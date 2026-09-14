@@ -100,14 +100,14 @@
 <script>
 // ===== 靜態配置（流程 + 技能 + 快捷鈕，動態嘢嚟自 status.json）=====
 const WORKFLOWS = [
-  {t:"錢大媽 CDM 自動化", code:["CDM"], s:"每晚 19:40/20:30/21:30 三輪。下載 Yahoo 訂單→執貨表→發票→PDF/打印→微信→email。target=today+2天。"},
-  {t:"新增產品", code:["新產品","上新產品"], s:"讀工作指引→問名/價/分類→改 products_v2.json + inventory.html + Firestore doc + 借圖→sync+deploy+push。"},
-  {t:"刪除 / 下架產品", code:["刪除產品","下架產品"], s:"問隱藏（推薦）定完全刪除，再執行對應方案。"},
-  {t:"AB 卡（雙規格）", code:["AB卡","雙規格卡"], s:"一卡兩 SKU，Tab 切換，SKU 尾 A 自動配對。"},
-  {t:"Firestore /products 同步", code:["sync products"], s:"跑 sync_products_to_firestore.py 推 107+ 款上雲。"},
-  {t:"祐興報價單 Excel", code:["報價單"], s:"gen_quote_xlsx.py 生成 103 款 + 相 + 分類分組。"},
-  {t:"Beatra 廣告片", code:["廣告片"], s:"充值 ¥29 後 render 15 秒芝士番茄鮮肉餃（hero 相已收）。"},
-  {t:"每日自動巡檢", code:["巡查"], s:"每晚 21:40 自動 report 去微信（CDM 跑咗未+出咗咩單）。"}
+  {t:"錢大媽 CDM 自動化", slug:"cdm", code:["CDM"], s:"每晚 19:40/20:30/21:30 三輪。下載 Yahoo 訂單→執貨表→發票→PDF/打印→微信→email。target=today+2天。"},
+  {t:"新增產品", slug:"new-product", code:["新產品","上新產品"], s:"讀工作指引→問名/價/分類→改 products_v2.json + inventory.html + Firestore doc + 借圖→sync+deploy+push。"},
+  {t:"刪除 / 下架產品", slug:"del-product", code:["刪除產品","下架產品"], s:"問隱藏（推薦）定完全刪除，再執行對應方案。"},
+  {t:"AB 卡（雙規格）", slug:"ab-card", code:["AB卡","雙規格卡"], s:"一卡兩 SKU，Tab 切換，SKU 尾 A 自動配對。"},
+  {t:"Firestore /products 同步", slug:"sync-products", code:["sync products"], s:"跑 sync_products_to_firestore.py 推 107+ 款上雲。"},
+  {t:"祐興報價單 Excel", slug:"quote", code:["報價單"], s:"gen_quote_xlsx.py 生成 103 款 + 相 + 分類分組。"},
+  {t:"Beatra 廣告片", slug:"beatra", code:["廣告片"], s:"充值 ¥29 後 render 15 秒芝士番茄鮮肉餃（hero 相已收）。"},
+  {t:"每日自動巡檢", slug:"patrol", code:["巡查"], s:"每晚 21:40 自動 report 去微信（CDM 跑咗未+出咗咩單）。"}
 ];
 
 const SKILLS = [
