@@ -145,7 +145,7 @@ const QUICK = [
 function renderStatic(){
   // 流程
   document.getElementById('workflows').innerHTML = WORKFLOWS.map(w=>`
-    <div class="wf" onclick="location.href='workflows/'+w.slug+'.html'" style="cursor:pointer">
+    <div class="wf" data-slug="${w.slug}" style="cursor:pointer">
       <div class="t">${w.t} <span style="float:right;color:var(--cyan);font-size:.72rem">▶ 流程圖</span></div>
       <div>${(w.code||[]).map(c=>`<span class="code">${c}</span>`).join('')}</div>
       <div class="s">${w.s}</div>
@@ -164,6 +164,9 @@ function renderStatic(){
       `</div>`;
   });
   document.getElementById('quick').innerHTML = q;
+  document.querySelectorAll('#workflows .wf').forEach(el=>{
+    el.onclick=()=>{ location.href='workflows/'+el.dataset.slug+'.html'; };
+  });
   document.querySelectorAll('.btn').forEach(b=>{
     b.onclick=()=>copyCmd(b.dataset.cmd);
   });
