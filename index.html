@@ -145,8 +145,8 @@ const QUICK = [
 function renderStatic(){
   // 流程
   document.getElementById('workflows').innerHTML = WORKFLOWS.map(w=>`
-    <div class="wf">
-      <div class="t">${w.t}</div>
+    <div class="wf" onclick="location.href='workflows/'+w.slug+'.html'" style="cursor:pointer">
+      <div class="t">${w.t} <span style="float:right;color:var(--cyan);font-size:.72rem">▶ 流程圖</span></div>
       <div>${(w.code||[]).map(c=>`<span class="code">${c}</span>`).join('')}</div>
       <div class="s">${w.s}</div>
     </div>`).join('');

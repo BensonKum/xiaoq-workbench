@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0a0e14">
+<title>新增產品 · 小Q工作台</title>
+<style>
+:root{--bg:#0a0e14;--card:#151b24;--line:#26303d;--txt:#e6edf3;--sub:#8b97a7;--cyan:#00e5ff;--purple:#b388ff;--green:#00e676;--orange:#ff6b35}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang HK","Microsoft JhengHei",sans-serif;padding:16px;max-width:680px;margin:0 auto;line-height:1.5}
+header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+header a{color:var(--cyan);text-decoration:none;font-size:.82rem;background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:8px}
+header h1{font-size:1.15rem;font-weight:700}
+.code{display:inline-block;background:rgba(0,229,255,.12);color:var(--cyan);font-size:.72rem;padding:2px 9px;border-radius:6px;font-family:ui-monospace,Menlo,monospace;margin-bottom:14px}
+.flow{display:flex;flex-direction:column;gap:0}
+.step{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--cyan);border-radius:12px;padding:14px;display:flex;gap:12px;align-items:flex-start}
+.step .num{flex:0 0 30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--purple));color:#0a0e14;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.step .t{font-weight:600;font-size:.92rem;margin-bottom:3px}
+.step .d{font-size:.8rem;color:var(--sub)}
+.arrow{text-align:center;color:var(--purple);font-size:1.2rem;margin:2px 0;padding-left:14px}
+.note{margin-top:20px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px;font-size:.8rem;color:var(--sub)}
+.note b{color:var(--orange)}
+</style></head>
+<body>
+<header><a href="../index.html">← 工作台</a><h1>新增產品</h1></header>
+<div class="code">口令：新產品 / 上新產品</div>
+<div class="flow">
+<div class="step"><div class="num">1</div><div><div class="t">📖 讀工作指引</div><div class="d">先讀 產品更新工作指引.md（改名/新增/停售必讀）</div></div></div><div class="arrow">↓</div><div class="step"><div class="num">2</div><div><div class="t">❓ 問三項</div><div class="d">產品名 / 價錢 / 分類（SKU 按 YH 規則自動編）</div></div></div><div class="arrow">↓</div><div class="step"><div class="num">3</div><div><div class="t">🗂️ 改 products_v2.json</div><div class="d">canonical 產品資料（名/SKU/分類/local_img）</div></div></div><div class="arrow">↓</div><div class="step"><div class="num">4</div><div><div class="t">🏪 改 inventory.html</div><div class="d">倉存系統動態讀 products_v2.json（唔使手改卡）</div></div></div><div class="arrow">↓</div><div class="step"><div class="num">5</div><div><div class="t">🔥 Firestore inventory doc</div><div class="d">開 inventory doc（id=產品名，含 central 庫存）</div></div></div><div class="arrow">↓</div><div class="step"><div class="num">6</div><div><div class="t">🖼️ 借圖 / 上圖</div><div class="d">冇實物相先借佔位圖，之後補 local_img</div></div></div><div class="arrow">↓</div><div class="step"><div class="num">7</div><div><div class="t">🔄 sync + deploy + push</div><div class="d">sync products → firebase deploy → commit+push GitHub</div></div></div>
+</div>
+<div class="note">⚠️ 雙軌維護：products_v2.json（標準源）+ index.html（前台）+ Firestore 三方要同步。改完必 deploy 否則前台睇唔到。</div>
+</body></html>
