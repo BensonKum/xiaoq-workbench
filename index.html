@@ -87,6 +87,12 @@
     <div class="btns" id="quick"></div>
   </div>
 
+  <!-- ⑥ 祐興網站 -->
+  <div class="card full">
+    <h2><span class="ic">🌐</span>祐興網站（撳落直接開）</h2>
+    <div class="btns" id="sites"></div>
+  </div>
+
   <!-- ⑤ 待辦清單 -->
   <div class="card full">
     <h2><span class="ic">✅</span>待辦清單</h2>
@@ -139,7 +145,12 @@ const QUICK = [
     {lab:"新增產品", cmd:"新產品"},
     {lab:"下架產品", cmd:"下架產品"}
   ]}
-];
+]};
+
+const SITES = [
+  {lab:"祐興食品網站", url:"https://yauhing-food.com/"},
+  {lab:"倉存系統", url:"https://yauhing-food.com/inventory.html"}
+};
 
 // ===== 渲染 =====
 function renderStatic(){
@@ -169,6 +180,12 @@ function renderStatic(){
   });
   document.querySelectorAll('.btn').forEach(b=>{
     b.onclick=()=>copyCmd(b.dataset.cmd);
+  });
+  // 網站快捷（開新頁跳轉）
+  document.getElementById('sites').innerHTML = SITES.map(s2=>
+    `<div class="btn" data-url="${s2.url}" style="cursor:pointer"><span class="lab">${s2.lab}</span><span class="cmd">${s2.url}</span></div>`).join('');
+  document.querySelectorAll('#sites .btn').forEach(el=>{
+    el.onclick=()=>{ window.open(el.dataset.url, '_blank'); };
   });
 }
 
