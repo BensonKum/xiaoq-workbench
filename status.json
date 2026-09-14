@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-09-14 21:49",
+  "cdm": {
+    "ran_today": true,
+    "target_date": "20260916",
+    "pdf_ready": true,
+    "files": [
+      {
+        "name": "執貨入箱表(WB)_20260916.pdf",
+        "size_kb": 38
+      },
+      {
+        "name": "錢大媽發票(WB)_16092026.pdf",
+        "size_kb": 175
+      }
+    ]
+  },
+  "firestore": {
+    "products_synced_date": "2026-09-11",
+    "products_count": 114
+  },
+  "todos": [
+    {
+      "text": "清 Firestore /products security rule（allow read:if true 係暫行）",
+      "done": false
+    },
+    {
+      "text": "YM808/YM809 換實物相（local_img 仍佔位圖）",
+      "done": false
+    },
+    {
+      "text": "CDM email 加 inamyleung 後備收件人（現寫死只去 bensonkum86）",
+      "done": false
+    },
+    {
+      "text": "桌面整理 3 個 _desktop版 取捨 + TERRY 4 夾合併",
+      "done": false
+    },
+    {
+      "text": "Gmail App Password 硬編碼風險（cdm_auto.py）",
+      "done": false
+    },
+    {
+      "text": "Beatra 充值 ¥29 後 render 15 秒廣告片",
+      "done": false
+    }
+  ]
+}
