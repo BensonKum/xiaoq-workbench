@@ -46,7 +46,8 @@ const QUICK = [
 
 const SITES = [
   {lab:"祐興食品網站", url:"https://yauhing-food.com/"},
-  {lab:"倉存系統", url:"https://yauhing-food.com/inventory.html"}
+  {lab:"倉存系統", url:"https://yauhing-food.com/inventory.html"},
+  {lab:"取貨核實", url:"https://yauhing-food.com/verify.html"}
 ];
 
 // ===== 渲染 =====
