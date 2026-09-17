@@ -1,19 +1,10 @@
 {
-  "generated_at": "2026-09-16 21:45",
+  "generated_at": "2026-09-17 10:39",
   "cdm": {
-    "ran_today": true,
-    "target_date": "20260918",
-    "pdf_ready": true,
-    "files": [
-      {
-        "name": "執貨入箱表(WB)_20260918.pdf",
-        "size_kb": 38
-      },
-      {
-        "name": "錢大媽發票(WB)_18092026.pdf",
-        "size_kb": 175
-      }
-    ]
+    "ran_today": false,
+    "target_date": "20260919",
+    "pdf_ready": false,
+    "files": []
   },
   "firestore": {
     "products_synced_date": "2026-09-11",
