@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-09-20 21:45",
+  "generated_at": "2026-09-21 21:45",
   "cdm": {
     "ran_today": true,
-    "target_date": "20260922",
+    "target_date": "20260923",
     "pdf_ready": true,
     "files": [
       {
-        "name": "執貨入箱表(WB)_20260922.pdf",
+        "name": "執貨入箱表(WB)_20260923.pdf",
         "size_kb": 38
       },
       {
-        "name": "錢大媽發票(WB)_22092026.pdf",
+        "name": "錢大媽發票(WB)_23092026.pdf",
         "size_kb": 175
       }
     ]
