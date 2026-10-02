@@ -9,7 +9,7 @@ except Exception:
     pass
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-PY = r"C:\Program Files\QClaw\v0.2.37.630\resources\openclaw\config/bin/python/python.cmd"
+PY = r"C:\Users\user\.workbuddy\binaries\python\versions\3.13.12\python.exe"
 
 def run(cmd):
     print(">>>", " ".join(cmd))
@@ -39,8 +39,8 @@ def main():
                           capture_output=True, text=True)
     if diff.returncode != 0:
         run(["git", "-C", BASE, "commit", "-m", "自動更新 工作台 %s" % now])
-        # 用 remote URL 內嵌 token 直接推；停用憑證助手以免卡住等彈窗
-        run(["git", "-C", BASE, "-c", "credential.helper=", "push"])
+        # 用全域 credential helper（wincred）推，唔使彈窗
+        run(["git", "-C", BASE, "push"])
         print("✅ 小Q工作台已更新並推送")
     else:
         print("ℹ️ 無變更，跳過推送")
