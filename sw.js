@@ -1,7 +1,7 @@
 /* 祐興工作台 Service Worker —— 離線快取 + 令 PWA 可安裝
  * 版本號必須同 index.html 嘅 APP_VERSION 一致（用 _bump_sw.py 自動同步）
  */
-const APP_VER = 'v42';
+const APP_VER = 'v43';
 const CACHE = 'xq-workbench-' + APP_VER;
 const ASSETS = [
   './', './index.html', './manifest.json',

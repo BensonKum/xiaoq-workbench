@@ -250,6 +250,46 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
   .cmd-card { flex-basis: calc(50% - 7px); }
   .cmd-card.open { flex-basis: 100%; }
 }
+/* ===== 祐興網站（3 張 Website 卡：指住會跳，撳一下開新視窗去網站） ===== */
+.web-grid { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; max-width: 640px; }
+.web-card {
+  flex: 1 1 calc(33.333% - 9.5px);          /* 640px 內 3 格（每格約 204px） */
+  aspect-ratio: 1 / 1;                      /* 正方形磁貼，同其他卡一致 */
+  background: var(--card, #22304d); border: 1px solid var(--line, #3d4c68); border-radius: 18px;
+  overflow: hidden; color: #fff; cursor: pointer; position: relative;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  padding: 12px; text-align: center; font-family: inherit;
+  box-shadow: 0 4px 12px rgba(0,0,0,.45);
+  transition: transform .24s cubic-bezier(.2,0,.2,1), box-shadow .24s ease, border-color .24s ease, filter .24s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.web-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: var(--w, #4d8dff); }
+.web-ico {
+  width: 52px; height: 52px; border-radius: 16px; flex: 0 0 auto;
+  background: var(--w, #4d8dff);
+  display: flex; align-items: center; justify-content: center; font-size: 27px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.42);
+  transition: transform .24s cubic-bezier(.2,0,.2,1);
+}
+.web-name { font-size: 17px; font-weight: 900; letter-spacing: .4px; line-height: 1.2; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
+.web-hint { font-size: 12px; font-weight: 700; color: rgba(255,255,255,.84); }
+/* 指住會跳（同一套手感：翹起 6px + 放大 6%） */
+@media (hover: hover) and (pointer: fine) {
+  .web-card:hover {
+    transform: translateY(-6px) scale(1.06); z-index: 2;
+    box-shadow: 0 22px 44px rgba(0,0,0,.66);
+    border-color: var(--w, #4d8dff); filter: brightness(1.08);
+  }
+  .web-card:hover .web-ico { transform: translateY(-3px) scale(1.08); }
+}
+.web-card:active { transform: translateY(-2px) scale(.97); }
+.web-card:active .web-ico { transform: none; }
+.web-card:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+@media (max-width: 520px) {
+  .web-card { flex: 0 1 calc(50% - 7px); }   /* 兩格一行，第三張唔會被拉去全闊 */
+  .web-ico { width: 44px; height: 44px; font-size: 24px; border-radius: 14px; }
+  .web-name { font-size: 16px; }
+}
 /* 小卡片（按「口令」後彈出） */
 .cmd-pop {
   position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%) translateY(24px);
@@ -468,6 +508,10 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
   <div class="section">
     <div class="section-title"><span class="dot" style="background:var(--warning)"></span>口令 / 指令<span class="drag-hint">· 撳一下卡面睇範圍，撳「口令」即複製，貼畀小Buddy 就照做</span></div>
     <div class="cmd-grid" id="cmd-grid"></div>
+  </div>
+  <div class="section">
+    <div class="section-title"><span class="dot" style="background:linear-gradient(90deg,#2f8fd6,#12a97a)"></span>祐興網站<span class="drag-hint">· 撳一下卡片即開新視窗去網站（指住會跳）；網址日後話畀小Buddy 就自動填入</span></div>
+    <div class="web-grid" id="web-grid"></div>
   </div>
   <div class="section">
     <div class="section-title"><span class="dot" style="background:linear-gradient(90deg,#ff4d6d,#ff9a3c,#ffd166)"></span>Skill / 技能<span class="drag-hint">· Dashboard 6 個交互 pattern 圖案，撳卡面 → 撳「睇 Pattern 圖案」即出圖</span></div>
@@ -1205,6 +1249,66 @@ function setDone(id, raw) {
 </script>
 
 <script>
+/* ===== 祐興網站（3 張 Website 卡：撳一下開新視窗去網站，指住會跳） =====
+   ⚠️ 網址集中喺下面 WEB_SITES 一開頭。日後 Benson 話畀網址，只需要改嗰張卡嘅 'url' 欄：
+      例：{ id:'site', name:'祐興網站', icon:'🌐', c:'#4d8dff', hint:'公司官網', url:'https://...' }
+   url: '' = 未設定（撳下去只出提示，唔會開到 ）。
+=============================================================================== */
+(function () {
+  var grid = document.getElementById('web-grid');
+  if (!grid) return;
+
+  var WEB_SITES = [
+    { id: 'site',  name: '祐興網站', icon: '🌐', c: '#4d8dff', hint: '公司官網 · 品牌對外', url: '' },
+    { id: 'stock', name: '倉存系統', icon: '📦', c: '#12a97a', hint: '膠盒同存貨紀錄',      url: '' },
+    { id: 'order', name: '訂單確認', icon: '🧾', c: '#ff9a3c', hint: '每日訂單核對',        url: '' }
+  ];
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (m) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+    });
+  }
+  function toast(msg) {
+    var t = document.getElementById('pwa-toast');
+    if (!t) return;
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(function () { t.classList.remove('show'); }, 4600);
+  }
+  function open(site) {
+    var url = (site.url || '').trim();
+    if (!url) {
+      toast('「' + site.name + '」嘅網址而未設定 —— 話畀小Buddy 一句，我就自動填落去');
+      return;
+    }
+    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+    try { window.open(url, '_blank', 'noopener,noreferrer'); }
+    catch (e) { window.location.href = url; }
+    toast('🌐 已開「' + site.name + '」：' + url);
+  }
+
+  WEB_SITES.forEach(function (site) {
+    var d = document.createElement('div');
+    d.className = 'web-card';
+    d.setAttribute('role', 'button');
+    d.setAttribute('tabindex', '0');
+    d.setAttribute('aria-label', site.name);
+    d.dataset.id = site.id;
+    d.style.setProperty('--w', site.c);
+    d.innerHTML =
+      '<div class="web-ico">' + site.icon + '</div>' +
+      '<div class="web-name">' + esc(site.name) + '</div>' +
+      '<div class="web-hint">↗ ' + esc(site.hint) + '</div>';
+    d.addEventListener('click', function () { open(site); });
+    d.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); open(site); }
+    });
+    grid.appendChild(d);
+  });
+})();
+</script>
+
+<script>
 /* ================= Skill / 技能（一張卡放 6 個 Dashboard pattern 圖案） ================= */
 (function () {
   var card = document.getElementById('skill-card');
@@ -1501,8 +1605,8 @@ function setDone(id, raw) {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v42';
-  var APP_PUBLISHED = '2026/10/03 06:21';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v43';
+  var APP_PUBLISHED = '2026/10/03 06:37';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
