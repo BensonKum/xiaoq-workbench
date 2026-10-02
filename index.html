@@ -1486,14 +1486,21 @@ function setDone(id, raw) {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v40';
+  var APP_VERSION = 'v41';
+  var APP_PUBLISHED = '2026/10/03 06:08';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
 
   (function paintVer() {
     var f = document.getElementById('appFooter');
-    if (f) f.textContent = '祐興工作台 ' + APP_VERSION + ' · 實時數據追蹤 · 每次只問一條問題';
+    var pub = (typeof APP_PUBLISHED === 'string' && APP_PUBLISHED) ? APP_PUBLISHED : '';
+    if (f) {
+      var parts = ['祐興工作台 ' + APP_VERSION];
+      if (pub) parts.push('最後 publish ' + pub.replace(/\//g, '.').replace(/-/g, '.'));
+      parts.push('實時數據追蹤 · 每次只問一條問題');
+      f.textContent = parts.join(' · ');
+    }
     if (updVer) updVer.textContent = APP_VERSION;
     if (updBtn) updBtn.classList.add('show');
   })();

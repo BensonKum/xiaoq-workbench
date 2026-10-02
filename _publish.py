@@ -21,6 +21,7 @@ import os
 import re
 import sys
 import urllib.request
+from datetime import datetime
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HTML = os.path.join(HERE, 'index.html')
@@ -28,6 +29,7 @@ SW = os.path.join(HERE, 'sw.js')
 
 RE_HTML = re.compile(r"(var APP_VERSION\s*=\s*)'([^']+)'")
 RE_SW = re.compile(r"(const APP_VER\s*=\s*)'([^']+)'")
+RE_PUB = re.compile(r"(var APP_PUBLISHED\s*=\s*)'([^']*)'")   # footer「最後 publish」時間
 
 ONLINE = 'https://xiaoq-workbench-76614.app.workbuddy.host/index.html'
 
@@ -95,11 +97,23 @@ def main():
         else:
             print('線上同本地都係 %s，直接升做 %s' % (old, new))
 
+    # footer「最後 publish 時間」（本地時區），publish 呢一刻寫入
+    stamp = datetime.now().strftime('%Y/%m/%d %H:%M')
+
     print('%s → %s%s' % (old, new, '（--dry，未落檔）' if dry else ''))
     if dry:
+        print('  最後 publish 會寫：%s' % stamp)
         return 0
 
     html2 = RE_HTML.sub(lambda m: m.group(1) + "'%s'" % new, html, count=1)
+    if RE_PUB.search(html2):
+        html2 = RE_PUB.sub(lambda m: m.group(1) + "'%s'" % stamp, html2, count=1)
+        print('  footer 最後 publish 時間：%s' % stamp)
+    else:                                                   # 舊檔冇呢行就自己插播
+        html2 = html2.replace(
+            "var APP_VERSION = '%s';" % new,
+            "var APP_VERSION = '%s';\n  var APP_PUBLISHED = '%s';" % (new, stamp), 1)
+        print('  （index.html 冇 APP_PUBLISHED，已自動插入）')
     sw2 = RE_SW.sub(lambda m: m.group(1) + "'%s'" % new, sw, count=1)
 
     tmp = HTML + '.tmp'
