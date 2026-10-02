@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0a0e14">
+<title>錢大媽 CDM 自動化 · 小Q工作台</title>
+<style>
+:root{--bg:#0a0e14;--card:#151b24;--line:#26303d;--txt:#e6edf3;--sub:#8b97a7;--cyan:#00e5ff;--purple:#b388ff;--green:#00e676;--orange:#ff6b35}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang HK","Microsoft JhengHei",sans-serif;padding:16px;max-width:680px;margin:0 auto;line-height:1.5}
+header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+header a{color:var(--cyan);text-decoration:none;font-size:.82rem;background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:8px}
+header h1{font-size:1.15rem;font-weight:700}
+.code{display:inline-block;background:rgba(0,229,255,.12);color:var(--cyan);font-size:.72rem;padding:2px 9px;border-radius:6px;font-family:ui-monospace,Menlo,monospace;margin-bottom:14px}
+.flow{display:flex;flex-direction:column;gap:0}
+.step{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--cyan);border-radius:12px;padding:14px;display:flex;gap:12px;align-items:flex-start}
+.step .num{flex:0 0 30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--purple));color:#0a0e14;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.step .t{font-weight:600;font-size:.92rem;margin-bottom:3px}
+.step .d{font-size:.8rem;color:var(--sub)}
+.arrow{text-align:center;color:var(--purple);font-size:1.2rem;margin:2px 0;padding-left:14px}
+.note{margin-top:20px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px;font-size:.8rem;color:var(--sub)}
+.note b{color:var(--orange)}
+</style></head>
+<body>
+<header><a href="../index.html">← 工作台</a><h1>錢大媽 CDM 自動化</h1></header>
+<div class="code">口令：CDM</div>
+<div class="flow">
+<div class="step"><div class="num">1</div><div><div class="t">📥 下載 Yahoo 訂單</div><div class="d">step1 由 sap@qdama.cn 下載附件（防重複：marker + PDF 雙重檢查）</div></div></div><div class="arrow">↓</div><div class="step"><div class="num">2</div><div><div class="t">📋 更新執貨入箱表</div><div class="d">step2 寫入 執貨入箱表_{target}.xlsx</div></div></div><div class="arrow">↓</div><div class="step"><div class="num">3</div><div><div class="t">🧾 更新錢大媽發票</div><div class="d">step3 寫入 錢大媽發票_{ddmmyyyy}.xls</div></div></div><div class="arrow">↓</div><div class="step"><div class="num">4</div><div><div class="t">🖨️ 打印 / 匯出 PDF</div><div class="d">step4 打印機輸出 + 匯出 PDF（TOSHIBA IP 192.168.1.199）</div></div></div><div class="arrow">↓</div><div class="step"><div class="num">5</div><div><div class="t">📲 微信發送</div><div class="d">step5 發 PDF 去微信（cron 約 19:50 觸發）</div></div></div><div class="arrow">↓</div><div class="step"><div class="num">6</div><div><div class="t">📧 郵件發送</div><div class="d">step6 發 PDF 去 bensonkum86@gmail.com</div></div></div>
+</div>
+<div class="note">⏰ 每晚 19:40 / 20:30 / 21:30 三輪自動跑（公司機鎖屏即可）。target_date = 今日 + 2 天。防重複：第一輪標記後，後兩輪自動跳過。</div>
+</body></html>

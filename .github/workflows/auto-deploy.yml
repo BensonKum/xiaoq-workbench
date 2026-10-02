@@ -1,0 +1,39 @@
+name: 小Q工作台 自動部署
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # 香港時間 21:30（UTC+8）定時重建流程頁
+    - cron: "30 13 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 重新生成流程頁 (workflows/*.html)
+        run: python gen_workflows.py
+
+      - name: 提交變更（若有）
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add workflows/
+          if git diff --cached --quiet; then
+            echo "無變更，跳過 commit"
+          else
+            git commit -m "auto: 重建流程頁 $(date +%Y-%m-%d)"
+            git push
+          fi
