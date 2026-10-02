@@ -2,8 +2,19 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>祐興工作台 - Benson</title>
+<!-- ===== PWA：可「添加到主畫面」當 App 用 ===== -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d1117">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="祐興工作台">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <style>
 :root {
   /* ===== 深色（黑底）主題 ===== */
@@ -344,6 +355,27 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
   .sk-body { padding: 16px; }
   .sk-pats { grid-template-columns: 1fr; }
 }
+/* ===== 加到主畫面（PWA install）懸浮鈕 + toast ===== */
+.pwa-install {
+  position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 60; display: none; align-items: center; gap: 8px;
+  border: 1px solid #4d95e0; background: linear-gradient(135deg, #1b2a44, #141d2c);
+  color: #fff; font-family: inherit; font-size: 14px; font-weight: 800; letter-spacing: .3px;
+  padding: 11px 17px; border-radius: 999px; cursor: pointer;
+  box-shadow: 0 10px 26px rgba(0,0,0,.65);
+  -webkit-tap-highlight-color: transparent;
+}
+.pwa-install.show { display: flex; }
+@media (hover: hover) and (pointer: fine) { .pwa-install:hover { border-color: #6fb0f5; transform: translateY(-2px); } }
+.pwa-toast {
+  position: fixed; left: 50%; transform: translateX(-50%) translateY(18px);
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px)); z-index: 61;
+  max-width: min(90vw, 440px); background: #151d2c; border: 1px solid #2b3442;
+  color: #fff; font-size: 14px; font-weight: 700; line-height: 1.55;
+  padding: 12px 16px; border-radius: 12px; box-shadow: 0 12px 30px rgba(0,0,0,.65);
+  opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .25s ease;
+}
+.pwa-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
@@ -1348,6 +1380,61 @@ function setDone(id, raw) {
     chip.addEventListener('keydown', function (ev) {
       if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); run(key, chip); }
     });
+  });
+})();
+</script>
+<!-- ===== PWA：加入到主畫面 ===== -->
+<button class="pwa-install" id="pwa-btn" type="button">📲 加到主畫面</button>
+<div class="pwa-toast" id="pwa-toast" role="status" aria-live="polite"></div>
+<script>
+(function () {
+  var deferred = null;
+  var btn = document.getElementById('pwa-btn');
+  var toast = document.getElementById('pwa-toast');
+  var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  function tip(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(function () { toast.classList.remove('show'); }, 4600);
+  }
+
+  /* Android / Chrome：瀏覽器觸發安裝提示 */
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault(); deferred = e; btn.classList.add('show');
+  });
+  window.addEventListener('appinstalled', function () {
+    btn.classList.remove('show'); deferred = null; tip('✅ 已完成！而家可以由主畫面開「祐興工作台」');
+  });
+  /* 預設顯示（Android 手動「添加到主畫面」一樣得）；已安裝就隱藏 */
+  var standalone = window.matchMedia('(display-mode: standalone)').matches ||
+                   navigator.standalone === true;
+  if (!standalone) btn.classList.add('show');
+  /* iOS 冇 install API，撳下去直接畀分享指引 */
+  if (iOS && standalone) btn.classList.remove('show');
+
+  /* 註冊 Service Worker（離線可開 + 令 Chrome 識別為可安裝 PWA） */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
+
+  btn.addEventListener('click', function () {
+    if (deferred) {
+      deferred.prompt();
+      deferred.userChoice.then(function (r) {
+        if (r.outcome === 'accepted') btn.classList.remove('show');
+        deferred = null;
+      });
+      return;
+    }
+    if (iOS) {
+      tip('📱 撳瀏覽器底部中間「分享 ↑」→ 揀「添加到主畫面」→ 右上角「新增」就完成。');
+    } else {
+      tip('⋮ 右上角選擇「添加到主畫面」／「安裝 app」，就可以當 App 用。');
+    }
   });
 })();
 </script>
