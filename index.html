@@ -344,6 +344,33 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .sk-state { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 800; margin-top: 8px; padding: 3px 10px; border-radius: 12px; }
 .sk-state.on { background: rgba(74,222,128,.16); color: #86efac; }
 .sk-state.off { background: rgba(226,179,60,.16); color: #f7cf6d; }
+
+/* ===== Skill 分層（3 層：自建 / 内置 Plugin / Expert）三色版本 ===== */
+.skill-card.layer-1::before { background: linear-gradient(90deg, #ff4d6d, #ff9a3c); }
+.skill-card.layer-2::before { background: linear-gradient(90deg, #4d8dff, #00d4a0); }
+.skill-card.layer-3::before { background: linear-gradient(90deg, #b15cff, #ff4d9e); }
+.skill-card.layer-1 .sk-face .sk-ico { background: linear-gradient(140deg, #ff4d6d, #ff9a3c); box-shadow: 0 6px 16px rgba(255,90,110,.42); }
+.skill-card.layer-2 .sk-face .sk-ico { background: linear-gradient(140deg, #4d8dff, #00d4a0); box-shadow: 0 6px 16px rgba(77,141,255,.42); }
+.skill-card.layer-3 .sk-face .sk-ico { background: linear-gradient(140deg, #b15cff, #ff4d9e); box-shadow: 0 6px 16px rgba(177,92,255,.42); }
+.sk-layer-tag {
+  display: inline-flex; align-items: center; gap: 6px; margin-bottom: 8px;
+  font-size: 12px; font-weight: 800; padding: 4px 11px; border-radius: 12px;
+}
+.sk-layer-tag.l1 { background: rgba(255,90,110,.16); color: #ff9aab; border: 1px solid rgba(255,90,110,.34); }
+.sk-layer-tag.l2 { background: rgba(77,141,255,.16); color: #9dc2ff; border: 1px solid rgba(77,141,255,.34); }
+.sk-layer-tag.l3 { background: rgba(177,92,255,.16); color: #d3a6ff; border: 1px solid rgba(177,92,255,.34); }
+.sk-list { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+.sk-list-row {
+  display: flex; gap: 8px; align-items: flex-start; padding: 6px 0 6px 8px;
+  border-bottom: 1px solid #1a2436; font-size: 12.5px; line-height: 1.55;
+}
+.sk-list-row .sk-i { flex: 0 0 20px; text-align: center; }
+.sk-list-row .sk-n { font-weight: 800; color: #e6eefb; word-break: break-word; }
+.sk-list-row .sk-d { color: #93a1b8; font-size: 11.5px; word-break: break-word; }
+.sk-list-row.l1 { border-left: 3px solid rgba(255,90,110,.45); padding-left: 8px; }
+.sk-list-row.l2 { border-left: 3px solid rgba(77,141,255,.45); padding-left: 8px; }
+.sk-list-row.l3 { border-left: 3px solid rgba(177,92,255,.45); padding-left: 8px; }
+@media (max-width: 620px) { .sk-list { grid-template-columns: 1fr; } }
 @media (max-width: 860px) {
   .skill-grid { max-width: 100%; }
   .skill-card { flex-basis: calc(33.333% - 9.3px); }
@@ -421,6 +448,32 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
           <div class="sk-ico">🎨</div>
           <div class="sk-name">Skill / 技能</div>
           <div class="sk-hint">撳開睇 6 個 pattern</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title"><span class="dot" style="background:linear-gradient(90deg,#4d8dff,#00d4a0,#b15cff)"></span>Skill 分層<span class="drag-hint">· 3 層：自建 Skill（業務口令）／内置 Plugin（系統技能）／Expert 專家包，撳卡面睇全名單</span></div>
+    <div class="skill-grid" id="layer-grid">
+      <div class="skill-card layer layer-1" id="layer-1" role="button" tabindex="0" aria-expanded="false">
+        <div class="sk-face">
+          <div class="sk-ico">🛠️</div>
+          <div class="sk-name">① 自建 Skill</div>
+          <div class="sk-hint">撳開睇 8 個業務口令</div>
+        </div>
+      </div>
+      <div class="skill-card layer layer-2" id="layer-2" role="button" tabindex="0" aria-expanded="false">
+        <div class="sk-face">
+          <div class="sk-ico">🔌</div>
+          <div class="sk-name">② 内置 Plugin</div>
+          <div class="sk-hint">撳開睇 29 個系統技能</div>
+        </div>
+      </div>
+      <div class="skill-card layer layer-3" id="layer-3" role="button" tabindex="0" aria-expanded="false">
+        <div class="sk-face">
+          <div class="sk-ico">🎓</div>
+          <div class="sk-name">③ Expert 專家包</div>
+          <div class="sk-hint">撳開睇 3 個</div>
         </div>
       </div>
     </div>
@@ -1435,6 +1488,184 @@ function setDone(id, raw) {
     } else {
       tip('⋮ 右上角選擇「添加到主畫面」／「安裝 app」，就可以當 App 用。');
     }
+  });
+})();
+</script>
+
+<script>
+/* ===== Skill 分層：① 自建 Skill ② 内置 Plugin ③ Expert 專家包 =====
+   注意：同一個 element 只掛「一個」listener，内部再分流 .sk-close / .sk-btn / 其餘。
+   （當年「撳圖案會收卡」就係因為掛咗兩個 listener + 用 stopPropagation 擋唔到。） */
+(function () {
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  var SVG = {};
+  SVG.l1 =
+    '<svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">' +
+    '<rect x="14" y="18" width="52" height="34" rx="6" fill="#2a1618" stroke="#ff4d6d" stroke-width="2.4"/>' +
+    '<rect x="76" y="18" width="52" height="34" rx="6" fill="#1d2740" stroke="#ff4d6d" stroke-width="1.6" stroke-opacity=".55"/>' +
+    '<rect x="138" y="18" width="52" height="34" rx="6" fill="#1d2740" stroke="#ff4d6d" stroke-width="1.6" stroke-opacity=".55"/>' +
+    '<rect x="200" y="18" width="52" height="34" rx="6" fill="#1d2740" stroke="#ff4d6d" stroke-width="1.6" stroke-opacity=".55"/>' +
+    '<rect x="14" y="60" width="52" height="34" rx="6" fill="#1d2740" stroke="#ff4d6d" stroke-width="1.6" stroke-opacity=".55"/>' +
+    '<rect x="76" y="60" width="52" height="34" rx="6" fill="#1d2740" stroke="#ff4d6d" stroke-width="1.6" stroke-opacity=".55"/>' +
+    '<rect x="138" y="60" width="52" height="34" rx="6" fill="#1d2740" stroke="#ff4d6d" stroke-width="1.6" stroke-opacity=".55"/>' +
+    '<rect x="200" y="60" width="52" height="34" rx="6" fill="#ff9a3c" fill-opacity=".2" stroke="#ff9a3c" stroke-width="2.4"/>' +
+    '<path d="M124 35 L132 31 L136 23 L140 31 L148 35 L140 39 L136 47 L132 39 Z" fill="#ff9a3c"/>' +
+    '</svg>';
+  SVG.l2 =
+    '<svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">' +
+    '<rect x="14" y="26" width="26" height="48" rx="6" fill="#12203a" stroke="#4d8dff" stroke-width="2"/>' +
+    '<path d="M27 74 L27 82 M20 82 L34 82" stroke="#4d8dff" stroke-width="3" stroke-linecap="round"/>' +
+    '<rect x="50" y="34" width="14" height="32" rx="3" fill="#4d8dff" fill-opacity=".5"/>' +
+    '<rect x="72" y="34" width="14" height="32" rx="3" fill="#4d8dff" fill-opacity=".34"/>' +
+    '<rect x="94" y="34" width="14" height="32" rx="3" fill="#4d8dff" fill-opacity=".5"/>' +
+    '<rect x="116" y="34" width="14" height="32" rx="3" fill="#4d8dff" fill-opacity=".34"/>' +
+    '<rect x="138" y="34" width="14" height="32" rx="3" fill="#4d8dff" fill-opacity=".5"/>' +
+    '<rect x="160" y="34" width="14" height="32" rx="3" fill="#4d8dff" fill-opacity=".34"/>' +
+    '<rect x="182" y="34" width="14" height="32" rx="3" fill="#4d8dff" fill-opacity=".5"/>' +
+    '<rect x="204" y="34" width="14" height="32" rx="3" fill="#4d8dff" fill-opacity=".34"/>' +
+    '<rect x="226" y="34" width="14" height="32" rx="3" fill="#4d8dff" fill-opacity=".5"/>' +
+    '<text x="256" y="62" fill="#00d4a0" font-size="30" font-family="sans-serif" font-weight="700">29</text>' +
+    '</svg>';
+  SVG.l3 =
+    '<svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M120 26 L150 14 L180 26 L150 38 Z" fill="#b15cff" fill-opacity=".3" stroke="#b15cff" stroke-width="2.4"/>' +
+    '<path d="M150 38 L150 60" stroke="#b15cff" stroke-width="2.2"/>' +
+    '<path d="M150 60 L124 70 L150 80 L176 70 Z" fill="#b15cff" fill-opacity=".22" stroke="#b15cff" stroke-width="2.2" stroke-linejoin="round"/>' +
+    '<circle cx="42" cy="50" r="18" fill="#1e1533" stroke="#b15cff" stroke-width="2.2"/>' +
+    '<path d="M36 50 L48 50 M42 44 L42 56" stroke="#b15cff" stroke-width="2" stroke-linecap="round"/>' +
+    '<circle cx="258" cy="50" r="18" fill="#1e1533" stroke="#b15cff" stroke-width="2.2"/>' +
+    '<path d="M252 50 L264 50 M258 44 L258 56" stroke="#b15cff" stroke-width="2" stroke-linecap="round"/>' +
+    '<circle cx="86" cy="74" r="12" fill="#1e1533" stroke="#b15cff" stroke-width="2" stroke-opacity=".6"/>' +
+    '<circle cx="214" cy="74" r="12" fill="#1e1533" stroke="#b15cff" stroke-width="2" stroke-opacity=".6"/>' +
+    '</svg>';
+
+  var LAYERS = [
+    {
+      id: 'layer-1', svg: 'l1', tag: 'l1', tagTxt: 'LEVEL 1 · 自定義',
+      ico: '🛠️', name: '① 自建 Skill',
+      effect: '小QQ工作室自己寫嘅 skill，放喺 ~/.workbuddy/skills/ 一共有 8 個，全部 SKILL.md 有 frontmatter。呢啲先係我哋日常工作真正用嘅業務口令（外侧插件唔算）。',
+      rows: [
+        ['cdm-workflow', '錢大媽 CDM 每日流程 + 膠盒結餘'],
+        ['cdm-plastic-box-fix', '膠盒倉存 Excel 修復'],
+        ['cdm-invoice-reconciliation', 'CDM 發票對數 Flow1/2/3'],
+        ['food-index-reporter', 'Food Index 報價單（Kai Shing）'],
+        ['super-tri-reporter', 'Super Tri 報價單（HKY/KYW 等）'],
+        ['stock-analyst', '股票分析 + 每週報告 + email'],
+        ['doodle-anim', '手繪 Code 動畫／科普片'],
+        ['benson-project-dashboard', '項目儀表板 PWA']
+      ]
+    },
+    {
+      id: 'layer-2', svg: 'l2', tag: 'l2', tagTxt: 'LEVEL 2 · 系統內置',
+      ico: '🔌', name: '② 内置 Plugin',
+      effect: 'WorkBuddy 自帶／插件提供嘅 29 個技能，放喺 ~/.workbuddy/plugins/cache/workbuddy-builtin/（同一個會有 5.5.6／5.6.2／5.7.3 三個版本副本，上面係去重後嘅名字）。佢哋唔係我哋寫嘅，但系統會自動用。',
+      rows: [
+        ['buddy-image-processing', '圖片去字／水印／修復／抠圖'],
+        ['buddy-multimodal-generation', '3D 模型／模板影片'],
+        ['cloud-service', '後端 + 資料庫 + 登入'],
+        ['cloudstudio-deploy', '雲端部署'],
+        ['sites', '發布為應用／預覽'],
+        ['skill-creator', '建立新 skill'],
+        ['marketplace-skill-installer', '安裝 skill'],
+        ['expert-manager', '專家包管理'],
+        ['library', '資料庫／網盤'],
+        ['tencent-docx', 'Word 文檔創作'],
+        ['tencent-docs-routing', '本地 Office 路由'],
+        ['tencent-local-office-edit', '本地 Office 即時編輯'],
+        ['workbuddy-finance-skill', '金融場景總入口'],
+        ['wecom-forwarded-chat-resources', '企業微信轉發資源'],
+        ['geo-map-compliance-guard', '地圖合規守護'],
+        ['recommend-connectors', '推薦連接器'],
+        ['recommend-experts', '推薦專家'],
+        ['miora-brand-design', 'AI 品牌設計'],
+        ['miora-creative-core', '創意核心'],
+        ['miora-image-generation', 'AI 圖片生成'],
+        ['miora-video-generation', 'AI 影片生成'],
+        ['ardot-design-core', '設計系統核心'],
+        ['ardot-design-router', '設計路由'],
+        ['ardot-design-to-code', '設計轉程式碼'],
+        ['ardot-ui-design', 'UI 設計'],
+        ['ardot-poster', '海報設計'],
+        ['ardot-slides', '簡報設計'],
+        ['design-router', '設計總路由'],
+        ['livestream-poster', '直播海報']
+      ]
+    },
+    {
+      id: 'layer-3', svg: 'l3', tag: 'l3', tagTxt: 'LEVEL 3 · 專家包',
+      ico: '🎓', name: '③ Expert 專家包',
+      effect: 'Expert 包（Expert Pack）係比 skill 更大嘅一層封裝，放喺 ~/.workbuddy/plugins/cache/experts/，入面除了技能仲有專業判斷流程。目前裝咗 3 個。',
+      rows: [
+        ['document-skills', '文件處理專家（1.0.1）'],
+        ['kdocs-pdf-toolbox', 'PDF 工具箱（2.6.4）'],
+        ['wps-office-expert', 'WPS Office 專家（1.0.0）']
+      ]
+    }
+  ];
+
+  LAYERS.forEach(function (L) {
+    var card = document.getElementById(L.id);
+    if (!card) return;
+
+    var rowsHtml = L.rows.map(function (r) {
+      return '<div class="sk-list-row ' + L.tag + '">' +
+             '<span class="sk-i">▪</span>' +
+             '<span><span class="sk-n">' + esc(r[0]) + '</span>' +
+             '<span class="sk-d"><br>' + esc(r[1]) + '</span></span>' +
+             '</div>';
+    }).join('');
+
+    card.insertAdjacentHTML('beforeend',
+      '<div class="sk-body">' +
+        '<div class="sk-layer-tag ' + L.tag + '">' + esc(L.tagTxt) + ' · ' + L.rows.length + ' 個</div>' +
+        '<div class="sk-diagram hide">' + SVG[L.svg] + '</div>' +
+        '<button class="sk-btn" type="button">睇 Pattern 圖案</button>' +
+        '<div class="sk-txt">' +
+          '<div class="sk-effect">' + esc(L.effect) + '</div>' +
+          '<div class="sk-list">' + rowsHtml + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<button class="sk-close" type="button" aria-label="收起">✕</button>');
+
+    function collapse() {
+      card.classList.remove('open');
+      card.setAttribute('aria-expanded', 'false');
+    }
+    function doToggle() {
+      var willOpen = !card.classList.contains('open');   // 先判定自己（次序錯會變「收咗又開返」）
+      var grid = card.parentElement;
+      var others = grid.querySelectorAll('.skill-card.open');
+      for (var i = 0; i < others.length; i++) {
+        others[i].classList.remove('open');
+        others[i].setAttribute('aria-expanded', 'false');
+      }
+      if (willOpen) { card.classList.add('open'); card.setAttribute('aria-expanded', 'true'); }
+      else { card.classList.remove('open'); card.setAttribute('aria-expanded', 'false'); }
+    }
+
+    /* 單一 listener 内部分流 */
+    card.addEventListener('click', function (ev) {
+      var t = ev.target;
+      if (!t || !t.closest) return;
+      if (t.closest('.sk-close')) { collapse(); return; }
+      if (t.closest('.sk-btn')) {
+        var box = card.querySelector('.sk-diagram');
+        var btn = card.querySelector('.sk-btn');
+        if (box.classList.contains('hide')) { box.classList.remove('hide'); btn.textContent = '收起圖案'; }
+        else { box.classList.add('hide'); btn.textContent = '睇 Pattern 圖案'; }
+        return;
+      }
+      doToggle();
+    });
+    card.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); doToggle(); }
+      if (ev.key === 'Escape' && card.classList.contains('open')) collapse();
+    });
   });
 })();
 </script>
