@@ -18,7 +18,8 @@
 <style>
 :root {
   /* ===== 深色（黑底）主題 ===== */
-  --bg: #000000; --card: #141922; --card-2: #0d1117; --ink: #ffffff; --muted: #d3dbe6; --line: #2b3442;
+  /* 卡片底色：一律藍灰底（唔係黑、唔係白），同 --bg 有分明對比 */
+  --bg: #05070d; --card: #22304d; --card-2: #1b2740; --ink: #ffffff; --muted: #d3dbe6; --line: #3d4c68;
   --primary: #4d95e0; --success: #4ade80; --warning: #e2b33c; --danger: #f06a6a;
   --cdm: #7b8ff5; --product: #45c9c0; --admin: #f5a44a; --media: #a984f0;
 }
@@ -32,7 +33,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .filter-bar {
   display: flex; align-items: stretch; gap: 10px;
   max-width: 900px; margin-bottom: 16px; padding: 10px 12px;
-  background: linear-gradient(135deg, #111a29 0%, #0c1320 100%);
+  background: linear-gradient(135deg, #1a2540 0%, #101728 100%);
   border: 1px solid var(--line); border-radius: 16px;
   box-shadow: 0 8px 22px rgba(0,0,0,.55);
   position: sticky; top: 0; z-index: 40;
@@ -44,7 +45,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 }
 .fb-chip {
   flex: 1 1 0; min-width: 0; position: relative; overflow: hidden;
-  border: 1px solid var(--line); background: #151d2c; border-radius: 12px;
+  border: 1px solid var(--line); background: #1f2b45; border-radius: 12px;
   padding: 8px 12px 8px 14px; cursor: pointer; color: #fff; font-family: inherit; text-align: left;
   display: flex; align-items: center; gap: 9px;
   transition: transform .2s cubic-bezier(.2,0,.2,1), background .2s ease, border-color .2s ease, box-shadow .2s ease;
@@ -118,13 +119,13 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .flow-card .flow-status.pending { background: rgba(226,179,60,.16); color: #f7cf6d; }
 .flow-card .flow-status.error { background: rgba(240,106,106,.16); color: #fca5a5; }
 .flow-card .flow-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.flow-card .flow-tag { font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 6px; background: #222b3a; color: #aeb9c8; }
+.flow-card .flow-tag { font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 6px; background: #2f3f60; color: #aeb9c8; }
 /* 完成日期（3 張指定卡卡面新增） */
 .flow-card .flow-done { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); font-size: 16px; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .flow-card .flow-done .done-when { color: var(--primary); font-weight: 800; }
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
 .modal-overlay.active { display: flex; }
-.modal { background: #fff; border-radius: 16px; padding: 24px; width: 480px; max-width: 90vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.modal { background: #1b2740; border-radius: 16px; padding: 24px; width: 480px; max-width: 90vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
 .modal h2 { font-size: 24px; font-weight: 800; margin-bottom: 18px; color: #ffffff; }
 .modal .step { padding: 14px; margin-bottom: 10px; background: var(--card-2); border: 1px solid var(--line); border-radius: 8px; font-size: 17px; font-weight: 700; color: #eaf1fa; }
 .modal .step-num { font-weight: 800; color: #7cb8f0; margin-right: 10px; }
@@ -167,7 +168,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .flow-x {
   display: none; position: absolute; top: 8px; right: 10px; z-index: 4;
   width: 30px; height: 30px; border-radius: 50%;
-  border: 1px solid var(--line); background: #1d2634; color: #cfd8e3;
+  border: 1px solid var(--line); background: #2b3a58; color: #cfd8e3;
   font-size: 15px; font-weight: 800; line-height: 1; cursor: pointer;
   font-family: inherit; align-items: center; justify-content: center;
   -webkit-tap-highlight-color: transparent;
@@ -175,7 +176,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .flow-card.open .flow-x { display: flex; }
 @media (hover: hover) and (pointer: fine) { .flow-x:hover { background: #2a3547; color: #ffffff; } }
 .flow-open {
-  margin-top: 12px; background: #ffffff; color: #0b1220;
+  margin-top: 12px; background: #4d95e0; color: #ffffff;
   border: none; border-radius: 10px; padding: 9px 18px;
   font-size: 15px; font-weight: 800; cursor: pointer; font-family: inherit;
 }
@@ -224,7 +225,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .cmd-key { font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 6px; background: rgba(0,0,0,.32); color: #fff; }
 .cmd-btn {
   display: inline-flex; align-items: center; gap: 8px;
-  background: #ffffff; color: #0b1220;
+  background: #4d95e0; color: #ffffff;
   border: none; border-radius: 10px; padding: 11px 22px;
   font-size: 17px; font-weight: 800; cursor: pointer; font-family: inherit;
   box-shadow: 0 4px 12px rgba(0,0,0,.35);
@@ -281,7 +282,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .skill-card {
   flex: 0 0 calc(20% - 11.2px);            /* 同口令磁貼一般大（640px 內 5 格） */
   aspect-ratio: 1 / 1;
-  background: #101826; border: 1px solid var(--line); border-radius: 18px; overflow: hidden;
+  background: #22304d; border: 1px solid var(--line); border-radius: 18px; overflow: hidden;
   cursor: pointer; position: relative; color: #fff; font-family: inherit;
   box-shadow: 0 4px 10px rgba(0,0,0,.45);
   transition: flex-basis .3s cubic-bezier(.2,0,.2,1), box-shadow .22s ease, transform .22s ease, border-color .2s;
@@ -303,7 +304,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .sk-close {
   display: none; position: absolute; top: 10px; right: 12px; z-index: 4;
   width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line);
-  background: #1d2634; color: #cfd8e3; font-size: 15px; font-weight: 800; line-height: 1;
+  background: #2b3a58; color: #cfd8e3; font-size: 15px; font-weight: 800; line-height: 1;
   cursor: pointer; font-family: inherit; align-items: center; justify-content: center;
   -webkit-tap-highlight-color: transparent;
 }
@@ -312,7 +313,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .sk-sub { font-size: 14px; font-weight: 700; color: var(--muted); margin: 6px 0 16px; line-height: 1.6; }
 .sk-pats { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
 .sk-pat {
-  background: #141c2b; border: 1px solid #263149; border-radius: 14px; overflow: hidden;
+  background: #2a3a5c; border: 1px solid #3d4c68; border-radius: 14px; overflow: hidden;
   display: flex; flex-direction: column;
 }
 .sk-pat-bar { height: 6px; background: var(--sk, #4d8dff); }
@@ -324,12 +325,12 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 }
 .sk-pat-en { font-size: 15px; font-weight: 800; letter-spacing: .3px; }
 .sk-pat-cn { font-size: 12px; font-weight: 700; color: #93a1b8; margin-left: auto; text-align: right; }
-.sk-diagram { margin: 4px 12px 8px; border-radius: 10px; background: #0d1420; border: 1px solid #22304c; overflow: hidden; }
+.sk-diagram { margin: 4px 12px 8px; border-radius: 10px; background: #1b2740; border: 1px solid #33456b; overflow: hidden; }
 .sk-diagram svg { display: block; width: 100%; height: auto; }
 .sk-diagram.hide { display: none; }
 .sk-btn {
   margin: 12px 13px 13px; align-self: flex-start;
-  background: #fff; color: #0b1220; border: none; border-radius: 10px; padding: 8px 16px;
+  background: #4d95e0; color: #ffffff; border: none; border-radius: 10px; padding: 8px 16px;
   font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit;
   box-shadow: 0 4px 12px rgba(0,0,0,.35); transition: transform .18s cubic-bezier(.2,0,.2,1);
 }
@@ -359,10 +360,24 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .sk-layer-tag.l1 { background: rgba(255,90,110,.16); color: #ff9aab; border: 1px solid rgba(255,90,110,.34); }
 .sk-layer-tag.l2 { background: rgba(77,141,255,.16); color: #9dc2ff; border: 1px solid rgba(77,141,255,.34); }
 .sk-layer-tag.l3 { background: rgba(177,92,255,.16); color: #d3a6ff; border: 1px solid rgba(177,92,255,.34); }
+/* ===== 分層卡「指住會跳」：移上去整張卡翹起 6px + 放大 + 打燈（開咗嗰張要穩陣，唔跳） ===== */
+@media (hover: hover) and (pointer: fine) {
+  .skill-card:hover:not(.open) {
+    transform: translateY(-6px) scale(1.07);
+    z-index: 2;
+    box-shadow: 0 22px 44px rgba(0,0,0,.66);
+    border-color: #55708f;
+  }
+  .skill-card.layer-1:hover:not(.open) { border-color: rgba(255,90,110,.75); }
+  .skill-card.layer-2:hover:not(.open) { border-color: rgba(77,141,255,.75); }
+  .skill-card.layer-3:hover:not(.open) { border-color: rgba(177,92,255,.75); }
+  .skill-card.open:hover { transform: none; }
+}
+.skill-card:active:not(.open) { transform: translateY(-2px) scale(.97); }
 .sk-list { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
 .sk-list-row {
   display: flex; gap: 8px; align-items: flex-start; padding: 6px 0 6px 8px;
-  border-bottom: 1px solid #1a2436; font-size: 12.5px; line-height: 1.55;
+  border-bottom: 1px solid #2a3752; font-size: 12.5px; line-height: 1.55;
 }
 .sk-list-row .sk-i { flex: 0 0 20px; text-align: center; }
 .sk-list-row .sk-n { font-weight: 800; color: #e6eefb; word-break: break-word; }
@@ -397,7 +412,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .pwa-toast {
   position: fixed; left: 50%; transform: translateX(-50%) translateY(18px);
   bottom: calc(84px + env(safe-area-inset-bottom, 0px)); z-index: 61;
-  max-width: min(90vw, 440px); background: #151d2c; border: 1px solid #2b3442;
+  max-width: min(90vw, 440px); background: #1f2b45; border: 1px solid #3d4c68;
   color: #fff; font-size: 14px; font-weight: 700; line-height: 1.55;
   padding: 12px 16px; border-radius: 12px; box-shadow: 0 12px 30px rgba(0,0,0,.65);
   opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .25s ease;
@@ -1259,7 +1274,7 @@ function setDone(id, raw) {
     '</svg>';
   SVG.sticky =
     '<svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">' +
-    '<rect x="0" y="0" width="300" height="100" fill="#0d1420"/>' +
+    '<rect x="0" y="0" width="300" height="100" fill="#1b2740"/>' +
     '<rect x="20" y="2" width="96" height="8" rx="4" fill="#4d8dff" fill-opacity=".9"/>' +
     '<rect x="124" y="2" width="26" height="8" rx="3" fill="#4d8dff" fill-opacity=".45"/>' +
     '<rect x="20" y="22" width="120" height="26" rx="6" fill="#4d8dff" fill-opacity=".16" stroke="#4d8dff" stroke-width="2"/>' +
@@ -1486,8 +1501,8 @@ function setDone(id, raw) {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v41';
-  var APP_PUBLISHED = '2026/10/03 06:08';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v42';
+  var APP_PUBLISHED = '2026/10/03 06:21';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
