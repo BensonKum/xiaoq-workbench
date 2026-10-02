@@ -6,63 +6,344 @@
 <title>祐興工作台 - Benson</title>
 <style>
 :root {
-  --bg: #f0f4f8; --card: #ffffff; --ink: #1a202c; --muted: #718096; --line: #e2e8f0;
-  --primary: #3182ce; --success: #38a169; --warning: #d69e2e; --danger: #e53e3e;
-  --cdm: #667eea; --product: #38b2ac; --admin: #ed8936; --media: #9f7aea;
+  /* ===== 深色（黑底）主題 ===== */
+  --bg: #000000; --card: #141922; --card-2: #0d1117; --ink: #ffffff; --muted: #d3dbe6; --line: #2b3442;
+  --primary: #4d95e0; --success: #4ade80; --warning: #e2b33c; --danger: #f06a6a;
+  --cdm: #7b8ff5; --product: #45c9c0; --admin: #f5a44a; --media: #a984f0;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; }
-header { background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: #fff; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-header h1 { font-size: 24px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-header p { font-size: 13px; opacity: 0.85; margin-top: 4px; }
-.container { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px; }
-.stat-card { background: var(--card); border-radius: 12px; padding: 16px; border: 1px solid var(--line); text-align: center; }
-.stat-card .stat-icon { font-size: 28px; margin-bottom: 4px; }
-.stat-card .stat-value { font-size: 24px; font-weight: 700; color: var(--primary); }
-.stat-card .stat-label { font-size: 12px; color: var(--muted); }
-.refresh-bar { background: var(--card); border-radius: 12px; padding: 16px; margin-bottom: 24px; border: 1px solid var(--line); display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-.btn-refresh { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; font-weight: 600; background: var(--primary); color: #fff; transition: all 0.2s; }
-.btn-refresh:hover { background: #2b6cb0; transform: translateY(-1px); }
-.btn-refresh:disabled { background: var(--muted); cursor: not-allowed; }
-.status-indicator { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif; background: var(--bg); color: #ffffff; font-weight: 700; line-height: 1.6; -webkit-text-size-adjust: 100%; }
+header { background: linear-gradient(135deg, #0b1220 0%, #16233a 100%); color: #fff; padding: 30px 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.6); border-bottom: 2px solid var(--cdm); }
+header h1 { font-size: 32px; font-weight: 800; display: flex; align-items: center; gap: 12px; letter-spacing: .5px; }
+header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
+.container { max-width: 1200px; margin: 0 auto; padding: 28px 16px; }
+/* ===== 頂部 Global Filter Bar（橫向篩選條：固定頂部／單一激活態／切換即全局聯動） ===== */
+.filter-bar {
+  display: flex; align-items: stretch; gap: 10px;
+  max-width: 900px; margin-bottom: 16px; padding: 10px 12px;
+  background: linear-gradient(135deg, #111a29 0%, #0c1320 100%);
+  border: 1px solid var(--line); border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(0,0,0,.55);
+  position: sticky; top: 0; z-index: 40;
+}
+.fb-label {
+  display: flex; align-items: center; gap: 6px; white-space: nowrap;
+  font-size: 13px; font-weight: 800; color: var(--muted); letter-spacing: .5px;
+  padding-right: 10px; border-right: 1px dashed var(--line);
+}
+.fb-chip {
+  flex: 1 1 0; min-width: 0; position: relative; overflow: hidden;
+  border: 1px solid var(--line); background: #151d2c; border-radius: 12px;
+  padding: 8px 12px 8px 14px; cursor: pointer; color: #fff; font-family: inherit; text-align: left;
+  display: flex; align-items: center; gap: 9px;
+  transition: transform .2s cubic-bezier(.2,0,.2,1), background .2s ease, border-color .2s ease, box-shadow .2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.fb-chip::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--fb, var(--primary)); }
+.fb-chip .fb-ico { font-size: 19px; line-height: 1; flex: 0 0 auto; }
+.fb-txt { display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
+.fb-name { font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fb-val { font-size: 11.5px; font-weight: 700; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* 激活態（Global Filter 單選） */
+.fb-chip.active {
+  background: linear-gradient(135deg, rgba(77,149,224,.26), rgba(77,149,224,.07));
+  border-color: #4d95e0;
+  box-shadow: inset 0 0 0 1px rgba(77,149,224,.45), 0 6px 18px rgba(77,149,224,.2);
+}
+.fb-chip.active .fb-val { color: #a9cdf5; }
+.fb-chip.active .fb-name::after { content: ' ●'; color: var(--primary); font-size: 9px; vertical-align: middle; }
+.fb-chip.ghost { --fb: #6b7688; }
+.fb-chip.busy { filter: brightness(1.25); }
+@media (hover: hover) and (pointer: fine) {
+  .fb-chip:hover { transform: translateY(-2px); border-color: #4d95e0; }
+  .fb-chip.active:hover { transform: none; }
+}
+.fb-chip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.fb-chip:active { transform: scale(.98); }
+/* Global Filter 聯動：切換篩選時，下方所有指標卡同步「打亮」一下（共享參考線效果） */
+.flow-card.linked, .cmd-card.linked, .skill-card.linked {
+  box-shadow: 0 0 0 2px rgba(77,149,224,.45), 0 14px 34px rgba(0,0,0,.6);
+  border-color: #4d95e0;
+}
+.flow-card.linked .flow-icon, .cmd-card.linked .cmd-ico { transform: scale(1.12); }
+.flow-card, .cmd-card, .skill-card { transition: flex-basis .3s cubic-bezier(.2,0,.2,1), box-shadow .22s ease, transform .22s ease, border-color .25s ease; }
+@media (max-width: 860px) {
+  .filter-bar { flex-wrap: wrap; }
+  .fb-label { display: none; }
+  .fb-chip { flex: 1 1 46%; }
+}
+@media (max-width: 420px) {
+  /* 手機：filter bar 單行橫向滾動 → 高度恆定一排（同電腦一致），唔會摺成 4 行佔 30% 畫面 */
+  .filter-bar { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; scrollbar-width: none; padding: 8px; }
+  .filter-bar::-webkit-scrollbar { display: none; }
+  .fb-chip { flex: 0 0 auto; min-width: max-content; }
+}
+.action-status { font-size: 15px; font-weight: 700; color: var(--muted); margin: -6px 0 24px; }
+.status-indicator { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: var(--muted); }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 .section { margin-bottom: 24px; }
-.section-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-.section-title .dot { width: 8px; height: 8px; border-radius: 50%; }
-.flow-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-.flow-card { background: var(--card); border-radius: 12px; padding: 20px; border: 1px solid var(--line); cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
-.flow-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
-.flow-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+.section-title { font-size: 22px; font-weight: 800; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; color: #ffffff; letter-spacing: .5px; }
+.section-title .dot { width: 11px; height: 11px; border-radius: 50%; }
+.flow-grid { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; max-width: 640px; }
+.flow-card {
+  flex: 0 0 calc(20% - 11.2px);            /* 640px 內 5 格 ≈ 117px，同口令磁貼一致 */
+  aspect-ratio: 1 / 1;
+  background: var(--card); border-radius: 18px; padding: 0; border: 1px solid var(--line);
+  cursor: pointer; position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: flex-basis .28s cubic-bezier(.2,0,.2,1), box-shadow .22s ease, filter .22s ease, border-color .2s;
+  user-select: none; -webkit-user-select: none;
+}
+.flow-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; }
 .flow-card.cdm::before { background: var(--cdm); }
 .flow-card.product::before { background: var(--product); }
 .flow-card.admin::before { background: var(--admin); }
 .flow-card.media::before { background: var(--media); }
-.flow-card .flow-icon { font-size: 32px; margin-bottom: 8px; }
-.flow-card .flow-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
-.flow-card .flow-desc { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
-.flow-card .flow-status { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 8px; border-radius: 12px; background: #f0fff4; color: var(--success); }
-.flow-card .flow-status.pending { background: #fffbeb; color: var(--warning); }
-.flow-card .flow-status.error { background: #fff5f5; color: var(--danger); }
-.flow-card .flow-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
-.flow-card .flow-tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: var(--bg); color: var(--muted); }
+.flow-card .flow-icon { font-size: 40px; margin-bottom: 10px; }
+.flow-card .flow-name { font-size: 21px; font-weight: 800; margin-bottom: 6px; color: #ffffff; letter-spacing: .3px; }
+.flow-card .flow-desc { font-size: 16px; font-weight: 700; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+.flow-card .flow-status { display: inline-flex; align-items: center; gap: 5px; font-size: 15px; font-weight: 800; padding: 4px 12px; border-radius: 14px; background: rgba(74,222,128,.16); color: #86efac; }
+.flow-card .flow-status.pending { background: rgba(226,179,60,.16); color: #f7cf6d; }
+.flow-card .flow-status.error { background: rgba(240,106,106,.16); color: #fca5a5; }
+.flow-card .flow-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.flow-card .flow-tag { font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 6px; background: #222b3a; color: #aeb9c8; }
+/* 完成日期（3 張指定卡卡面新增） */
+.flow-card .flow-done { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); font-size: 16px; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.flow-card .flow-done .done-when { color: var(--primary); font-weight: 800; }
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
 .modal-overlay.active { display: flex; }
 .modal { background: #fff; border-radius: 16px; padding: 24px; width: 480px; max-width: 90vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-.modal h2 { font-size: 18px; margin-bottom: 16px; }
-.modal .step { padding: 12px; margin-bottom: 8px; background: var(--bg); border-radius: 8px; font-size: 13px; }
-.modal .step-num { font-weight: 700; color: var(--primary); margin-right: 8px; }
-.modal-actions { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
-.btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; font-weight: 600; }
+.modal h2 { font-size: 24px; font-weight: 800; margin-bottom: 18px; color: #ffffff; }
+.modal .step { padding: 14px; margin-bottom: 10px; background: var(--card-2); border: 1px solid var(--line); border-radius: 8px; font-size: 17px; font-weight: 700; color: #eaf1fa; }
+.modal .step-num { font-weight: 800; color: #7cb8f0; margin-right: 10px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 22px; justify-content: flex-end; }
+.btn { padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-size: 17px; font-weight: 700; }
 .btn-primary { background: var(--primary); color: #fff; }
-.btn-cancel { background: var(--line); color: var(--muted); }
-.footer { text-align: center; padding: 24px; font-size: 12px; color: var(--muted); }
-.update-log { background: var(--card); border-radius: 12px; padding: 16px; margin-top: 24px; border: 1px solid var(--line); max-height: 200px; overflow-y: auto; }
-.update-log h3 { font-size: 14px; margin-bottom: 12px; }
-.log-entry { padding: 8px; border-left: 3px solid var(--primary); background: var(--bg); margin-bottom: 8px; font-size: 12px; }
+.btn-cancel { background: #39414f; color: #cbd5e0; }
+.footer { text-align: center; padding: 26px; font-size: 16px; font-weight: 700; color: var(--muted); }
+.update-log { background: var(--card); border-radius: 12px; padding: 18px; margin-top: 24px; border: 1px solid var(--line); max-height: 220px; overflow-y: auto; }
+.update-log h3 { font-size: 19px; font-weight: 800; margin-bottom: 14px; color: #ffffff; }
+.log-entry { padding: 10px 12px; border-left: 4px solid var(--primary); background: var(--card-2); margin-bottom: 10px; font-size: 15px; font-weight: 700; color: #e6edf7; }
 .log-entry.success { border-left-color: var(--success); }
 .log-entry.error { border-left-color: var(--danger); }
+
+/* 模块拖動排序（Bento Drag） */
+.flow-card { user-select: none; -webkit-user-select: none; }
+.flow-card.dragging { z-index: 20; transition: none !important; cursor: grabbing; box-shadow: 0 14px 30px rgba(0,0,0,0.18); }
+.flow-card .flow-icon { pointer-events: none; }
+.drag-hint { font-size: 14px; color: var(--muted); font-weight: 700; margin-left: 8px; }
+
+/* ===== 深色模式補丁（黑底專用） ===== */
+.flow-card { background: var(--card); }
+.flow-card:hover { box-shadow: 0 12px 26px rgba(0,0,0,.6); border-color: #47566b; }
+@media (hover: hover) and (pointer: fine) {
+  .flow-card:not(.open):hover { transform: scale(1.06); z-index: 2; }
+  .flow-card.open:hover { transform: none; }
+}
+/* 收起淨顯名稱（圖標+名+提示），撳開先show內容 —— 同口令磁貼一致 */
+.flow-face { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 10px; text-align: center; }
+.flow-face .flow-icon { font-size: 26px; margin-bottom: 2px; }
+.flow-face .flow-name { font-size: 15px; font-weight: 800; line-height: 1.25; padding: 0 4px; color: #ffffff; }
+.flow-hint { font-size: 11px; font-weight: 700; color: var(--muted); }
+.flow-body { display: none; padding: 16px; flex-direction: column; align-items: flex-start; overflow-y: auto; }
+.flow-card.open .flow-body { display: flex; }
+.flow-card.open .flow-face { display: none; }
+.flow-card.open {
+  flex-basis: calc(80% - 16px); aspect-ratio: auto; z-index: 3;
+  box-shadow: 0 14px 34px rgba(0,0,0,.6); border-color: #55677e;
+}
+.flow-x {
+  display: none; position: absolute; top: 8px; right: 10px; z-index: 4;
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1px solid var(--line); background: #1d2634; color: #cfd8e3;
+  font-size: 15px; font-weight: 800; line-height: 1; cursor: pointer;
+  font-family: inherit; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.flow-card.open .flow-x { display: flex; }
+@media (hover: hover) and (pointer: fine) { .flow-x:hover { background: #2a3547; color: #ffffff; } }
+.flow-open {
+  margin-top: 12px; background: #ffffff; color: #0b1220;
+  border: none; border-radius: 10px; padding: 9px 18px;
+  font-size: 15px; font-weight: 800; cursor: pointer; font-family: inherit;
+}
+@media (max-width: 860px) {
+  .flow-grid { max-width: 100%; }
+  .flow-card { flex-basis: calc(33.333% - 9.3px); }
+  .flow-card.open { flex-basis: 100%; }
+}
+@media (max-width: 520px) {
+  .flow-card { flex-basis: calc(50% - 7px); }
+  .flow-card.open { flex-basis: 100%; }
+}
+.footer { color: var(--muted); }
+.status-indicator { color: var(--muted); }
+
+/* ===== 口令 / 指令 卡片區（細方磁貼：淨顯名稱，撳開先show內容） ===== */
+.cmd-grid { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; max-width: 640px; }
+.cmd-card {
+  flex: 0 0 calc(20% - 11.2px);            /* 640px 內 5 格 = 每格約 117px，同頂上磁貼一般大 */
+  aspect-ratio: 1 / 1;                     /* 正方形磁貼 */
+  background: var(--cmd-c, #2b6cb0); border: none; border-radius: 18px;
+  color: #fff; cursor: pointer; position: relative; overflow: hidden;
+  display: flex; flex-direction: column; font-family: inherit;
+  box-shadow: 0 4px 10px rgba(0,0,0,.45);
+  transition: flex-basis .28s cubic-bezier(.2,0,.2,1), box-shadow .22s ease, filter .22s ease, transform .22s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.cmd-face { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px; text-align: center; }
+.cmd-no {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(0,0,0,.32); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; font-weight: 800; flex: 0 0 auto;
+}
+.cmd-name { font-size: 16px; font-weight: 800; line-height: 1.25; letter-spacing: .3px; text-shadow: 0 1px 2px rgba(0,0,0,.35); padding: 0 4px; }
+.cmd-hint { font-size: 12px; font-weight: 700; color: rgba(255,255,255,.8); }
+/* 撳開：張卡放大到兩格、取消正方、show 內容 */
+.cmd-card.open { flex-basis: calc(60% - 18px); aspect-ratio: auto; z-index: 3; box-shadow: 0 14px 34px rgba(0,0,0,.6); }
+.cmd-card.open .cmd-face { display: none; }
+.cmd-body { display: none; padding: 18px; flex-direction: column; align-items: flex-start; }
+.cmd-card.open .cmd-body { display: flex; }
+.cmd-body .cmd-name { font-size: 22px; align-self: center; }
+.cmd-skill { font-size: 14px; font-weight: 700; color: rgba(255,255,255,.82); margin-top: 4px; }
+.cmd-range { font-size: 15px; font-weight: 700; color: rgba(255,255,255,.94); margin: 10px 0 12px; line-height: 1.55; }
+.cmd-keys { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.cmd-key { font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 6px; background: rgba(0,0,0,.32); color: #fff; }
+.cmd-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #ffffff; color: #0b1220;
+  border: none; border-radius: 10px; padding: 11px 22px;
+  font-size: 17px; font-weight: 800; cursor: pointer; font-family: inherit;
+  box-shadow: 0 4px 12px rgba(0,0,0,.35);
+  transition: transform .18s cubic-bezier(.2,0,.2,1), filter .18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (hover: hover) and (pointer: fine) {
+  .cmd-card:hover { transform: scale(1.06); box-shadow: 0 12px 26px rgba(0,0,0,.6); z-index: 2; filter: brightness(1.07); }
+  .cmd-card.open:hover { transform: none; }
+  .cmd-btn:hover { transform: scale(1.07); filter: brightness(1.06); }
+}
+.cmd-btn:active { transform: scale(1.0); }
+.cmd-card:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.cmd-btn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.cmd-btn.copied { background: var(--success); color: #06210f; }
+@media (max-width: 860px) {
+  .cmd-grid { max-width: 100%; }
+  .cmd-card { flex-basis: calc(33.333% - 9.3px); }
+  .cmd-card.open { flex-basis: 100%; }
+}
+@media (max-width: 520px) {
+  .cmd-card { flex-basis: calc(50% - 7px); }
+  .cmd-card.open { flex-basis: 100%; }
+}
+/* 小卡片（按「口令」後彈出） */
+.cmd-pop {
+  position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%) translateY(24px);
+  width: min(560px, calc(100vw - 32px)); z-index: 300;
+  opacity: 0; visibility: hidden; transition: opacity .22s ease, transform .22s cubic-bezier(.2,0,.2,1), visibility .22s;
+}
+.cmd-pop.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+.cmd-pop-inner {
+  background: #0f1520; border: 2px solid var(--cmd-c, var(--primary)); border-radius: 16px;
+  padding: 20px 22px; box-shadow: 0 18px 50px rgba(0,0,0,.7);
+  position: relative;
+}
+.cmd-pop-head { font-size: 16px; font-weight: 800; color: var(--muted); letter-spacing: .5px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.cmd-pop-cmd {
+  font-size: 25px; font-weight: 800; color: #ffffff; line-height: 1.4;
+  background: var(--card-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
+  word-break: break-word;
+}
+.cmd-pop-range { font-size: 16px; font-weight: 700; color: var(--muted); margin-top: 12px; line-height: 1.55; }
+.cmd-pop-tip { font-size: 15px; font-weight: 700; color: var(--success); margin-top: 10px; }
+.cmd-pop-x {
+  position: absolute; top: 10px; right: 12px;
+  background: none; border: none; color: var(--muted); font-size: 20px;
+  font-weight: 800; cursor: pointer; line-height: 1; padding: 4px 6px;
+}
+.cmd-pop-x:hover { color: #fff; }
+
+/* ===== Skill / 技能（一張大卡，內含 6 個 Dashboard pattern 圖案） ===== */
+.skill-grid { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; max-width: 640px; }
+.skill-card {
+  flex: 0 0 calc(20% - 11.2px);            /* 同口令磁貼一般大（640px 內 5 格） */
+  aspect-ratio: 1 / 1;
+  background: #101826; border: 1px solid var(--line); border-radius: 18px; overflow: hidden;
+  cursor: pointer; position: relative; color: #fff; font-family: inherit;
+  box-shadow: 0 4px 10px rgba(0,0,0,.45);
+  transition: flex-basis .3s cubic-bezier(.2,0,.2,1), box-shadow .22s ease, transform .22s ease, border-color .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.skill-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, #ff4d6d, #ff9a3c, #ffd166); }
+.sk-face { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px; padding: 12px; text-align: center; }
+.sk-face .sk-ico {
+  width: 46px; height: 46px; border-radius: 14px; flex: 0 0 auto;
+  background: linear-gradient(140deg, #ff4d6d, #ff9a3c); box-shadow: 0 6px 16px rgba(255,90,110,.42);
+  display: flex; align-items: center; justify-content: center; font-size: 25px;
+}
+.sk-name { font-size: 15px; font-weight: 800; line-height: 1.25; letter-spacing: .3px; padding: 0 4px; }
+.sk-hint { font-size: 11px; font-weight: 700; color: var(--muted); }
+.skill-card.open { flex-basis: 100%; aspect-ratio: auto; z-index: 3; box-shadow: 0 16px 40px rgba(0,0,0,.7); border-color: #5b6d86; }
+.skill-card.open .sk-face { display: none; }
+.sk-body { display: none; padding: 22px; flex-direction: column; overflow-y: auto; max-height: 620px; }
+.skill-card.open .sk-body { display: flex; }
+.sk-close {
+  display: none; position: absolute; top: 10px; right: 12px; z-index: 4;
+  width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line);
+  background: #1d2634; color: #cfd8e3; font-size: 15px; font-weight: 800; line-height: 1;
+  cursor: pointer; font-family: inherit; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.skill-card.open .sk-close { display: flex; }
+.sk-head { font-size: 23px; font-weight: 900; letter-spacing: .4px; display: flex; align-items: center; gap: 10px; }
+.sk-sub { font-size: 14px; font-weight: 700; color: var(--muted); margin: 6px 0 16px; line-height: 1.6; }
+.sk-pats { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.sk-pat {
+  background: #141c2b; border: 1px solid #263149; border-radius: 14px; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.sk-pat-bar { height: 6px; background: var(--sk, #4d8dff); }
+.sk-pat-top { display: flex; align-items: center; gap: 9px; padding: 11px 13px 5px; }
+.sk-pat-no {
+  width: 25px; height: 25px; border-radius: 8px; flex: 0 0 auto;
+  background: var(--sk, #4d8dff); color: #0b1220;
+  display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900;
+}
+.sk-pat-en { font-size: 15px; font-weight: 800; letter-spacing: .3px; }
+.sk-pat-cn { font-size: 12px; font-weight: 700; color: #93a1b8; margin-left: auto; text-align: right; }
+.sk-diagram { margin: 4px 12px 8px; border-radius: 10px; background: #0d1420; border: 1px solid #22304c; overflow: hidden; }
+.sk-diagram svg { display: block; width: 100%; height: auto; }
+.sk-diagram.hide { display: none; }
+.sk-btn {
+  margin: 12px 13px 13px; align-self: flex-start;
+  background: #fff; color: #0b1220; border: none; border-radius: 10px; padding: 8px 16px;
+  font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit;
+  box-shadow: 0 4px 12px rgba(0,0,0,.35); transition: transform .18s cubic-bezier(.2,0,.2,1);
+}
+@media (hover: hover) and (pointer: fine) { .sk-btn:hover { transform: scale(1.06); } }
+.sk-txt { padding: 0 13px 13px; }
+.sk-effect { font-size: 13px; font-weight: 700; color: #dbe6f5; line-height: 1.65; }
+.sk-prompt {
+  margin-top: 8px; font-size: 12px; font-weight: 700; color: #a9cdf5;
+  background: rgba(77,149,224,.12); border: 1px solid rgba(77,149,224,.32);
+  border-radius: 9px; padding: 8px 10px; line-height: 1.6; word-break: break-word;
+}
+.sk-state { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 800; margin-top: 8px; padding: 3px 10px; border-radius: 12px; }
+.sk-state.on { background: rgba(74,222,128,.16); color: #86efac; }
+.sk-state.off { background: rgba(226,179,60,.16); color: #f7cf6d; }
+@media (max-width: 860px) {
+  .skill-grid { max-width: 100%; }
+  .skill-card { flex-basis: calc(33.333% - 9.3px); }
+  .skill-card.open { flex-basis: 100%; }
+}
+@media (max-width: 520px) {
+  .skill-card { flex-basis: calc(50% - 7px); }
+  .skill-card.open { flex-basis: 100%; }
+  .sk-body { padding: 16px; }
+  .sk-pats { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
@@ -71,76 +352,102 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 4px; }
   <p>Benson 嘅業務管理系統 ｜ 最後更新：<span id="last-update">載入中...</span></p>
 </header>
 
-<div class="refresh-bar">
-  <button class="btn-refresh" onclick="refreshAll()" id="refresh-btn">🔄 刷新所有數據</button>
-  <button class="btn-refresh" onclick="checkCDM()" id="cdm-btn">📋 檢查 CDM 流程</button>
-  <button class="btn-refresh" onclick="checkInventory()" id="inventory-btn">📦 檢查膠盒倉存</button>
-  <div class="status-indicator">
-    <div class="status-dot" id="status-dot"></div>
-    <span id="status-text">就緒</span>
-  </div>
+<div class="filter-bar" id="filter-bar">
+  <div class="fb-label">🔽 全局篩選</div>
+  <button class="fb-chip active" type="button" id="refresh-btn" data-fb="refresh" style="--fb:#4d95e0">
+    <span class="fb-ico">🔄</span>
+    <span class="fb-txt"><span class="fb-name">刷新數據</span><span class="fb-val" id="fb-val-refresh">一鍵更新全部指標</span></span>
+  </button>
+  <button class="fb-chip" type="button" id="cdm-btn" data-fb="cdm" style="--fb:#7b8ff5">
+    <span class="fb-ico">📋</span>
+    <span class="fb-txt"><span class="fb-name">檢查 CDM</span><span class="fb-val" id="fb-val-cdm">● 待檢查</span></span>
+  </button>
+  <button class="fb-chip" type="button" id="inventory-btn" data-fb="inventory" style="--fb:#45c9c0">
+    <span class="fb-ico">📦</span>
+    <span class="fb-txt"><span class="fb-name">膠盒倉存</span><span class="fb-val" id="fb-val-inventory">● 讀取中...</span></span>
+  </button>
+  <button class="fb-chip ghost" type="button" id="reset-order-btn" data-fb="reset" style="--fb:#6b7688">
+    <span class="fb-ico">↺</span>
+    <span class="fb-txt"><span class="fb-name">還原順序</span><span class="fb-val">還原拖動順序</span></span>
+  </button>
+</div>
+<div class="action-status status-indicator">
+  <span class="status-dot" id="status-dot"></span>
+  <span id="status-text">就緒</span>
 </div>
 
 <div class="container">
-  <div class="stats">
-    <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-value" id="stat-products">103</div><div class="stat-label">產品數目</div></div>
-    <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-value" id="stat-orders">-</div><div class="stat-label">今日訂單</div></div>
-    <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-value" id="stat-cdm">-</div><div class="stat-label">CDM 狀態</div></div>
-    <div class="stat-card"><div class="stat-icon">📊</div><div class="stat-value" id="stat-inventory">-</div><div class="stat-label">膠盒餘額</div></div>
-  </div>
-
   <div class="section">
-    <div class="section-title"><span class="dot" style="background:var(--cdm)"></span>自動化流程</div>
+    <div class="section-title"><span class="dot" style="background:var(--warning)"></span>口令 / 指令<span class="drag-hint">· 撳一下卡面睇範圍，撳「口令」即複製，貼畀小Buddy 就照做</span></div>
+    <div class="cmd-grid" id="cmd-grid"></div>
+  </div>
+  <div class="section">
+    <div class="section-title"><span class="dot" style="background:linear-gradient(90deg,#ff4d6d,#ff9a3c,#ffd166)"></span>Skill / 技能<span class="drag-hint">· Dashboard 6 個交互 pattern 圖案，撳卡面 → 撳「睇 Pattern 圖案」即出圖</span></div>
+    <div class="skill-grid">
+      <div class="skill-card" id="skill-card" role="button" tabindex="0" aria-expanded="false">
+        <div class="sk-face">
+          <div class="sk-ico">🎨</div>
+          <div class="sk-name">Skill / 技能</div>
+          <div class="sk-hint">撳開睇 6 個 pattern</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title"><span class="dot" style="background:var(--cdm)"></span>自動化流程<span class="drag-hint">· 卡片可拖動排序（順序會記住）</span></div>
     <div class="flow-grid">
-      <div class="flow-card cdm" onclick="showFlow('cdm')">
+      <div class="flow-card cdm" data-id="cdm" onclick="showFlow('cdm')">
         <div class="flow-icon">🤖</div>
         <div class="flow-name">① 錢大媽 CDM 自動化</div>
         <div class="flow-desc">訂單自動下載→執貨表→發票→PDF→微信發送</div>
         <div class="flow-status" id="status-cdm">● 待檢查</div>
         <div class="flow-tags"><span class="flow-tag">19:40</span><span class="flow-tag">20:30</span><span class="flow-tag">21:30</span></div>
+        <div class="flow-done">📅 完成日期：<span class="done-when" id="done-cdm">-</span></div>
       </div>
-      <div class="flow-card admin" onclick="showFlow('inspect')">
+      <div class="flow-card admin" data-id="inspect" onclick="showFlow('inspect')">
         <div class="flow-icon">🔍</div>
         <div class="flow-name">⑧ 每日自動巡檢</div>
         <div class="flow-desc">21:40 自動檢查 CDM 是否完成，輸出 PDF 是否齊全</div>
         <div class="flow-status pending">● 待運行</div>
         <div class="flow-tags"><span class="flow-tag">21:40</span><span class="flow-tag">cron</span></div>
+        <div class="flow-done">📅 完成日期：<span class="done-when" id="done-inspect">-</span></div>
       </div>
-      <div class="flow-card product" onclick="showFlow('inventory')">
+      <div class="flow-card product" data-id="inventory" onclick="showFlow('inventory')">
         <div class="flow-icon">📦</div>
         <div class="flow-name">⑨ 膠盒倉存</div>
         <div class="flow-desc">小膠盒: <span id="small-box" style="font-weight:700;color:var(--primary)">-</span> 個 | 大膠盒: <span id="big-box" style="font-weight:700;color:var(--primary)">-</span> 個</div>
         <div class="flow-status" id="inventory-status">● 讀取中...</div>
         <div class="flow-tags"><span class="flow-tag">實時更新</span></div>
+        <div class="flow-done">📅 完成日期：<span class="done-when" id="done-inventory">-</span></div>
       </div>
     </div>
   </div>
 
   <div class="section">
-    <div class="section-title"><span class="dot" style="background:var(--product)"></span>產品管理</div>
+    <div class="section-title"><span class="dot" style="background:var(--product)"></span>產品管理<span class="drag-hint">· 卡片可拖動排序（順序會記住）</span></div>
     <div class="flow-grid">
-      <div class="flow-card product" onclick="showFlow('new-product')">
+      <div class="flow-card product" data-id="new-product" onclick="showFlow('new-product')">
         <div class="flow-icon">➕</div>
         <div class="flow-name">② 新增產品</div>
         <div class="flow-desc">讀指引→問詳情→改 JSON→開 Firestore→上圖→deploy</div>
         <div class="flow-status">● 就緒</div>
         <div class="flow-tags"><span class="flow-tag">口令：新產品</span></div>
       </div>
-      <div class="flow-card product" onclick="showFlow('delete-product')">
+      <div class="flow-card product" data-id="delete-product" onclick="showFlow('delete-product')">
         <div class="flow-icon">🗑️</div>
         <div class="flow-name">③ 刪除/下架產品</div>
         <div class="flow-desc">問隱藏定完全刪除→改 JSON→Firestore doc→deploy</div>
         <div class="flow-status">● 就緒</div>
         <div class="flow-tags"><span class="flow-tag">口令：刪除產品</span></div>
       </div>
-      <div class="flow-card product" onclick="showFlow('ab-card')">
+      <div class="flow-card product" data-id="ab-card" onclick="showFlow('ab-card')">
         <div class="flow-icon">🎴</div>
         <div class="flow-name">④ AB 卡（雙規格）</div>
         <div class="flow-desc">一卡雙 SKU：base + 尾 A，含「+」解析 Tab 標籤</div>
         <div class="flow-status">● 就緒</div>
         <div class="flow-tags"><span class="flow-tag">口令：AB卡</span></div>
       </div>
-      <div class="flow-card product" onclick="showFlow('sync-products')">
+      <div class="flow-card product" data-id="sync-products" onclick="showFlow('sync-products')">
         <div class="flow-icon">🔄</div>
         <div class="flow-name">⑤ Firestore 同步</div>
         <div class="flow-desc">products_v2.json → /products 集合，驗證 doc 數</div>
@@ -151,16 +458,16 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 4px; }
   </div>
 
   <div class="section">
-    <div class="section-title"><span class="dot" style="background:var(--admin)"></span>報價與媒體</div>
+    <div class="section-title"><span class="dot" style="background:var(--admin)"></span>報價與媒體<span class="drag-hint">· 卡片可拖動排序（順序會記住）</span></div>
     <div class="flow-grid">
-      <div class="flow-card admin" onclick="showFlow('quote')">
+      <div class="flow-card admin" data-id="quote" onclick="showFlow('quote')">
         <div class="flow-icon">📊</div>
         <div class="flow-name">⑥ 祐興報價單 Excel</div>
         <div class="flow-desc">gen_quote_xlsx.py → 配圖 → 11分類分組 → 發微信</div>
         <div class="flow-status">● 就緒 (103款)</div>
         <div class="flow-tags"><span class="flow-tag">口令：報價單</span></div>
       </div>
-      <div class="flow-card media" onclick="showFlow('ad-video')">
+      <div class="flow-card media" data-id="ad-video" onclick="showFlow('ad-video')">
         <div class="flow-icon">🎬</div>
         <div class="flow-name">⑦ Beatra 15秒廣告片</div>
         <div class="flow-desc">充值¥29→收素材→render 720p/16:9/15秒→MP4</div>
@@ -226,6 +533,8 @@ async function refreshAll() {
     await checkCDM();
     
     document.getElementById('status-text').textContent = '已更新';
+    var fbR = document.getElementById('fb-val-refresh');
+    if (fbR) fbR.textContent = '✅ 已更新 ' + new Date().toLocaleTimeString('zh-HK', { hour: '2-digit', minute: '2-digit' });
     addLog('所有數據更新完成', 'success');
   } catch (e) {
     document.getElementById('status-text').textContent = '錯誤';
@@ -243,9 +552,12 @@ async function checkInventory() {
   // 這裡使用最新已知數據
   inventoryData = { small: 114089, big: 45151, date: '2026-09-17' };
   
-  document.getElementById('small-box').textContent = inventoryData.small.toLocaleString();
-  document.getElementById('big-box').textContent = inventoryData.big.toLocaleString();
-  document.getElementById('stat-inventory').textContent = inventoryData.small.toLocaleString();
+  setDone('done-inventory', inventoryData.date);
+  /* Global Filter 聯動：數字用 rAF tween 滾動過渡，唔係硬跳 */
+  tweenNum(document.getElementById('small-box'), inventoryData.small);
+  tweenNum(document.getElementById('big-box'), inventoryData.big);
+  var fbInv = document.getElementById('fb-val-inventory');
+  if (fbInv) fbInv.textContent = '小 ' + inventoryData.small.toLocaleString() + ' / 大 ' + inventoryData.big.toLocaleString();
   document.getElementById('inventory-status').textContent = '● 已更新';
   document.getElementById('inventory-status').className = 'flow-status';
   
@@ -260,9 +572,11 @@ async function checkCDM() {
   // 模擬檢查
   cdmStatus = 'checked';
   
-  document.getElementById('stat-cdm').textContent = '✓';
+  setDone('done-cdm', todayStr());
   document.getElementById('status-cdm').textContent = '● 已檢查';
   document.getElementById('status-cdm').className = 'flow-status';
+  var fbCdm = document.getElementById('fb-val-cdm');
+  if (fbCdm) fbCdm.textContent = '● 已檢查 ' + todayStr();
   
   addLog('CDM 流程檢查完成', 'success');
   return true;
@@ -320,7 +634,6 @@ function executeFlow() {
     case 'sync-products':
       addLog('正在同步 Firestore...', 'info');
       setTimeout(() => {
-        document.getElementById('stat-sync').textContent = '✓';
         addLog('Firestore 同步完成', 'success');
       }, 2000);
       break;
@@ -367,15 +680,12 @@ async function loadInventory() {
       };
       document.getElementById('small-box').textContent = inventoryData.small.toLocaleString();
       document.getElementById('big-box').textContent = inventoryData.big.toLocaleString();
-      document.getElementById('stat-inventory').textContent = inventoryData.small.toLocaleString();
       document.getElementById('inventory-status').textContent = '● 已更新';
       addLog(`膠盒倉存: 小${inventoryData.small.toLocaleString()} / 大${inventoryData.big.toLocaleString()}`, 'success');
     }
   } catch (e) {
-    // 如果 API 失敗，使用硬編碼數據
-    document.getElementById('small-box').textContent = inventoryData.small.toLocaleString();
-    document.getElementById('big-box').textContent = inventoryData.big.toLocaleString();
-    document.getElementById('stat-inventory').textContent = inventoryData.small.toLocaleString();
+    // 本地 API 失敗：唔好用硬編碼舊數覆蓋，保留 loadStatus() 由 status.json 讀到嘅值
+    addLog('本機 API 未能回應，沿用 status.json 數據', 'info');
   }
 }
 
@@ -391,18 +701,19 @@ async function loadStatus() {
   try {
     const response = await fetch('https://bensonkum.github.io/xiaoq-workbench/status.json');
     const data = await response.json();
-    
-    // 更新 CDM 狀態
+
+    // 更新 CDM 狀態 + 完成日期
     if (data.cdm) {
-      document.getElementById('stat-cdm').textContent = data.cdm.ran_today ? '✓' : '⚠';
+      setDone('done-cdm', data.cdm.target_date);
+      const files = data.cdm.files || [];
+      if (files.length) setDone('done-inspect', files[files.length - 1].date);
       document.getElementById('status-cdm').textContent = data.cdm.ran_today ? '● 今日已完成' : '● 待執行';
       document.getElementById('status-cdm').className = data.cdm.ran_today ? 'flow-status' : 'flow-status pending';
-      addLog(`CDM: ${data.cdm.target_date} 目標，PDF ${data.cdm.pdf_ready ? '已就緒' : '未生成'}`, 'success');
+      addLog(`CDM: ${fmtDateString(data.cdm.target_date)} 目標，PDF ${data.cdm.pdf_ready ? '已就緒' : '未生成'}`, 'success');
     }
-    
+
     // 更新 Firestore 狀態
     if (data.firestore) {
-      document.getElementById('stat-sync').textContent = '✓';
       addLog(`Firestore: ${data.firestore.products_count} 款產品已同步 (${data.firestore.products_synced_date})`, 'success');
     }
     
@@ -417,10 +728,628 @@ async function loadStatus() {
       document.getElementById('last-update').textContent = data.generated_at;
     }
     
+
+    // 膠盒倉存 + 完成日期
+    if (data.inventory) {
+      setDone('done-inventory', data.inventory.date);
+      document.getElementById('small-box').textContent = data.inventory.small.toLocaleString();
+      document.getElementById('big-box').textContent = data.inventory.big.toLocaleString();
+      document.getElementById('inventory-status').textContent = '● 已更新';
+      document.getElementById('inventory-status').className = 'flow-status';
+    }
+
   } catch (e) {
     addLog('讀取狀態失敗: ' + e.message, 'error');
   }
 }
+
+/* ===== 完成日期（3 張指定卡） ===== */
+function fmtDateString(v) {
+  if (v === null || v === undefined || v === '') return '';
+  const s = String(v).trim();
+  if (/^\d{8}$/.test(s)) return s.slice(0, 4) + '-' + s.slice(4, 6) + '-' + s.slice(6, 8);
+  return s;
+}
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function setDone(id, raw) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const s = fmtDateString(raw);
+  el.textContent = s ? s : todayStr();
+  el.style.color = s ? 'var(--primary)' : 'var(--muted)';
+}
+
+/* ===== 模塊拖動排序（Bento Drag，FLIP + 吸附） ===== */
+(function () {
+  const grids = [].slice.call(document.querySelectorAll('.flow-grid'));
+  const KEY = 'xq_flow_order_v1';
+  function flip(grid, mutate) {
+    const pairs = [].slice.call(grid.children).map(el => [el, el.getBoundingClientRect()]);
+    mutate();
+    pairs.forEach(function (p) {
+      const el = p[0], old = p[1], n = el.getBoundingClientRect();
+      const dx = old.left - n.left, dy = old.top - n.top;
+      if (!dx && !dy) return;
+      el.style.transition = 'none';
+      el.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+      requestAnimationFrame(function () {
+        el.style.transition = 'transform .32s cubic-bezier(.2,0,.2,1)';
+        el.style.transform = '';
+      });
+    });
+  }
+  function save() {
+    const o = {};
+    grids.forEach(function (g, i) { o[i] = [].slice.call(g.children).map(c => c.dataset.id); });
+    try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) { }
+  }
+  function load() {
+    let o = {};
+    try { o = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { o = {}; }
+    grids.forEach(function (g, i) {
+      const list = o[i];
+      if (!list) return;
+      list.forEach(function (id) { const c = g.querySelector('[data-id="' + id + '"]'); if (c) g.appendChild(c); });
+    });
+  }
+  function snapBack(card) {
+    const old = card.getBoundingClientRect();
+    card.style.transition = 'none';
+    card.classList.remove('dragging');
+    card.style.transform = '';
+    const n = card.getBoundingClientRect();
+    const dx = old.left - n.left, dy = old.top - n.top;
+    if (dx || dy) {
+      card.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+      requestAnimationFrame(function () {
+        card.style.transition = 'transform .28s ease';
+        card.style.transform = '';
+      });
+    }
+  }
+  load();
+  let el = null, grid = null, sx = 0, sy = 0, lx = 0, ly = 0, armed = false, moved = false, timer = null, block = false, lastHit = null;
+  function clear() {
+    if (timer) { clearTimeout(timer); timer = null; }
+    if (el) { el.classList.remove('dragging'); el.style.transition = ''; el = null; }
+    grid = null; armed = false; moved = false; lastHit = null;
+  }
+  grids.forEach(function (g) {
+    g.addEventListener('pointerdown', function (e) {
+      const card = e.target.closest ? e.target.closest('.flow-card') : null;
+      if (!card) return;
+      el = card; grid = g; sx = e.clientX; sy = e.clientY; lx = e.clientX; ly = e.clientY;
+      moved = false; block = false;
+      armed = (e.pointerType === 'mouse');
+      if (!armed) {
+        timer = setTimeout(function () {
+          if (el && !moved) { armed = true; sx = lx; sy = ly; el.classList.add('dragging'); el.style.transition = 'none'; }
+        }, 320);
+      }
+    });
+    g.addEventListener('pointermove', function (e) {
+      if (!el) return;
+      lx = e.clientX; ly = e.clientY;
+      if (!armed) return;
+      const dx = lx - sx, dy = ly - sy;
+      if (!moved) { if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return; moved = true; el.classList.add('dragging'); }
+      el.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+      const others = [].slice.call(g.children).filter(c => c !== el);
+      let hit = null;
+      for (let i = 0; i < others.length; i++) {
+        const r = others[i].getBoundingClientRect();
+        if (lx >= r.left && lx <= r.right && ly >= r.top && ly <= r.bottom) { hit = others[i]; break; }
+      }
+      if (hit === lastHit) return;
+      lastHit = hit;
+      if (!hit) return;
+      const kids = [].slice.call(g.children);
+      const cur = kids.indexOf(el), tgt = kids.indexOf(hit);
+      flip(g, function () {
+        if (tgt < cur) g.insertBefore(el, hit); else g.insertBefore(el, hit.nextSibling);
+      });
+      sx = lx; sy = ly; el.style.transition = 'none';
+    });
+    g.addEventListener('pointerup', function () {
+      if (el && armed) {
+        if (moved) { block = true; save(); }
+        snapBack(el);
+      }
+      clear();
+    });
+    g.addEventListener('pointercancel', function () { if (el && armed && moved) block = true; clear(); });
+    g.addEventListener('click', function (e) { if (block) { e.stopPropagation(); e.preventDefault(); block = false; } }, true);
+  });
+  window.resetOrder = function () {
+    try { localStorage.removeItem(KEY); } catch (e) { }
+    location.reload();
+  };
+})();
+</script>
+
+<script>
+/* ===== 流程卡：收起淨顯名稱、撳開先show內容（同口令磁貼一致），內容 bottom 有「開啟流程」彈窗 ===== */
+(function () {
+  function forEachCard(fn) {
+    var cards = document.querySelectorAll('.flow-card');
+    for (var i = 0; i < cards.length; i++) fn(cards[i]);
+  }
+  forEachCard(function (card) {
+    card.removeAttribute('onclick');
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-expanded', 'false');
+
+    /* 1) 卡面：圖標 + 名稱 + 提示 */
+    var face = document.createElement('div');
+    face.className = 'flow-face';
+    var icon = card.querySelector('.flow-icon');
+    var name = card.querySelector('.flow-name');
+    if (icon) face.appendChild(icon);
+    if (name) face.appendChild(name);
+    var hint = document.createElement('div');
+    hint.className = 'flow-hint';
+    hint.textContent = '撳開睇詳情';
+    face.appendChild(hint);
+
+    /* 2) 內容區：原來的 desc/status/tags/done 全搬落去，再加「開啟流程」鈕 */
+    var body = document.createElement('div');
+    body.className = 'flow-body';
+    while (card.firstChild) body.appendChild(card.firstChild);
+    card.appendChild(face);
+    card.appendChild(body);
+
+    /* 2-b) 展開狀態專用嘅 ✕ 收起鈕（收起狀態隱形） */
+    var x = document.createElement('button');
+    x.className = 'flow-x';
+    x.type = 'button';
+    x.textContent = '✕';
+    x.setAttribute('aria-label', '收起');
+    x.addEventListener('click', function (ev) {
+      ev.stopPropagation();
+      card.classList.remove('open');
+      card.setAttribute('aria-expanded', 'false');
+    });
+    card.appendChild(x);
+
+    var btn = document.createElement('button');
+    btn.className = 'flow-open';
+    btn.type = 'button';
+    btn.textContent = '開啟流程';
+    btn.addEventListener('click', function (ev) {
+      ev.stopPropagation();
+      if (typeof window.showFlow === 'function') window.showFlow(card.dataset.id);
+    });
+    body.appendChild(btn);
+
+    /* 3) 互斥展開（同一個 grid 內） */
+    function toggle() {
+      /* _ss: 「自己係咪已開」一定要喺清走其他卡之前判定，
+             否则自己的 open 會先被清走、之後永遠判定做「未開」→ 展開咗就收唔返。 */
+      var willOpen = !card.classList.contains('open');
+      var grid = card.parentElement;
+      if (grid) {
+        var others = grid.querySelectorAll('.flow-card.open');
+        for (var i = 0; i < others.length; i++) {
+          others[i].classList.remove('open');
+          others[i].setAttribute('aria-expanded', 'false');
+        }
+      }
+      if (willOpen) { card.classList.add('open'); } else { card.classList.remove('open'); }
+      card.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    }
+    card.addEventListener('click', function (ev) {
+      /* 只忽略「開啟流程」鈕（佢自己 stopPropagation 開彈窗）；其他地方（包括展開後嘅內容區）
+         一律 toggle → 展開再撳一次就收返原狀 */
+      if (ev.target.closest('.flow-open')) return;
+      toggle();
+    });
+    card.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); toggle(); }
+    });
+  });
+})();
+</script>
+
+<div class="cmd-pop" id="cmd-pop">
+  <div class="cmd-pop-inner">
+    <button class="cmd-pop-x" type="button" onclick="hideCmdPop()" aria-label="close">✕</button>
+    <div class="cmd-pop-head" id="cmd-pop-head-txt">🎛️ 口令已複製</div>
+    <div class="cmd-pop-cmd" id="cmd-pop-cmd"></div>
+    <div class="cmd-pop-range" id="cmd-pop-range"></div>
+    <div class="cmd-pop-tip">💡 直接黏貼畀小Buddy，佢就知道要做咩</div>
+  </div>
+</div>
+
+<script>
+/* ================= 口令 / 指令 卡片（撳「口令」即複製，彈小卡片） ================= */
+(function () {
+  var CMDS = [
+    {
+      name: 'CDM 每日流程', skill: 'cdm-workflow', c: '#7b8ff5', bg: 'rgba(123,143,245,.08)',
+      keys: ['CDM', '執貨表', '膠盒倉存', '19:40 排程'],
+      range: '講 CDM／執貨表／膠盒倉存 → 每日流程總覽、結餘計算（新結餘 = 上期結餘 + 補貨 − 用量）、鐵規。每晚 19:40 自動化跑 gen_delivery.py。',
+      say: 'CDM 每日流程'
+    },
+    {
+      name: '膠盒倉存修復', skill: 'cdm-plastic-box-fix', c: '#f5a44a', bg: 'rgba(245,164,74,.08)',
+      keys: ['文件損壞', '打唔開', '2KB', '孤兒行', '補數'],
+      range: '膠盒倉存 Excel 出事 → WPS 報「文件可能損壞」畸形格修復、月份 sheet 消失、結餘唔扣數、錯 sheet 孤兒行、補歷史缺日（backfill）。',
+      say: 'CDM 膠盒倉存修復'
+    },
+    {
+      name: 'CDM 發票對數', skill: 'cdm-invoice-reconciliation', c: '#4d95e0', bg: 'rgba(77,149,224,.10)',
+      keys: ['CDM 發票對數: [日期] [功能]', 'Flow1 單日', 'Flow2 合併', 'Flow3 金額對數'],
+      range: '唯一有正式口令格式：Flow1 單日發票 / Flow2 5(6) 日合併 / Flow3 金額對數，pipeline 掃缺失冪等（有就跳過）。',
+      say: 'CDM 發票對數: [日期] [功能]'
+    },
+    {
+      name: 'Food Index 報價', skill: 'food-index-reporter', c: '#45c9c0', bg: 'rgba(69,201,192,.08)',
+      keys: ['Food Index', 'Kai Shing', '價目表', '箱價／散價', '改價'],
+      range: '只碰 Food Index（07_Food Index price list）→ 讀寫價目表 col1 編號／col3 名／col7 規格／col8 箱價／col10 散價。**絕對唔撈 Super Tri**。',
+      say: '改 Food Index 價目表'
+    },
+    {
+      name: 'Super Tri 報價', skill: 'super-tri-reporter', c: '#a984f0', bg: 'rgba(169,132,240,.08)',
+      keys: ['Super Tri', 'HKY／KYW／KYP／KKG／KDS', '報價單', '箱價／散價'],
+      range: '只碰 Super Tri（WB+QClaw\\08_Super Tri price list）→ 6 間供應商 xlsx 同步改價（Row1 標題／Row51-52 欄頭／Row53 起）。**絕對唔撈 Food Index**。',
+      say: '改 Super Tri 價目表'
+    }
+  ];
+
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  /* 複製：優先 Clipboard API（localhost 可用），LAN http 唔係 secure context → 回落 execCommand */
+  function copyText(t) {
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(t);
+    return new Promise(function (res, rej) {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = t;
+        ta.setAttribute('readonly', '');
+        ta.style.cssText = 'position:fixed;top:-1000px;left:0;opacity:0;';
+        document.body.appendChild(ta);
+        ta.focus(); ta.select(); ta.setSelectionRange(0, t.length);
+        var ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        ok ? res() : rej(new Error('execCommand copy failed'));
+      } catch (e) { rej(e); }
+    });
+  }
+
+  var grid = document.getElementById('cmd-grid');
+  var pop = document.getElementById('cmd-pop');
+  var pCmd = document.getElementById('cmd-pop-cmd');
+  var pRange = document.getElementById('cmd-pop-range');
+  var pHead = document.getElementById('cmd-pop-head-txt');
+  var timer = null;
+
+  function hide() { if (pop) pop.classList.remove('show'); }
+
+  var openCard = null;
+  function toggleCard(el) {
+    if (openCard === el) { el.classList.remove('open'); el.setAttribute('aria-expanded', 'false'); openCard = null; return; }
+    if (openCard) openCard.classList.remove('open');
+    el.classList.add('open'); el.setAttribute('aria-expanded', 'true'); openCard = el;
+  }
+
+  CMDS.forEach(function (c, i) {
+    var d = document.createElement('div');
+    d.className = 'cmd-card';
+    d.setAttribute('role', 'button');
+    d.setAttribute('tabindex', '0');
+    d.setAttribute('aria-expanded', 'false');
+    d.style.setProperty('--cmd-c', c.c);
+    var keys = c.keys.map(function (k) { return '<span class="cmd-key">' + esc(k) + '</span>'; }).join('');
+    d.innerHTML =
+      '<div class="cmd-face">' +
+        '<div class="cmd-no">' + (i + 1) + '</div>' +
+        '<div class="cmd-name">' + esc(c.name) + '</div>' +
+        '<div class="cmd-hint">撳開睇範圍</div>' +
+      '</div>' +
+      '<div class="cmd-body">' +
+        '<div class="cmd-name">' + esc(c.name) + '</div>' +
+        '<div class="cmd-skill">' + esc(c.skill) + '</div>' +
+        '<div class="cmd-range">' + esc(c.range) + '</div>' +
+        '<div class="cmd-keys">' + keys + '</div>' +
+        '<button class="cmd-btn" type="button">口令</button>' +
+      '</div>';
+    d.addEventListener('click', function (ev) {
+      if (ev.target.closest('.cmd-btn')) return;   /* 按「口令」交畀下面嘅複製邏輯 */
+      toggleCard(d);
+    });
+    d.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); toggleCard(d); }
+    });
+    d.querySelector('.cmd-btn').addEventListener('click', function () {
+      var btn = this;
+      btn.classList.add('copied');
+      setTimeout(function () { btn.classList.remove('copied'); }, 1200);
+      if (pHead) pHead.textContent = '#' + (i + 1) + ' ' + c.name + ' — 口令已複製';
+      if (pCmd) pCmd.textContent = c.say;
+      if (pRange) pRange.textContent = c.range;
+      if (pop) { pop.classList.add('show'); clearTimeout(timer); timer = setTimeout(hide, 3600); }
+      copyText(c.say).then(function () {
+        btn.textContent = '已複製 ✓';
+        setTimeout(function () { btn.textContent = '口令'; }, 1400);
+      }, function () {
+        btn.textContent = '手動複製';
+      });
+    });
+    grid.appendChild(d);
+  });
+
+  window.hideCmdPop = hide;
+})();
+</script>
+
+<script>
+/* ================= Skill / 技能（一張卡放 6 個 Dashboard pattern 圖案） ================= */
+(function () {
+  var card = document.getElementById('skill-card');
+  if (!card) return;
+
+  /* 1) 拖動中的格位（橙色實心底 + 投影），其餘虚線幽靈位 */
+  var SVG = {};
+  SVG.drag =
+    '<svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">' +
+    '<rect x="16" y="24" width="42" height="26" rx="5" fill="#1d2740" stroke="#ff4d6d" stroke-width="2"/>' +
+    '<rect x="66" y="24" width="42" height="26" rx="5" fill="#1d2740" stroke="#ff4d6d" stroke-width="2"/>' +
+    '<rect x="116" y="24" width="42" height="26" rx="5" fill="#1d2740" stroke="#ff4d6d" stroke-width="2" stroke-dasharray="4 3"/>' +
+    '<rect x="166" y="24" width="42" height="26" rx="5" fill="#1d2740" stroke="#ff4d6d" stroke-width="2"/>' +
+    '<rect x="216" y="24" width="42" height="26" rx="5" fill="#1d2740" stroke="#ff4d6d" stroke-width="2"/>' +
+    '<rect x="152" y="6" width="48" height="30" rx="6" fill="#ff4d6d" fill-opacity=".28" stroke="#ff4d6d" stroke-width="2.5" stroke-dasharray="0"/>' +
+    '<path d="M137 21 L149 21" stroke="#ff4d6d" stroke-width="2" stroke-linecap="round"/>' +
+    '<path d="M144 16.5 L149 21.5 L143.5 26.5" fill="none" stroke="#ff4d6d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<rect x="16" y="62" width="42" height="26" rx="5" fill="#1d2740" stroke="#ff4d6d" stroke-width="2"/>' +
+    '<rect x="66" y="62" width="42" height="26" rx="5" fill="#1d2740" stroke="#ff4d6d" stroke-width="2"/>' +
+    '<rect x="116" y="62" width="42" height="26" rx="5" fill="#1d2740" stroke="#ff4d6d" stroke-width="2"/>' +
+    '<rect x="166" y="62" width="42" height="26" rx="5" fill="#1d2740" stroke="#ff4d6d" stroke-width="2"/>' +
+    '<rect x="216" y="62" width="42" height="26" rx="5" fill="#1d2740" stroke="#ff4d6d" stroke-width="2"/>' +
+    '<path d="M232 88 L236 94 L240 88 Z" fill="#ff4d6d"/>' +
+    '</svg>';
+  SVG.expand =
+    '<svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">' +
+    '<rect x="14" y="16" width="58" height="46" rx="6" fill="#2a1c10" stroke="#ff9a3c" stroke-width="2"/>' +
+    '<path d="M22 50 L36 36 L46 44 L56 28" fill="none" stroke="#ff9a3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<path d="M76 39 L100 39" stroke="#ff9a3c" stroke-width="2" stroke-dasharray="4 3"/>' +
+    '<path d="M94 34 L101 39.5 L93.5 44.5" fill="none" stroke="#ff9a3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<rect x="106" y="12" width="122" height="66" rx="7" fill="#ff9a3c" fill-opacity=".16" stroke="#ff9a3c" stroke-width="2.5"/>' +
+    '<path d="M116 66 L136 48 L156 58 L176 38 L200 50 L214 32" fill="none" stroke="#ff9a3c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<circle cx="176" cy="38" r="4" fill="#ff9a3c"/>' +
+    '<rect x="14" y="80" width="26" height="14" rx="4" fill="#ff9a3c" fill-opacity=".35" stroke="#ff9a3c" stroke-width="1.6"/>' +
+    '<rect x="46" y="80" width="26" height="14" rx="4" fill="#1d2740" stroke="#ff9a3c" stroke-width="1.6" stroke-opacity=".55"/>' +
+    '<rect x="78" y="80" width="26" height="14" rx="4" fill="#1d2740" stroke="#ff9a3c" stroke-width="1.6" stroke-opacity=".55"/>' +
+    '<rect x="110" y="80" width="26" height="14" rx="4" fill="#1d2740" stroke="#ff9a3c" stroke-width="1.6" stroke-opacity=".55"/>' +
+    '</svg>';
+  SVG.filter =
+    '<svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">' +
+    '<rect x="14" y="8" width="272" height="24" rx="8" fill="#241f10" stroke="#ffd166" stroke-width="2"/>' +
+    '<rect x="22" y="14" width="46" height="12" rx="6" fill="#ffd166" fill-opacity=".55"/>' +
+    '<rect x="76" y="14" width="62" height="12" rx="6" fill="#ffd166" fill-opacity=".34"/>' +
+    '<rect x="146" y="14" width="44" height="12" rx="6" fill="#ffd166" fill-opacity=".34"/>' +
+    '<path d="M216 14 L232 20 L216 26 Z" fill="#ffd166"/>' +
+    '<rect x="264" y="12" width="18" height="16" rx="4" fill="#ffd166" fill-opacity=".5"/>' +
+    '<path d="M18 56 L22 56 M18 74 L22 74" stroke="#ffd166" stroke-width="2.5" stroke-linecap="round"/>' +
+    '<rect x="26" y="48" width="22" height="34" rx="3" fill="#ffd166" fill-opacity=".75"/>' +
+    '<rect x="62" y="40" width="22" height="42" rx="3" fill="#ffd166" fill-opacity=".58"/>' +
+    '<rect x="98" y="30" width="22" height="52" rx="3" fill="#ffd166" fill-opacity=".72"/>' +
+    '<rect x="134" y="22" width="22" height="60" rx="3" fill="#ffd166" fill-opacity=".88"/>' +
+    '<rect x="170" y="18" width="22" height="64" rx="3" fill="#ffd166"/>' +
+    '<rect x="206" y="34" width="22" height="48" rx="3" fill="#ffd166" fill-opacity=".6"/>' +
+    '<rect x="242" y="26" width="22" height="56" rx="3" fill="#ffd166" fill-opacity=".78"/>' +
+    '<path d="M266 50 L286 50" stroke="#ffd166" stroke-width="2.5" stroke-linecap="round"/>' +
+    '<path d="M280 45 L287 50.5 L280 56" fill="none" stroke="#ffd166" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '</svg>';
+  SVG.hover =
+    '<svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M176 6 L176 94" stroke="#00d4a0" stroke-width="2" stroke-dasharray="5 4"/>' +
+    '<path d="M20 32 L66 22 L104 38 L148 20 L198 34 L248 18" fill="none" stroke="#00d4a0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<path d="M20 54 L68 62 L110 44 L152 58 L200 40 L250 56" fill="none" stroke="#00d4a0" stroke-width="2" stroke-opacity=".62" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<path d="M20 76 L70 68 L112 82 L156 70 L204 84 L250 72" fill="none" stroke="#00d4a0" stroke-width="2" stroke-opacity=".62" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<rect x="188" y="12" width="30" height="76" rx="8" fill="#00d4a0" fill-opacity=".1" stroke="#00d4a0" stroke-width="1.6"/>' +
+    '<circle cx="198" cy="34" r="4.5" fill="#00d4a0"/><circle cx="198" cy="54" r="3" fill="#00d4a0" fill-opacity=".45"/><circle cx="198" cy="76" r="3" fill="#00d4a0" fill-opacity=".45"/>' +
+    '<path d="M196 16.5 L199.5 20 L203 16.5" fill="none" stroke="#00d4a0" stroke-width="1.8" stroke-linecap="round"/>' +
+    '</svg>';
+  SVG.sticky =
+    '<svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">' +
+    '<rect x="0" y="0" width="300" height="100" fill="#0d1420"/>' +
+    '<rect x="20" y="2" width="96" height="8" rx="4" fill="#4d8dff" fill-opacity=".9"/>' +
+    '<rect x="124" y="2" width="26" height="8" rx="3" fill="#4d8dff" fill-opacity=".45"/>' +
+    '<rect x="20" y="22" width="120" height="26" rx="6" fill="#4d8dff" fill-opacity=".16" stroke="#4d8dff" stroke-width="2"/>' +
+    '<rect x="28" y="30" width="46" height="10" rx="4" fill="#4d8dff" fill-opacity=".7"/>' +
+    '<rect x="20" y="54" width="150" height="9" rx="4" fill="#1e2a42"/>' +
+    '<rect x="20" y="68" width="112" height="9" rx="4" fill="#1e2a42"/>' +
+    '<path d="M240 18 L240 74" stroke="#4d8dff" stroke-width="2" stroke-dasharray="4 4"/>' +
+    '<path d="M234 68 L240 78 L246 68" fill="none" stroke="#4d8dff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<path d="M244 26 L272 26" stroke="#4d8dff" stroke-width="2" stroke-opacity=".6"/>' +
+    '<rect x="272" y="20" width="14" height="12" rx="3" fill="#4d8dff" fill-opacity=".45"/>' +
+    '<path d="M272 40 L244 40" stroke="#4d8dff" stroke-width="2" stroke-opacity=".6"/>' +
+    '<rect x="244" y="34" width="14" height="12" rx="3" fill="#4d8dff" fill-opacity=".45"/>' +
+    '</svg>';
+  SVG.detail =
+    '<svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">' +
+    '<rect x="14" y="14" width="96" height="72" rx="7" fill="#1e1533" stroke="#b15cff" stroke-width="2"/>' +
+    '<rect x="14" y="20" width="96" height="12" rx="3" fill="#b15cff" fill-opacity=".55"/>' +
+    '<rect x="14" y="38" width="96" height="12" rx="3" fill="#b15cff" fill-opacity=".22"/>' +
+    '<rect x="14" y="56" width="96" height="12" rx="3" fill="#b15cff" fill-opacity=".16"/>' +
+    '<rect x="14" y="74" width="96" height="12" rx="3" fill="#b15cff" fill-opacity=".16"/>' +
+    '<path d="M114 50 L152 50" stroke="#b15cff" stroke-width="2" stroke-dasharray="4 3"/>' +
+    '<path d="M145 45 L152 50.5 L144.5 55.5" fill="none" stroke="#b15cff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<rect x="156" y="10" width="126" height="80" rx="8" fill="#b15cff" fill-opacity=".14" stroke="#b15cff" stroke-width="2.5"/>' +
+    '<rect x="164" y="18" width="52" height="10" rx="4" fill="#b15cff" fill-opacity=".75"/>' +
+    '<rect x="164" y="36" width="84" height="8" rx="4" fill="#2a1f45"/>' +
+    '<rect x="164" y="50" width="70" height="8" rx="4" fill="#2a1f45"/>' +
+    '<rect x="164" y="64" width="90" height="8" rx="4" fill="#2a1f45"/>' +
+    '<circle cx="244" cy="34" r="13" fill="none" stroke="#b15cff" stroke-width="2.2"/>' +
+    '<path d="M240 34 L244 38 L250 31" fill="none" stroke="#b15cff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '</svg>';
+
+  var PATS = [
+    {
+      en: 'Bento Drag', cn: '可拖動模塊網格', c: '#ff4d6d', svg: SVG.drag, done: true, state: '已落地 · xq_flow_order_v1',
+      effect: '页面采用不等大模块网格（Bento Grid），模块支持拖拽重排，拖动时其余模块平滑让位，松手吸附到最近格位，顺序写入 localStorage。',
+      prompt: '页面采用不等大模块网格（Bento Grid），模块支持拖拽重排，拖动时其余模块平滑让位，松手吸附到最近格位。'
+    },
+    {
+      en: 'Expand in Place', cn: '模块就地放大', c: '#ff9a3c', svg: SVG.expand, done: false, state: '未落地 · 現時開 modal',
+      effect: '点击图表模块由原位放大铺满主显示区，其余模块缩成一排缩略图留在底部（Shared Element Expand），关闭沿原路收回。',
+      prompt: '模块点击后原位放大为详情视图（Shared Element Expand），其余模块缩为底部缩略条，点击缩略图切换，关闭沿原路收回。'
+    },
+    {
+      en: 'Global Filter', cn: '顶部筛选全局联动', c: '#ffd166', svg: SVG.filter, done: false, state: '未有 · Charts 區無篩選條',
+      effect: '时间范围 / 分类筛选等控件统一置顶，切换后所有数字滚动过渡、图表平滑插值，不整页刷新，无需到处找筛选入口。',
+      prompt: '全局筛选条固定在顶部（Global Filter Bar），切换后所有指标数字滚动过渡，图表数据平滑插值，不整页重载。'
+    },
+    {
+      en: 'Linked Hover', cn: '图表悬停联动', c: '#00d4a0', svg: SVG.hover, done: false, state: '未有 · 多圖無共享 guide line',
+      effect: '悬停某一张图的某一天，其余图同一天同步高亮、其余数据降透明度，共用一条竖向参考线，方便跨图对比同一维度。',
+      prompt: '多图表悬停联动（Linked Hover），悬停时所有图表同步高亮同一数据点，其余数据降低透明度，共用一条竖向参考线。'
+    },
+    {
+      en: 'Sticky Compact Header', cn: '指标区滚动吸顶', c: '#4d8dff', svg: SVG.sticky, done: true, state: '已落地 · 指標區吸頂收細',
+      effect: '顶部大号指标区随向下滚动渐缩成一行小字钉在顶栏、数字始终可见，向上滚动连续还原（由滚动进度驱动字号与间距）。',
+      prompt: '顶部指标区滚动吸顶收缩（Sticky Compact Header），由滚动进度驱动字号与间距，收成单行后固定在顶栏，反向滚动连续还原。'
+    },
+    {
+      en: 'Master Detail', cn: '列表+右侧详情抽屉', c: '#b15cff', svg: SVG.detail, done: false, state: '未有 · 9 張卡全寬 grid',
+      effect: '点击表格任一行，右侧滑出详情面板，左侧列表压窄但保持可见、选中行高亮；↑↓ 切换记录只更新右 panel 内容。',
+      prompt: '主从布局（Master Detail），点击行后右侧滑出详情抽屉，列表压窄保持可见，当前行高亮，键盘上下切换只刷新面板内容。'
+    }
+  ];
+
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  var pats = PATS.map(function (p, i) {
+    return '' +
+      '<div class="sk-pat" style="--sk:' + p.c + '">' +
+        '<div class="sk-pat-bar"></div>' +
+        '<div class="sk-pat-top">' +
+          '<div class="sk-pat-no">' + (i + 1) + '</div>' +
+          '<div class="sk-pat-en">' + esc(p.en) + '</div>' +
+          '<div class="sk-pat-cn">' + esc(p.cn) + '</div>' +
+        '</div>' +
+        '<div class="sk-diagram hide">' + p.svg + '</div>' +
+        '<div class="sk-txt">' +
+          '<div class="sk-effect">' + esc(p.effect) + '</div>' +
+          '<div class="sk-prompt">🤖 AI 提示詞：' + esc(p.prompt) + '</div>' +
+          '<div class="sk-state ' + (p.done ? 'on' : 'off') + '">' + (p.done ? '✅' : '🟡') + ' ' + esc(p.state) + '</div>' +
+        '</div>' +
+        '<button class="sk-btn" type="button">睇 Pattern 圖案</button>' +
+      '</div>';
+  }).join('');
+
+  card.innerHTML =
+    '<div class="sk-head">🎨 Skill / 技能</div>' +
+    '<div class="sk-sub">Dashboard 六個交互 pattern（2 個已落地、4 個未落地）。撳「睇 Pattern 圖案」出圖；再撳一次收起。想落去邊一個先話我知。</div>' +
+    '<div class="sk-pats">' + pats + '</div>';
+
+  /* ✕ 收起鈕 */
+  var close = document.createElement('button');
+  close.className = 'sk-close';
+  close.type = 'button';
+  close.textContent = '✕';
+  close.setAttribute('aria-label', '收起');
+  close.addEventListener('click', function (ev) { ev.stopPropagation(); collapse(); });
+  card.appendChild(close);
+
+  function collapse() {
+    card.classList.remove('open');
+    card.setAttribute('aria-expanded', 'false');
+  }
+  function doToggle() {
+    var willOpen = !card.classList.contains('open');
+    var grid = card.parentElement;
+    if (grid) {
+      var others = grid.querySelectorAll('.skill-card.open');
+      for (var i = 0; i < others.length; i++) { others[i].classList.remove('open'); others[i].setAttribute('aria-expanded', 'false'); }
+    }
+    if (willOpen) card.classList.add('open'); else collapse();
+    card.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+  }
+
+  /* 單一 listener：prioritise 按鈕，剩下先當「撳卡開合」 */
+  card.addEventListener('click', function (ev) {
+    var t = ev.target;
+    var btn = t.closest ? t.closest('.sk-btn') : null;
+    if (btn) {
+      /* 「睇 Pattern 圖案」：只切換圖案顯示，唔影響卡嘅開合 */
+      var box = btn.parentElement.querySelector('.sk-diagram');
+      if (box.classList.contains('hide')) { box.classList.remove('hide'); btn.textContent = '收起圖案'; }
+      else { box.classList.add('hide'); btn.textContent = '睇 Pattern 圖案'; }
+      return;
+    }
+    if (t.closest && t.closest('.sk-close')) { collapse(); return; }
+    doToggle();
+  });
+  card.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); doToggle(); }
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape' && card.classList.contains('open')) collapse();
+  });
+})();
+</script>
+
+<script>
+/* ================= 頂部 Global Filter Bar（單選激活 + 全局聯動） ================= */
+(function () {
+  /* 1) 數字滾動過渡（rAF tween），Global Filter 切換時唔會硬跳 */
+  window.tweenNum = function (el, to, dur) {
+    if (!el) return;
+    dur = dur || 700;
+    to = Number(to) || 0;
+    var from = parseFloat(String(el.textContent || '').replace(/[^0-9.\-]/g, '')) || 0;
+    if (Math.abs(to - from) < 1) { el.textContent = to.toLocaleString(); return; }
+    var t0 = performance.now();
+    function step(t) {
+      var k = Math.min(1, (t - t0) / dur);
+      var e = 1 - Math.pow(1 - k, 3);                 /* easeOutCubic */
+      el.textContent = Math.round(from + (to - from) * e).toLocaleString();
+      if (k < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  };
+
+  /* 2) 全局聯動：切換篩選時，下方所有指標卡同步打亮一下（共享參考線效果） */
+  var linkT = null;
+  window.globalLink = function () {
+    var targets = document.querySelectorAll('.flow-card, .cmd-card, .skill-card');
+    for (var i = 0; i < targets.length; i++) targets[i].classList.add('linked');
+    clearTimeout(linkT);
+    linkT = setTimeout(function () {
+      for (var j = 0; j < targets.length; j++) targets[j].classList.remove('linked');
+    }, 850);
+  };
+
+  /* 3) Filter Bar 單選激活 + 觸發對應動作 */
+  var chips = [].slice.call(document.querySelectorAll('.fb-chip'));
+  function setActive(chip) {
+    for (var i = 0; i < chips.length; i++) chips[i].classList.toggle('active', chips[i] === chip);
+  }
+  function run(key, chip) {
+    setActive(chip);
+    globalLink();
+    if (!chip.classList.contains('busy') && /refresh|cdm|inventory/.test(key)) {
+      chip.classList.add('busy');
+      setTimeout(function () { chip.classList.remove('busy'); }, 600);
+    }
+    if (key === 'refresh' && typeof window.refreshAll === 'function') window.refreshAll();
+    else if (key === 'cdm' && typeof window.checkCDM === 'function') window.checkCDM();
+    else if (key === 'inventory' && typeof window.checkInventory === 'function') window.checkInventory();
+    else if (key === 'reset' && typeof window.resetOrder === 'function') window.resetOrder();
+  }
+  chips.forEach(function (chip) {
+    var key = chip.getAttribute('data-fb');
+    chip.addEventListener('click', function () { run(key, chip); });
+    chip.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); run(key, chip); }
+    });
+  });
+})();
 </script>
 </body>
 </html>
