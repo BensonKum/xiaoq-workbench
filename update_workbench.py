@@ -39,9 +39,21 @@ def main():
                           capture_output=True, text=True)
     if diff.returncode != 0:
         run(["git", "-C", BASE, "commit", "-m", "自動更新 工作台 %s" % now])
-        # 用全域 credential helper（wincred）推，唔使彈窗
-        run(["git", "-C", BASE, "push"])
-        print("✅ 小Q工作台已更新並推送")
+        # push：本環境可能封鎖 github 出站，加 timeout 唔好 hang 死 cron/自動化
+        print(">>> git push (timeout 60s)")
+        env = dict(os.environ); env["GIT_TERMINAL_PROMPT"] = "0"; env["GCM_INTERACTIVE"] = "never"
+        try:
+            pr = subprocess.run(["git", "-C", BASE, "push"], capture_output=True, text=True,
+                                encoding="utf-8", errors="replace", env=env, timeout=60)
+            if pr.returncode == 0:
+                print("✅ 小Q工作台已更新並推送")
+            else:
+                print("[warn] 本地已更新並 commit，但 push 失敗 (rc=%d)" % pr.returncode)
+                if pr.stderr: print("  ", pr.stderr.strip()[:300])
+                print("  → 請喺有網絡嘅機手動：`git -C %s push`" % BASE)
+        except subprocess.TimeoutExpired:
+            print("[warn] push 超時（本環境或封鎖 github 出站），本地已更新並 commit")
+            print("  → 請喺有網絡嘅機手動：`git -C %s push`" % BASE)
     else:
         print("ℹ️ 無變更，跳過推送")
 
