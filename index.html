@@ -403,6 +403,20 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
   opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .25s ease;
 }
 .pwa-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+/* ===== 檢查／更新版本（PWA 專用，放左邊唔同 install 鈕爭位） ===== */
+.pwa-update {
+  position: fixed; left: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 62; display: none; align-items: center; gap: 8px;
+  border: 1px solid #f0a04b; background: linear-gradient(135deg, #3a2a17, #1a1410);
+  color: #ffd9a8; font-family: inherit; font-size: 13px; font-weight: 800; letter-spacing: .3px;
+  padding: 10px 16px; border-radius: 999px; cursor: pointer;
+  box-shadow: 0 10px 26px rgba(0,0,0,.65);
+  -webkit-tap-highlight-color: transparent;
+}
+.pwa-update.show { display: flex; }
+.pwa-update.run { opacity: .6; }
+.pwa-update .vno { font-size: 11px; opacity: .7; font-weight: 700; }
+@media (hover: hover) and (pointer: fine) { .pwa-update:hover { border-color: #ffc078; } }
 </style>
 </head>
 <body>
@@ -570,7 +584,11 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
   </div>
 </div>
 
-<div class="footer">祐興工作台 v3.0 · 實時數據追蹤 · 每次只問一條問題</div>
+<div class="footer" id="appFooter">祐興工作台 · 實時數據追蹤 · 每次只問一條問題</div>
+
+<button class="pwa-update" id="updBtn" type="button">
+  <span class="ic">⟳</span><span id="updTxt">檢查更新</span><span class="vno" id="updVer"></span>
+</button>
 
 <div class="modal-overlay" id="flow-modal">
   <div class="modal">
@@ -1466,6 +1484,60 @@ function setDone(id, raw) {
   if (!standalone) btn.classList.add('show');
   /* iOS 冇 install API，撳下去直接畀分享指引 */
   if (iOS && standalone) btn.classList.remove('show');
+
+  /* ---------- 版本號 + PWA 更新機制 ---------- */
+  var APP_VERSION = 'v38';
+  var updBtn = document.getElementById('updBtn');
+  var updTxt = document.getElementById('updTxt');
+  var updVer = document.getElementById('updVer');
+
+  (function paintVer() {
+    var f = document.getElementById('appFooter');
+    if (f) f.textContent = '祐興工作台 ' + APP_VERSION + ' · 實時數據追蹤 · 每次只問一條問題';
+    if (updVer) updVer.textContent = APP_VERSION;
+    if (updBtn) updBtn.classList.add('show');
+  })();
+
+  function askReload() {
+    if (!updBtn) return;
+    updBtn.classList.add('run');
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+    }
+    setTimeout(function () { try { location.reload(true); } catch (_) { location.href = location.href; } }, 400);
+  }
+
+  if (updBtn) {
+    updBtn.addEventListener('click', function () {
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+      }
+      var done = false;
+      var t0 = setTimeout(function () {
+        if (done) return;
+        done = true;
+        /* 檢查完都冇新 SW：即係已經最新，唔使 reload */
+        try { tip('✅ 已經係最新版本 ' + APP_VERSION + '，唔使更新。'); } catch (_) {}
+      }, 2500);
+      if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
+        navigator.serviceWorker.getRegistration('sw.js').then(function (reg) {
+          if (!reg) { done = true; clearTimeout(t0); location.reload(true); return; }
+          reg.update();
+          reg.addEventListener('updatefound', function () {
+            var nw = reg.installing;
+            if (!nw) return;
+            nw.addEventListener('statechange', function () {
+              if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+                done = true; clearTimeout(t0);
+                if (updTxt) updTxt.textContent = '有新版本 · 撳鍵更新';
+                askReload();
+              }
+            });
+          });
+        }).catch(function () {});
+      }
+    });
+  }
 
   /* 註冊 Service Worker（離線可開 + 令 Chrome 識別為可安裝 PWA） */
   if ('serviceWorker' in navigator) {
