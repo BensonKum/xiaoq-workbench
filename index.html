@@ -1261,7 +1261,7 @@ function setDone(id, raw) {
   var WEB_SITES = [
     { id: 'site',  name: '祐興網站', icon: '🌐', c: '#4d8dff', hint: '公司官網 · 品牌對外', url: 'https://yauhing-food.com/index.html' },
     { id: 'stock', name: '倉存系統', icon: '📦', c: '#12a97a', hint: '膠盒同存貨紀錄',      url: 'https://yauhing-food.com/inventory.html' },
-    { id: 'order', name: '訂單確認', icon: '🧾', c: '#ff9a3c', hint: '每日訂單核對',        url: '' }
+    { id: 'order', name: '訂單確認', icon: '🧾', c: '#ff9a3c', hint: '每日訂單核對',        url: 'https://yauhing-food.com/verify.html' }
   ];
 
   function esc(s) {
@@ -1605,8 +1605,8 @@ function setDone(id, raw) {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v44';
-  var APP_PUBLISHED = '2026/10/03 06:56';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v45';
+  var APP_PUBLISHED = '2026/10/03 07:16';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
