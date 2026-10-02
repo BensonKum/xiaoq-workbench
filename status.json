@@ -1,0 +1,37 @@
+{
+  "generated_at": "2026-10-02 11:34",
+  "inventory": {
+    "small": 78431,
+    "big": 37461,
+    "date": "2026-10-03"
+  },
+  "cdm": {
+    "ran_today": true,
+    "target_date": "20261002",
+    "pdf_ready": true,
+    "invoice_ready": true,
+    "files": [
+      {
+        "date": "20261001",
+        "has_pdf": true,
+        "has_xlsx": true,
+        "folder": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\錢大媽發票及執貨表_20261001"
+      },
+      {
+        "date": "20261002",
+        "has_pdf": true,
+        "has_xlsx": true,
+        "folder": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\錢大媽發票及執貨表_20261002"
+      }
+    ],
+    "invoice_count": 3
+  },
+  "orders": {
+    "today_count": 1,
+    "today_files": [
+      "(祐興粉麵廠有限公司)訂單20261002.XLS"
+    ],
+    "pending_count": 6
+  },
+  "last_backup": "2026-10-02"
+}

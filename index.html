@@ -193,6 +193,7 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 4px; }
 
 <script>
 // 數據存儲
+let currentFlow = null;
 let inventoryData = { small: 114089, big: 45151, date: '2026-09-17' };
 let cdmStatus = 'pending';
 let logEntries = [];
@@ -269,6 +270,7 @@ async function checkCDM() {
 
 // 顯示流程詳情
 function showFlow(flowId) {
+  currentFlow = flowId;
   const flow = FLOWS[flowId];
   if (!flow) return;
   
@@ -351,6 +353,31 @@ const FLOWS = {
   'inspect': { title: '⑧ 每日自動巡檢', steps: ['21:40 cron 自動跑 cdm_check_today.py', '查 marker 確認今晚 CDM 跑了未（target=今日+2）', '查輸出目錄 PDF 齊不齊', '微信 report 自動 send'] },
   'inventory': { title: '⑨ 膠盒倉存', steps: ['讀取膠盒倉存.xlsx', '小膠盒(產品1-10): 114,089 個', '大膠盒(產品11-12): 45,151 個', '實時更新顯示'] }
 };
+
+// 從本地 API 讀取庫存數據
+async function loadInventory() {
+  try {
+    const response = await fetch('http://127.0.0.1:8083/api/inventory');
+    const data = await response.json();
+    if (data.success) {
+      inventoryData = {
+        small: data.small_box,
+        big: data.big_box,
+        date: data.last_update
+      };
+      document.getElementById('small-box').textContent = inventoryData.small.toLocaleString();
+      document.getElementById('big-box').textContent = inventoryData.big.toLocaleString();
+      document.getElementById('stat-inventory').textContent = inventoryData.small.toLocaleString();
+      document.getElementById('inventory-status').textContent = '● 已更新';
+      addLog(`膠盒倉存: 小${inventoryData.small.toLocaleString()} / 大${inventoryData.big.toLocaleString()}`, 'success');
+    }
+  } catch (e) {
+    // 如果 API 失敗，使用硬編碼數據
+    document.getElementById('small-box').textContent = inventoryData.small.toLocaleString();
+    document.getElementById('big-box').textContent = inventoryData.big.toLocaleString();
+    document.getElementById('stat-inventory').textContent = inventoryData.small.toLocaleString();
+  }
+}
 
 // 初始化
 window.addEventListener('load', function() {
