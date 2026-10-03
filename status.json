@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-03 08:36",
+  "generated_at": "2026-10-03 22:59",
   "inventory": {
-    "small": 76278,
-    "big": 36991,
-    "date": "2026-10-04"
+    "small": 73751,
+    "big": 36464,
+    "date": "2026-10-05"
   },
   "cdm": {
     "ran_today": true,
@@ -24,14 +24,14 @@
         "folder": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\錢大媽發票及執貨表_20261003"
       }
     ],
-    "invoice_count": 4
+    "invoice_count": 5
   },
   "orders": {
     "today_count": 1,
     "today_files": [
       "(祐興粉麵廠有限公司)訂單20261003.XLS"
     ],
-    "pending_count": 8
+    "pending_count": 10
   },
   "last_backup": "2026-10-02"
 }

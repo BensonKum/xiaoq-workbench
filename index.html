@@ -663,7 +663,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 <script>
 // 數據存儲
 let currentFlow = null;
-let inventoryData = { small: 76278, big: 36991, date: '2026-10-04' };  // 僅供兩邊 source 都失敗時嘅 fallback
+let inventoryData = { small: 73751, big: 36464, date: '2026-10-05' };  // 僅供兩邊 source 都失敗時嘅 fallback（2026-10-03 22:59 同步 status.json；唔好再寫死舊數）
 let cdmStatus = 'pending';
 let logEntries = [];
 
@@ -709,11 +709,22 @@ async function refreshAll() {
 // 檢查膠盒倉存
 async function checkInventory() {
   addLog('檢查膠盒倉存數據...');
-  
-  // 模擬從 Excel 讀取（實際應調用後端 API）
-  // 這裡使用最新已知數據
-  inventoryData = { small: 114089, big: 45151, date: '2026-09-17' };
-  
+
+  // 🚨 2026-10-03 22:59 修：原本無條件寫死 { small: 114089, big: 45151, date: '2026-09-17' }（舊值）
+  //    → 撳一下「更新數據」個箱頂芯片就衝去 9/17 嘅過期數字。
+  //    改為實讀 status.json（同一源 as loadStatus）；讀唔到就保留現值，千祈唔好自動寫死舊數。
+  try {
+    const _rs = await fetch('status.json', { cache: 'no-store' });
+    const _sj = await _rs.json();
+    if (_sj && _sj.inventory && _sj.inventory.small != null) {
+      inventoryData = { small: _sj.inventory.small, big: _sj.inventory.big, date: _sj.inventory.date };
+    } else {
+      addLog('status.json 冇 inventory 欄 → 保留現有數據', 'warn');
+    }
+  } catch (e) {
+    addLog('讀 status.json 失敗 → 保留現有數據（唔用舊值覆寫）', 'info');
+  }
+
   setDone('done-inventory', inventoryData.date);
   /* Global Filter 聯動：數字用 rAF tween 滾動過渡，唔係硬跳 */
   tweenNum(document.getElementById('small-box'), inventoryData.small);
@@ -1611,8 +1622,8 @@ function setDone(id, raw) {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v46';
-  var APP_PUBLISHED = '2026/10/03 08:38';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v47';
+  var APP_PUBLISHED = '2026/10/03 23:01';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
