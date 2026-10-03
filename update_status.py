@@ -5,8 +5,8 @@
 讀取本地數據，生成 status.json 上傳到 GitHub Pages
 """
 import os
+import sys
 import json
-import openpyxl
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -16,28 +16,25 @@ WORKSPACE_CDM = r'C:\Users\benso\WorkBuddy\2026-09-21-11-40-31\cdm'
 OUTPUT_FILE = r'C:\Users\benso\WorkBuddy\Claw\tools-hub\status.json'
 
 def get_inventory_data():
-    """讀取膠盒倉存數據"""
+    """讀取膠盒倉存數據（同一套邏輯 as api.py：當月 sheet + 最新有日期嗰行 + col6/col7）
+
+    🚨 2026-10-03 修：舊 code 直接用 ws.max_row，10 月頁個 max_row 係「總用量」
+       摘要行 → 讀到 0／None，而 status.json 又係手改過嘅舊值，
+       搞到頂部 chip（/api/inventory）同流程卡（status.json）顯示唔一致。
+    """
     inventory_file = os.path.join(WORKSPACE_CDM, '膠盒倉存(WB).xlsx')
     if not os.path.exists(inventory_file):
         return {'small': 0, 'big': 0, 'date': '未知'}
-    
+
     try:
-        wb = openpyxl.load_workbook(inventory_file)
-        ws = wb["10月"]
-        
-        # 找最後一行有數據的
-        last_row = ws.max_row
-        while last_row > 1 and (ws.cell(last_row, 1).value is None or ws.cell(last_row, 1).value == ''):
-            last_row -= 1
-        
-        if last_row > 1:
-            small = ws.cell(last_row, 6).value or 0
-            big = ws.cell(last_row, 7).value or 0
-            date = ws.cell(last_row, 1).value
-            return {'small': small, 'big': big, 'date': str(date)[:10] if date else '未知'}
+        # 直接用 api.py 既 read_box_latest，兩邊同源唔會再分歧
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import api
+        box = api.read_box_latest(inventory_file)
+        return {'small': box['small'], 'big': box['big'], 'date': box['date']}
     except Exception as e:
         print(f'讀取倉存失敗: {e}')
-    
+
     return {'small': 0, 'big': 0, 'date': '未知'}
 
 def get_cdm_status():

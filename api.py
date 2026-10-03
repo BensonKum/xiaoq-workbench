@@ -6,6 +6,7 @@
 """
 import os
 import json
+import re
 from datetime import datetime
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import openpyxl
@@ -13,6 +14,45 @@ import openpyxl
 # 文件路徑
 INVENTORY_FILE = r'C:\Users\benso\WorkBuddy\Claw\cdm\膠盒倉存(WB).xlsx'
 CDM_DIR = r'C:\Users\benso\WorkBuddy\Claw\cdm'
+
+# 🚨 2026-10-03 修：倉存頁結餘一定要用「當月 sheet + 最新有日期嗰行 + col6/col7」
+#    - 舊 code 用 wb.active（openpyxl 開出嚟第一頁 = 「4月」）→ 回 4 月嘅數字
+#    - 舊 code 又用 col4/col5（標準頁 D/E 係「補貨」欄，唔係結餘）→ 出 '-'
+# 標準頁欄位：A日期 B/C用量 D/E補貨 F/G結餘 H總用量
+DATE_RE = re.compile(r'^\d{4}[-/]\d{1,2}[-/]\d{1,2}')
+
+
+def read_box_latest(path=INVENTORY_FILE):
+    """回 {'small':int,'big':int,'date':str} —— 當月 sheet 最新有日期嗰行嘅結餘"""
+    wb = openpyxl.load_workbook(path, data_only=True)
+    try:
+        today = datetime.now()
+        sheet = None
+        for name in wb.sheetnames:                      # 1) 揀當月 sheet
+            if str(name) == '%d月' % today.month:
+                sheet = wb[name]
+                break
+        if sheet is None:                                # 2) 冇就 fallback 翻最新嘅月份頁
+            sheet = wb[wb.sheetnames[-1]]
+
+        last = None                                      # 3) 搵最後一個「有日期」嘅行
+        for r in range(sheet.max_row, 0, -1):
+            v = sheet.cell(r, 1).value
+            if v is None:
+                continue
+            if DATE_RE.match(str(v).strip()):
+                last = r
+                break
+        if last is None:
+            return {'small': 0, 'big': 0, 'date': '未知'}
+
+        small = sheet.cell(last, 6).value or 0           # F = 小膠盒結餘
+        big = sheet.cell(last, 7).value or 0             # G = 大膠盒結餘
+        date = sheet.cell(last, 1).value
+        return {'small': small, 'big': big,
+                'date': str(date)[:10] if date else '未知'}
+    finally:
+        wb.close()
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -26,24 +66,14 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(404, 'Not found')
     
     def send_inventory(self):
-        """讀取膠盒倉存數據"""
+        """讀取膠盒倉存數據（當月 sheet 最新日嘅結餘）"""
         try:
-            wb = openpyxl.load_workbook(INVENTORY_FILE)
-            ws = wb.active
-            
-            # 讀取最後一行數據
-            last_row = ws.max_row
-            small_box = ws.cell(last_row, 4).value  # 產品1-10 結餘
-            big_box = ws.cell(last_row, 5).value   # 產品11-12 結餘
-            
-            # 讀取最後日期
-            last_date = ws.cell(last_row - 2, 1).value
-            
+            box = read_box_latest()
             data = {
                 'success': True,
-                'small_box': small_box or 0,
-                'big_box': big_box or 0,
-                'last_update': str(last_date) if last_date else '未知',
+                'small_box': box['small'],
+                'big_box': box['big'],
+                'last_update': box['date'],
                 'file_path': INVENTORY_FILE
             }
             self.send_json(data)
@@ -87,13 +117,11 @@ class Handler(BaseHTTPRequestHandler):
         
         # 檢查膠盒倉存
         try:
-            wb = openpyxl.load_workbook(INVENTORY_FILE)
-            ws = wb.active
-            last_row = ws.max_row
+            box = read_box_latest()
             result['inventory'] = {
-                'small_box': ws.cell(last_row, 4).value,
-                'big_box': ws.cell(last_row, 5).value,
-                'last_date': str(ws.cell(last_row - 2, 1).value)
+                'small_box': box['small'],
+                'big_box': box['big'],
+                'last_date': box['date']
             }
         except Exception as e:
             result['inventory_error'] = str(e)

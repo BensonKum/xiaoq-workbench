@@ -663,7 +663,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 <script>
 // 數據存儲
 let currentFlow = null;
-let inventoryData = { small: 114089, big: 45151, date: '2026-09-17' };
+let inventoryData = { small: 76278, big: 36991, date: '2026-10-04' };  // 僅供兩邊 source 都失敗時嘅 fallback
 let cdmStatus = 'pending';
 let logEntries = [];
 
@@ -826,7 +826,7 @@ const FLOWS = {
   'quote': { title: '⑥ 祐興報價單 Excel', steps: ['跑 gen_quote_xlsx.py', '配圖 images/（缺相用預留位）', '11 分類分組 + 分類 header（橙）', '發微信 / 或加 E 欄網站連結', '現狀：103 款；v4 待 Ben 確認公司名/Logo/電話地址'] },
   'ad-video': { title: '⑦ Beatra 15秒廣告片', steps: ['充值 console.beatra.ai/topup starter ¥29 = 11,000 credits（勿揀 ¥198）', '收素材：hero 相 + 食材相（已收 AI 圖，建議補實物照）', 'render：image_to_video seedance-2-mini 720p / 16:9 / 15秒', '輸出約 5,550 credits → MP4', '產品：芝士番茄鮮肉餃'] },
   'inspect': { title: '⑧ 每日自動巡檢', steps: ['21:40 cron 自動跑 cdm_check_today.py', '查 marker 確認今晚 CDM 跑了未（target=今日+2）', '查輸出目錄 PDF 齊不齊', '微信 report 自動 send'] },
-  'inventory': { title: '⑨ 膠盒倉存', steps: ['讀取膠盒倉存.xlsx', '小膠盒(產品1-10): 114,089 個', '大膠盒(產品11-12): 45,151 個', '實時更新顯示'] }
+  'inventory': { title: '⑨ 膠盒倉存', steps: ['讀取膠盒倉存(WB).xlsx 當月頁最新日嘅結餘', '小膠盒 = F 欄 / 大膠盒 = G 欄', '本地 API 8083 或 status.json 兩邊同源顯示', '實時更新顯示'] }
 };
 
 // 從本地 API 讀取庫存數據
@@ -842,6 +842,9 @@ async function loadInventory() {
       };
       document.getElementById('small-box').textContent = inventoryData.small.toLocaleString();
       document.getElementById('big-box').textContent = inventoryData.big.toLocaleString();
+      // 🚨 2026-10-03：頂部 chip 一定要同一時間寫，否則頂部同流程卡會顯示兩個數
+      var fbNow = document.getElementById('fb-val-inventory');
+      if (fbNow) fbNow.textContent = '小 ' + inventoryData.small.toLocaleString() + ' / 大 ' + inventoryData.big.toLocaleString();
       document.getElementById('inventory-status').textContent = '● 已更新';
       addLog(`膠盒倉存: 小${inventoryData.small.toLocaleString()} / 大${inventoryData.big.toLocaleString()}`, 'success');
     }
@@ -894,8 +897,11 @@ async function loadStatus() {
     // 膠盒倉存 + 完成日期
     if (data.inventory) {
       setDone('done-inventory', data.inventory.date);
+      inventoryData = { small: data.inventory.small, big: data.inventory.big, date: data.inventory.date };
       document.getElementById('small-box').textContent = data.inventory.small.toLocaleString();
       document.getElementById('big-box').textContent = data.inventory.big.toLocaleString();
+      var fbS = document.getElementById('fb-val-inventory');
+      if (fbS) fbS.textContent = '小 ' + data.inventory.small.toLocaleString() + ' / 大 ' + data.inventory.big.toLocaleString();
       document.getElementById('inventory-status').textContent = '● 已更新';
       document.getElementById('inventory-status').className = 'flow-status';
     }
@@ -1605,8 +1611,8 @@ function setDone(id, raw) {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v45';
-  var APP_PUBLISHED = '2026/10/03 07:16';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v46';
+  var APP_PUBLISHED = '2026/10/03 08:38';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
