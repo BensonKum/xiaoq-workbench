@@ -123,6 +123,34 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 /* 完成日期（3 張指定卡卡面新增） */
 .flow-card .flow-done { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); font-size: 16px; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .flow-card .flow-done .done-when { color: var(--primary); font-weight: 800; }
+
+/* ===== ⑪ CDM 全流程跟進表（闊卡，2026-10-04 加） ===== */
+.flow-card.wide { flex-basis: 100% !important; aspect-ratio: auto; padding: 16px 16px 14px; min-height: 0; }
+.flow-card.wide .flow-icon { font-size: 30px; margin-bottom: 6px; }
+.flow-card.wide .flow-name { font-size: 19px; }
+.flow-card.wide .flow-desc { font-size: 15px; margin-bottom: 8px; }
+.wf-progress { height: 6px; border-radius: 4px; background: #2f3f60; overflow: hidden; margin: 8px 0 10px; }
+.wf-progress > div { height: 100%; border-radius: 4px; background: var(--primary); transition: width .4s ease; }
+.wf-list { margin-top: 10px; display: flex; flex-direction: column; gap: 7px; }
+.wf-row {
+  display: flex; align-items: flex-start; gap: 10px; padding: 9px 10px;
+  background: var(--card-2); border: 1px solid var(--line); border-left: 4px solid var(--line);
+  border-radius: 10px; cursor: pointer;
+}
+.wf-row:hover { border-color: #47566b; }
+.wf-row.wf-ok { border-left-color: var(--primary); }
+.wf-row.wf-pending { border-left-color: #e2b33c; }
+.wf-row.wf-manual { border-left-color: #6b7a90; }
+.wf-no { flex: 0 0 26px; font-size: 18px; font-weight: 800; color: #7cb8f0; line-height: 1.2; }
+.wf-main { flex: 1 1 auto; min-width: 0; }
+.wf-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.wf-title { font-size: 16px; font-weight: 800; color: #ffffff; }
+.wf-time { font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: 6px; background: #2f3f60; color: #aeb9c8; }
+.wf-auto { font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 6px; background: rgba(74,222,128,.14); color: #86efac; }
+.wf-file { font-size: 14px; font-weight: 700; color: #ffd28a; word-break: break-all; margin-top: 2px; }
+.wf-path { font-size: 12px; font-weight: 700; color: #8fa3bb; word-break: break-all; margin-top: 1px; }
+.wf-note { font-size: 12px; font-weight: 700; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+.wf-badge { flex: 0 0 auto; font-size: 17px; font-weight: 800; padding: 2px 8px; border-radius: 8px; background: #2f3f60; color: #eaf1fa; }
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
 .modal-overlay.active { display: flex; }
 .modal { background: #1b2740; border-radius: 16px; padding: 24px; width: 480px; max-width: 90vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
@@ -586,6 +614,16 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
         <div class="flow-tags"><span class="flow-tag">21:00</span><span class="flow-tag">自動同步</span><span class="flow-tag" id="tag-flow1-files">-</span></div>
         <div class="flow-done">📅 同步：<span class="done-when" id="done-flow1">-</span><span id="flow1-detail" style="color:var(--muted);font-weight:700"></span></div>
       </div>
+      <div class="flow-card cdm wide" data-id="cdm-flow" onclick="showFlow('cdm-flow')">
+        <div class="flow-icon">🗺️</div>
+        <div class="flow-name">⑪ CDM 全流程跟進表</div>
+        <div class="flow-desc">由定單入庫到打印交收，8 步逐項列明檔案名 + 落地路徑 · 撳任意一行可複製完整路徑</div>
+        <div class="flow-status" id="status-wf">● 讀取中...</div>
+        <div class="wf-progress"><div id="wf-bar" style="width:0%"></div></div>
+        <div class="wf-list" id="wf-list"></div>
+        <div class="flow-tags"><span class="flow-tag">19:40 主流程</span><span class="flow-tag">21:00 Flow1</span><span class="flow-tag">人口令 Flow2/3</span><span class="flow-tag" id="tag-wf-target">-</span></div>
+        <div class="flow-done">🎯 目標：<span class="done-when" id="done-wf">-</span><span id="wf-detail" style="color:var(--muted);font-weight:700"></span></div>
+      </div>
     </div>
   </div>
 
@@ -702,6 +740,7 @@ async function refreshAll() {
     await checkInventory();
     await checkCDM();
     await checkFlow1();
+    await checkWorkflow();
     
     document.getElementById('status-text').textContent = '已更新';
     var fbR = document.getElementById('fb-val-refresh');
@@ -814,6 +853,13 @@ function executeFlow() {
         addLog('Flow1 同步檢查失敗: ' + e.message, 'error');
       });
       break;
+    case 'cdm-flow':
+      checkWorkflow().then(() => {
+        addLog('CDM 全流程跟進表已更新', 'success');
+      }).catch(e => {
+        addLog('跟進表更新失敗: ' + e.message, 'error');
+      });
+      break;
     case 'quote':
       addLog('正在生成報價單...', 'info');
       setTimeout(() => {
@@ -854,7 +900,8 @@ const FLOWS = {
   'ad-video': { title: '⑦ Beatra 15秒廣告片', steps: ['充值 console.beatra.ai/topup starter ¥29 = 11,000 credits（勿揀 ¥198）', '收素材：hero 相 + 食材相（已收 AI 圖，建議補實物照）', 'render：image_to_video seedance-2-mini 720p / 16:9 / 15秒', '輸出約 5,550 credits → MP4', '產品：芝士番茄鮮肉餃'] },
   'inspect': { title: '⑧ 每日自動巡檢', steps: ['21:40 cron 自動跑 cdm_check_today.py', '查 marker 確認今晚 CDM 跑了未（target=今日+2）', '查輸出目錄 PDF 齊不齊', '微信 report 自動 send'] },
   'inventory': { title: '⑨ 膠盒倉存', steps: ['讀取膠盒倉存(WB).xlsx 當月頁最新日嘅結餘', '小膠盒 = F 欄 / 大膠盒 = G 欄', '本地 API 8083 或 status.json 兩邊同源顯示', '實時更新顯示'] },
-  'flow1-sync': { title: '⑩ Flow1 單日發票 · 三處同步', steps: ['21:00 排程跑 gen_invoice_single.py，逐日出 inv_{DD}-{MM}-{YYYY}.xlsx', '出票後自動 sync_shadow()：cp 落 Claw 副本 + 工作區副本，印 md5 核對', 'status.json 嘅 flow1_sync 欄 = 逐檔 md5 對一次（缺 / 唔一致會列出）', '手機呢張卡即時显示「幾多檔 / 有冇缺 / 幾時 Check 過」', '目標：三處 md5 全一致，唔使再人手 ls 補'] }
+    'flow1-sync': { title: '⑩ Flow1 單日發票 · 三處同步', steps: ['21:00 排程跑 gen_invoice_single.py，逐日出 inv_{DD}-{MM}-{YYYY}.xlsx', '出票後自動 sync_shadow()：cp 落 Claw 副本 + 工作區副本，印 md5 核對', 'status.json 嘅 flow1_sync 欄 = 逐檔 md5 對一次（缺 / 唔一致會列出）', '手機呢張卡即時显示「幾多檔 / 有冇缺 / 幾時 Check 過」', '目標：三處 md5 全一致，唔使再人手 ls 補'] },
+    'cdm-flow': { title: '⑪ CDM 全流程跟進表', steps: ['① 訂單入庫：Yahoo 下載 (祐興粉麵廠有限公司)訂單YYYYMMDD.XLS → OneDrive\\Desktop\\CDM\\訂單\\', '② 落單去重：_cdm_common.py 寫 Archive\\delivery_{YYYYMMDD}.xlsx + processed_orders.json 做防重', '③ 19:40 主流程：gen_delivery.py 出 錢大媽發票及執貨表_{YYYYMMDD}\\delivery_{YYYYMMDD}_wb.xlsx + _wb.pdf', '④ 21:00 Flow1：gen_invoice_single.py 出 inv_{DD}-{MM}-{YYYY}.xlsx 落 CDM 發票\\{NN} {MMM} {YYYY}\\', '⑤ Flow1 三處同步：同一批 inv_* 自動 cp 落 WorkBuddy\\Claw\\cdm\\ 同 WorkBuddy\\{工作區}\\cdm\\', '⑥ Flow2 人口令：gen_flow23_segment.py --month YYYY-MM --segment DD-DD → Inv_ {DD}-{DD} MMM YYYY.xlsx', '⑦ Flow3 人口令：同一腳本第二段 → CDM 金額對數({DD}-{DD} MMM YYYY).xlsx（數字要同 Flow1 M 欄 + 執貨表 Col4 三方對）', '⑧ 打印 + email：TOSHIBA Universal Printer 2 / bensonkum86@gmail.com（人手）', '鐵規：Flow2/3 淨係 benso 手動撂口令，唔會自己跑；Flow1 三處同步唔使人手 ls'] }
 };
 
 // 從本地 API 讀取庫存數據
@@ -936,6 +983,7 @@ async function loadStatus() {
 
     // Flow1 三處同步（同一源，線上版都由 status.json 出）
     if (data.flow1_sync) renderFlow1Sync(data.flow1_sync);
+    if (data.cdm_workflow) renderWorkflow(data.cdm_workflow);
 
   } catch (e) {
     addLog('讀取狀態失敗: ' + e.message, 'error');
@@ -998,6 +1046,86 @@ async function checkFlow1() {
     addLog('status.json 冇 flow1_sync 欄 → 保留現有顯示', 'warn');
   } catch (e) {
     addLog('讀 status.json flow1_sync 失敗 → 保留現有顯示', 'info');
+  }
+  return false;
+}
+
+/* ===== ⑪ CDM 全流程跟進表（2026-10-04 加）
+   status.json['cdm_workflow'] = { target_date, month_folder, steps[], total, done, pending }
+   每步：{ no, name, time, auto, script, artifact, path, full, status, detail, files[] }
+   讀唔到就保留「讀取中」，千祈唔好寫死任何舊值。 */
+function wfBadge(s) { return s === 'ok' ? '✅' : (s === 'pending' ? '⏳' : '🖨️'); }
+function renderWorkflow(w) {
+  const st = document.getElementById('status-wf');
+  const list = document.getElementById('wf-list');
+  const bar = document.getElementById('wf-bar');
+  const dn = document.getElementById('done-wf');
+  const dt = document.getElementById('wf-detail');
+  const tg = document.getElementById('tag-wf-target');
+  if (!st || !w || !w.steps) return false;
+
+  if (tg) tg.textContent = '目標 ' + (w.target_date || '-');
+  if (dn) dn.textContent = (w.target_date ? w.target_date : todayStr());
+  if (dt) {
+    dt.textContent = (w.done || 0) + '/' + (w.total || 0) + ' 步完成' +
+                     ((w.pending) ? ' · ⏳ ' + w.pending + ' 待做' : '');
+  }
+  if (bar) bar.style.width = ((w.total ? ((w.done || 0) / w.total) * 100 : 0)) + '%';
+  st.textContent = '● ' + (w.done || 0) + '/' + (w.total || 0) + ' 步已出';
+  st.className = 'flow-status' + ((w.pending) ? ' pending' : '');
+
+  if (list) {
+    list.innerHTML = w.steps.map(function (s) {
+      const files = (s.files && s.files.length) ? s.files.join('　·　') : (s.artifact || '');
+      return '<div class="wf-row wf-' + s.status + '" data-full="' +
+             String(s.full || '').replace(/"/g, '&quot;') + '" ' +
+             'onclick="wfCopy(this)">' +
+             '<div class="wf-no">' + String(s.no) + '</div>' +
+             '<div class="wf-main">' +
+               '<div class="wf-head"><span class="wf-title">' + s.name + '</span>' +
+                 '<span class="wf-time">' + s.time + '</span>' +
+                 (s.auto ? '<span class="wf-auto">自動</span>' : '<span class="wf-auto" style="background:#2f3f60;color:#aeb9c8">人手</span>') +
+               '</div>' +
+               '<div class="wf-file">📄 ' + files + '</div>' +
+               '<div class="wf-path">📍 ' + (s.path || '') + '</div>' +
+               '<div class="wf-note">' + (s.detail || '') + '</div>' +
+             '</div>' +
+             '<div class="wf-badge">' + wfBadge(s.status) + '</div>' +
+             '</div>';
+    }).join('');
+  }
+  addLog('CDM 全流程跟進表：' + (w.done || 0) + '/' + (w.total || 0) + ' 步已出', 'success');
+  return true;
+}
+
+// 撳一行 = 複製完整路徑（用手機 / 電腦都得）
+function wfCopy(row) {
+  const v = row.getAttribute('data-full') || '';
+  if (!v) return;
+  const done = function () {
+    addLog('已複製路徑：' + v, 'success');
+    row.style.outline = '2px solid var(--primary)';
+    setTimeout(function () { row.style.outline = ''; }, 1200);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(v).then(done, done);
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = v; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta); done();
+  }
+}
+
+// 本地 status.json 讀 cdm_workflow（桌面用；失敗就保留現值）
+async function checkWorkflow() {
+  try {
+    const r = await fetch('status.json', { cache: 'no-store' });
+    const s = await r.json();
+    if (s && s.cdm_workflow) return renderWorkflow(s.cdm_workflow);
+    addLog('status.json 冇 cdm_workflow 欄 → 保留現有顯示', 'warn');
+  } catch (e) {
+    addLog('讀 status.json cdm_workflow 失敗 → 保留現有顯示', 'info');
   }
   return false;
 }
@@ -1683,8 +1811,8 @@ async function checkFlow1() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v48';
-  var APP_PUBLISHED = '2026/10/04 22:03';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v49';
+  var APP_PUBLISHED = '2026/10/04 22:46';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');

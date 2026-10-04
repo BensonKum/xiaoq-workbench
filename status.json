@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04 22:02",
+  "generated_at": "2026-10-04 22:37",
   "inventory": {
     "small": 71289,
     "big": 35950,
@@ -39,7 +39,149 @@
     "missing": [],
     "mismatch": [],
     "ok": true,
-    "checked_at": "22:02"
+    "checked_at": "22:37"
+  },
+  "cdm_workflow": {
+    "target_date": "2026-10-06",
+    "month_folder": "10 Oct 2026",
+    "steps": [
+      {
+        "id": "w01",
+        "no": 1,
+        "name": "訂單入庫",
+        "time": "19:00",
+        "auto": false,
+        "script": "（人類：Yahoo 下載祐興定單附件）",
+        "artifact": "訂單\\{YYYYMMDD}*.XLS",
+        "path": "OneDrive\\Desktop\\CDM\\訂單\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\訂單",
+        "status": "ok",
+        "detail": "揾到 171 個 .XLS",
+        "files": [
+          "(祐興粉麵廠有限公司)訂單20260401.XLS",
+          "(祐興粉麵廠有限公司)訂單20260402.XLS",
+          "(祐興粉麵廠有限公司)訂單20260408.XLS"
+        ]
+      },
+      {
+        "id": "w02",
+        "no": 2,
+        "name": "落單去重",
+        "time": "19:35",
+        "auto": true,
+        "script": "_cdm_common.py → Archive",
+        "artifact": "Archive\\delivery_{YYYYMMDD}.xlsx",
+        "path": "OneDrive\\Desktop\\CDM\\Archive\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\Archive",
+        "status": "ok",
+        "detail": "Archive 有 175 份 delivery_*；processed_orders.json 存在",
+        "files": [
+          "delivery_20260926.xlsx",
+          "delivery_20261004.xlsx",
+          "delivery_20261004_wb.xlsx"
+        ]
+      },
+      {
+        "id": "w03",
+        "no": 3,
+        "name": "19:40 主流程 · 執貨表",
+        "time": "19:40",
+        "auto": true,
+        "script": "gen_delivery.py",
+        "artifact": "錢大媽發票及執貨表_{YYYYMMDD}\\delivery_{YYYYMMDD}_wb.xlsx + .pdf",
+        "path": "OneDrive\\Desktop\\CDM\\錢大媽發票及執貨表_{YYYYMMDD}\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\錢大媽發票及執貨表_20261006",
+        "status": "ok",
+        "detail": "目標日 2026-10-06：輸出 3 個檔",
+        "files": [
+          "delivery_20261006_wb.pdf",
+          "delivery_20261006_wb.xlsx",
+          "invoice_20261006_wb.pdf"
+        ]
+      },
+      {
+        "id": "w04",
+        "no": 4,
+        "name": "21:00 Flow1 · 單日發票",
+        "time": "21:00",
+        "auto": true,
+        "script": "gen_invoice_single.py",
+        "artifact": "inv_{DD}-{MM}-{YYYY}.xlsx",
+        "path": "OneDrive\\Desktop\\CDM\\CDM 發票對數\\CDM 發票\\{月文件夹}\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\CDM 發票對數\\CDM 發票\\10 Oct 2026",
+        "status": "ok",
+        "detail": "本月 6 張（最新 inv_06-10-2026.xlsx）｜目標 2026-10-06：已出",
+        "files": [
+          "inv_04-10-2026.xlsx",
+          "inv_05-10-2026.xlsx",
+          "inv_06-10-2026.xlsx"
+        ]
+      },
+      {
+        "id": "w05",
+        "no": 5,
+        "name": "Flow1 · 三處同步",
+        "time": "21:00+",
+        "auto": true,
+        "script": "sync_shadow()（gen_invoice_single.py 內）",
+        "artifact": "同一批 inv_* 落 2 份副本",
+        "path": "WorkBuddy\\Claw\\cdm\\ + WorkBuddy\\{工作區}\\cdm\\",
+        "full": "C:\\Users\\benso\\WorkBuddy\\Claw\\cdm ／ C:\\Users\\benso\\WorkBuddy\\2026-09-21-11-40-31\\cdm",
+        "status": "ok",
+        "detail": "10 Oct 2026 / 6 檔 / 缺 0 / 唔一致 0（22:37 檢查）",
+        "files": []
+      },
+      {
+        "id": "w06",
+        "no": 6,
+        "name": "Flow2 · 5/6 日合併發票",
+        "time": "人口令",
+        "auto": false,
+        "script": "gen_flow23_segment.py --month YYYY-MM --segment DD-DD",
+        "artifact": "Inv_ {DD}-{DD} MMM YYYY.xlsx",
+        "path": "OneDrive\\Desktop\\CDM\\CDM 發票對數\\CDM 發票\\{月文件夹}\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\CDM 發票對數\\CDM 發票\\10 Oct 2026",
+        "status": "ok",
+        "detail": "本月已有 1 段：Inv_ 01-05 Oct 2026.xlsx",
+        "files": [
+          "Inv_ 01-05 Oct 2026.xlsx"
+        ]
+      },
+      {
+        "id": "w07",
+        "no": 7,
+        "name": "Flow3 · 金額對數",
+        "time": "人口令",
+        "auto": false,
+        "script": "gen_flow23_segment.py（同一腳本第二段）",
+        "artifact": "CDM 金額對數({DD}-{DD} MMM YYYY).xlsx",
+        "path": "OneDrive\\Desktop\\CDM\\CDM 發票對數\\CDM 發票\\{月文件夹}\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\CDM 發票對數\\CDM 發票\\10 Oct 2026",
+        "status": "ok",
+        "detail": "本月已有 1 份：CDM 金額對數(01-05 Oct 2026).xlsx",
+        "files": [
+          "CDM 金額對數(01-05 Oct 2026).xlsx"
+        ]
+      },
+      {
+        "id": "w08",
+        "no": 8,
+        "name": "打印 + email 出貨",
+        "time": "人手",
+        "auto": false,
+        "script": "（人類：開 Flow2/3 檔 → 打印 → email）",
+        "artifact": "打印機 TOSHIBA Universal Printer 2 ／ bensonkum86@gmail.com",
+        "path": "打印紙本 + 收件箱存檔",
+        "full": "",
+        "status": "manual",
+        "detail": "Iron rule：Flow2/3 淨係 benso 手動撂口令，唔會自動跑",
+        "files": []
+      }
+    ],
+    "total": 8,
+    "done": 7,
+    "pending": 0,
+    "ok": 7
   },
   "last_backup": "2026-10-02"
 }
