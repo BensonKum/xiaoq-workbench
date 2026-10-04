@@ -155,6 +155,41 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .wf-file { font-size: 11px; font-weight: 700; color: #ffd28a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
 .wf-path { font-size: 10px; font-weight: 700; color: #8fa3bb; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .wf-badge { flex: 0 0 auto; font-size: 14px; font-weight: 800; }
+
+/* ⑪ CDM 文件歸檔 · 檔案明細（2026-10-05 加）
+   默認收起；「📄 文件名」開關可隨時取消顯示檔名（一個設定，電話／電腦通吃） */
+.wf-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+/* 限高：明細多都唔會把張卡撐到 1500px 咁長（2026-10-05 改） */
+.wf-list { max-height: 260px; overflow-y: auto; }
+.wf-arch { display: flex; flex-direction: column; gap: 2px; margin-top: 2px; }
+.wf-arch.collapsed { display: none; }
+.wf-stage {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  margin-top: 5px; padding: 3px 7px; border-radius: 6px;
+  background: #22304b; border-left: 3px solid #3d4d68;
+}
+.wf-stage.wf-ok { border-left-color: var(--primary); }
+.wf-stage.wf-pending { border-left-color: #e2b33c; }
+.wf-stage.wf-manual { border-left-color: #6b7a90; }
+.wf-st { font-size: 13px; font-weight: 800; color: #ffffff; white-space: nowrap; }
+.wf-kind { font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 5px; background: #2f3f60; color: #aeb9c8; }
+.wf-count { font-size: 10px; font-weight: 800; color: #8fa3bb; }
+/* 一格 = 一行：檔名／路徑並排，各自 ellipsis，唔會折行撐高 */
+.wf-architem { display: flex; align-items: baseline; gap: 8px; padding: 1px 4px; }
+.wf-architem:hover { background: #22304b; }
+.wf-afile { flex: 1 1 44%; min-width: 0; font-size: 12px; font-weight: 700; color: #ffd28a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+.wf-afile:hover { color: #fff; }
+.wf-apath { flex: 1 1 56%; min-width: 0; font-size: 10px; font-weight: 700; color: #8fa3bb; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+.wf-apath:hover { color: #cfe0f5; }
+.wf-acopy { font-size: 10px; font-weight: 700; color: #7cb8f0; padding-left: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wf-more { font-size: 10px; font-weight: 800; color: #7cb8f0; padding-left: 12px; }
+.wf-list.nofile .wf-afile, .wf-list.nofile .wf-acopy { display: none; }
+/* 窄屏（Phone）改成每行 2 行：檔名一行、落地路徑一行，路徑唔會被截斷 */
+@media (max-width: 520px) {
+  .wf-architem { flex-direction: column; gap: 0; padding: 2px 4px; }
+  .wf-afile { flex: 1 1 auto; max-width: 100%; }
+  .wf-apath { flex: 1 1 auto; max-width: 100%; }
+}
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
 .modal-overlay.active { display: flex; }
 .modal { background: #1b2740; border-radius: 16px; padding: 24px; width: 480px; max-width: 90vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
@@ -620,11 +655,14 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
       </div>
       <div class="flow-card cdm wide" data-id="cdm-flow" onclick="showFlow('cdm-flow')">
         <div class="flow-icon">🗺️</div>
-        <div class="flow-name">⑪ CDM 全流程跟進表</div>
-        <div class="flow-desc">定單入庫 → 打印交收 8 步，列明檔案名 + 落地路徑 · 撳行複製完整路徑</div>
+        <div class="flow-name">⑪ CDM 文件歸檔</div>
+        <div class="flow-desc">8 步 · 歸檔 <span id="wf-arch-n">-</span> 份文件，逐個列明擱邊度 · 撳行複製完整路徑</div>
         <div class="flow-status" id="status-wf">● 讀取中...</div>
         <div class="wf-progress"><div id="wf-bar" style="width:0%"></div></div>
-        <button class="wf-toggle" id="wf-toggle" onclick="event.stopPropagation();wfToggle()">▸ 展開全部步驟</button>
+        <div class="wf-btns">
+          <button class="wf-toggle" id="wf-toggle" onclick="event.stopPropagation();wfToggle()">▸ 展開全部步驟</button>
+          <button class="wf-toggle" id="wf-filebtn" onclick="event.stopPropagation();wfFileToggle()" aria-pressed="1">📄 文件名</button>
+        </div>
         <div class="wf-list collapsed" id="wf-list"></div>
         <div class="flow-tags"><span class="flow-tag" id="tag-wf-target">-</span></div>
         <div class="flow-done">🎯 目標：<span class="done-when" id="done-wf">-</span><span id="wf-detail" style="color:var(--muted);font-weight:700"></span></div>
@@ -906,7 +944,10 @@ const FLOWS = {
   'inspect': { title: '⑧ 每日自動巡檢', steps: ['21:40 cron 自動跑 cdm_check_today.py', '查 marker 確認今晚 CDM 跑了未（target=今日+2）', '查輸出目錄 PDF 齊不齊', '微信 report 自動 send'] },
   'inventory': { title: '⑨ 膠盒倉存', steps: ['讀取膠盒倉存(WB).xlsx 當月頁最新日嘅結餘', '小膠盒 = F 欄 / 大膠盒 = G 欄', '本地 API 8083 或 status.json 兩邊同源顯示', '實時更新顯示'] },
     'flow1-sync': { title: '⑩ Flow1 單日發票 · 三處同步', steps: ['21:00 排程跑 gen_invoice_single.py，逐日出 inv_{DD}-{MM}-{YYYY}.xlsx', '出票後自動 sync_shadow()：cp 落 Claw 副本 + 工作區副本，印 md5 核對', 'status.json 嘅 flow1_sync 欄 = 逐檔 md5 對一次（缺 / 唔一致會列出）', '手機呢張卡即時显示「幾多檔 / 有冇缺 / 幾時 Check 過」', '目標：三處 md5 全一致，唔使再人手 ls 補'] },
-    'cdm-flow': { title: '⑪ CDM 全流程跟進表', steps: ['① 訂單入庫：Yahoo 下載 (祐興粉麵廠有限公司)訂單YYYYMMDD.XLS → OneDrive\\Desktop\\CDM\\訂單\\', '② 落單去重：_cdm_common.py 寫 Archive\\delivery_{YYYYMMDD}.xlsx + processed_orders.json 做防重', '③ 19:40 主流程：gen_delivery.py 出 錢大媽發票及執貨表_{YYYYMMDD}\\delivery_{YYYYMMDD}_wb.xlsx + _wb.pdf', '④ 21:00 Flow1：gen_invoice_single.py 出 inv_{DD}-{MM}-{YYYY}.xlsx 落 CDM 發票\\{NN} {MMM} {YYYY}\\', '⑤ Flow1 三處同步：同一批 inv_* 自動 cp 落 WorkBuddy\\Claw\\cdm\\ 同 WorkBuddy\\{工作區}\\cdm\\', '⑥ Flow2 人口令：gen_flow23_segment.py --month YYYY-MM --segment DD-DD → Inv_ {DD}-{DD} MMM YYYY.xlsx', '⑦ Flow3 人口令：同一腳本第二段 → CDM 金額對數({DD}-{DD} MMM YYYY).xlsx（數字要同 Flow1 M 欄 + 執貨表 Col4 三方對）', '⑧ 打印 + email：TOSHIBA Universal Printer 2 / bensonkum86@gmail.com（人手）', '鐵規：Flow2/3 淨係 benso 手動撂口令，唔會自己跑；Flow1 三處同步唔使人手 ls'] }
+    'cdm-flow': { title: '⑪ CDM 文件歸檔', steps: ['① 訂單入庫：Yahoo 下載 (祐興粉麵廠有限公司)訂單YYYYMMDD.XLS → OneDrive\\Desktop\\CDM\\訂單\\', '② 落單去重：_cdm_common.py 寫 Archive\\delivery_{YYYYMMDD}.xlsx + processed_orders.json 做防重', '③ 19:40 主流程：gen_delivery.py 出 錢大媽發票及執貨表_{YYYYMMDD}\\delivery_{YYYYMMDD}_wb.xlsx + _wb.pdf', '④ 21:00 Flow1：gen_invoice_single.py 出 inv_{DD}-{MM}-{YYYY}.xlsx 落 CDM 發票\\{NN} {MMM} {YYYY}\\', '⑤ Flow1 三處同步：同一批 inv_* 自動 cp 落 WorkBuddy\\Claw\\cdm\\ 同 WorkBuddy\\{工作區}\\cdm\\', '⑥ Flow2 人口令：gen_flow23_segment.py --month YYYY-MM --segment DD-DD → Inv_ {DD}-{DD} MMM YYYY.xlsx', '⑦ Flow3 人口令：同一腳本第二段 → CDM 金額對數({DD}-{DD} MMM YYYY).xlsx（數字要同 Flow1 M 欄 + 執貨表 Col4 三方對）', '⑧ 打印 + email：TOSHIBA Universal Printer 2 / bensonkum86@gmail.com（人手）',
+    '⑨ 附屬檔案：CDM_log.txt、_logs\\flow1_{YYYYMMDD}.log、processed_orders.json、膠盒倉存(WB).xlsx、四條主腳本',
+    '鐵規：Flow2/3 淨係 benso 手動撂口令，唔會自己跑；Flow1 三處同步唔使人手 ls',
+    '📄 文件名開關：撳卡上「📄 文件名 / 🙈 不顯示文件名」可隨時取消顯示檔名（Phone / PC 同一個設定）'] }
 };
 
 // 從本地 API 讀取庫存數據
@@ -988,7 +1029,7 @@ async function loadStatus() {
 
     // Flow1 三處同步（同一源，線上版都由 status.json 出）
     if (data.flow1_sync) renderFlow1Sync(data.flow1_sync);
-    if (data.cdm_workflow) renderWorkflow(data.cdm_workflow);
+    if (data.cdm_workflow) renderWorkflow(data.cdm_workflow, data.cdm_archive);
 
   } catch (e) {
     addLog('讀取狀態失敗: ' + e.message, 'error');
@@ -1060,14 +1101,25 @@ async function checkFlow1() {
    每步：{ no, name, time, auto, script, artifact, path, full, status, detail, files[] }
    讀唔到就保留「讀取中」，千祈唔好寫死任何舊值。 */
 function wfBadge(s) { return s === 'ok' ? '✅' : (s === 'pending' ? '⏳' : '🖨️'); }
-function renderWorkflow(w) {
+function renderWorkflow(w, arch) {
   const st = document.getElementById('status-wf');
   const list = document.getElementById('wf-list');
   const bar = document.getElementById('wf-bar');
   const dn = document.getElementById('done-wf');
   const dt = document.getElementById('wf-detail');
   const tg = document.getElementById('tag-wf-target');
+  const an = document.getElementById('wf-arch-n');
   if (!st || !w || !w.steps) return false;
+
+  // 「文件名」開關（默認開；關咗就淨係顯示步驟 + 路徑，唔晒一大堆檔名）
+  const KEY = 'xq_wf_nofile_v1';
+  let nofile = false;
+  try { nofile = localStorage.getItem(KEY) === '1'; } catch (e) {}
+  if (list) list.classList.toggle('nofile', nofile);
+  const fb = document.getElementById('wf-filebtn');
+  if (fb) { fb.setAttribute('aria-pressed', nofile ? '0' : '1'); fb.textContent = nofile ? '🙈 不顯示文件名' : '📄 文件名'; }
+
+  if (an) an.textContent = (arch && arch.total) ? arch.total : (w.total || 0);
 
   if (tg) tg.textContent = '目標 ' + (w.target_date || '-');
   if (dn) dn.textContent = (w.target_date ? w.target_date : todayStr());
@@ -1082,24 +1134,80 @@ function renderWorkflow(w) {
   if (list) {
     // 首次渲染（冇 data-n）必定收起，之後尊重用家開／關嘅狀態
     if (!list.getAttribute('data-n')) list.classList.add('collapsed');
-    list.innerHTML = w.steps.map(function (s) {
-      const files = (s.files && s.files.length) ? s.files.join('　·　') : (s.artifact || '');
-      return '<div class="wf-row wf-' + s.status + '" data-full="' +
-             String(s.full || '').replace(/"/g, '&quot;') + '" ' +
-             'title="' + String(s.detail || '').replace(/"/g, '&quot;') + '" ' +
-             'onclick="wfCopy(event,this)">' +
-             '<div class="wf-no">' + String(s.no) + '</div>' +
-             '<div class="wf-main">' +
-               '<div class="wf-head"><span class="wf-title">' + s.name + '</span>' +
-                 '<span class="wf-time">' + s.time + '</span>' +
-                 '<span class="wf-auto"' + (s.auto ? '' : ' style="background:#2f3f60;color:#aeb9c8"') + '>' + (s.auto ? '自動' : '人手') + '</span>' +
+
+    // step meta（no → time / auto / status），歸檔組用嚟顯示時間同自動定人手
+    const meta = {};
+    (w.steps || []).forEach(function (s) { meta[String(s.no)] = s; });
+
+    const esc2 = function (v) { return String(v === undefined || v === null ? '' : v).replace(/"/g, '&quot;'); };
+
+    // 由 cdm_archive 出明細；冇歸檔數據就跌返用原 8 步行
+    const items = (arch && arch.items) ? arch.items : null;
+    let html;
+    if (items && items.length) {
+      const groups = [];
+      items.forEach(function (it) {
+        const key = String(it.no) + '|' + (it.stage || '');
+        if (!groups.some(function (g) { return g.key === key; })) {
+          groups.push({ key: key, no: it.no, stage: it.stage, items: [] });
+        }
+        groups.filter(function (g) { return g.key === key; })[0].items.push(it);
+      });
+      const MAX_PER_STAGE = 4;    // 每步最多列 4 份，餘下收喺「…+N」，免張卡長到落 screen 底
+      html = groups.map(function (g) {
+        const m = meta[String(g.no)] || {};
+        const cnt = g.items.length;
+        const shown = g.items.slice(0, MAX_PER_STAGE);
+        const copys = [];
+        g.items.forEach(function (it) {
+          (it.copies || []).forEach(function (c) { copys.push(c); });
+        });
+        const cpHtml = copys.length
+          ? '<span class="wf-count" title="' + esc2(copys.map(function (c) { return c.where; }).join('\n')) + '">🪞 ' + copys.length + ' 副本</span>'
+          : '';
+        const head = '<div class="wf-arch">' +
+          '<div class="wf-stage wf-' + (m.status || g.items[0].status || 'ok') + '">' +
+            '<span class="wf-st">' + esc2(g.stage) + '</span>' +
+            '<span class="wf-kind">' + esc2(g.items[0].kind) + '</span>' +
+            '<span class="wf-time">' + esc2(m.time || '') + '</span>' +
+            '<span class="wf-auto"' + (m.auto ? '' : ' style="background:#2f3f60;color:#aeb9c8"') + '>' + (m.auto ? '自動' : '人手') + '</span>' +
+            '<span class="wf-count">' + cnt + ' 份</span>' + cpHtml +
+            '<span class="wf-badge">' + wfBadge(m.status || g.items[0].status) + '</span>' +
+          '</div>';
+        const rows = shown.map(function (it) {
+          const cpTitle = (it.copies && it.copies.length)
+            ? esc2(it.copies.map(function (c) { return '🪞 ' + c.where; }).join('\n'))
+            : '';
+          return '<div class="wf-architem">' +
+                   '<div class="wf-afile" title="' + esc2(it.name) + cpTitle + '" onclick="wfCopy(event,this)" ' +
+                     'data-full="' + esc2(it.full || '') + '">📄 ' + esc2(it.name) + '</div>' +
+                   '<div class="wf-apath" title="' + esc2(it.full || it.where) + cpTitle + '" onclick="wfCopy(event,this)" ' +
+                     'data-full="' + esc2(it.full || '') + '">📍 ' + esc2(it.where) + '</div>' +
+                 '</div>';
+        }).join('');
+        const more = cnt > shown.length
+          ? '<div class="wf-more">… 另有 ' + (cnt - shown.length) + ' 份（完整歸檔睇 status.json 嘅 cdm_archive）</div>' : '';
+        return head + rows + more + '</div>';
+      }).join('');
+    } else {
+      html = w.steps.map(function (s) {
+        const files = (s.files && s.files.length) ? s.files.join('　·　') : (s.artifact || '');
+        return '<div class="wf-row wf-' + s.status + '" data-full="' + esc2(s.full) + '" ' +
+               'title="' + esc2(s.detail) + '" onclick="wfCopy(event,this)">' +
+               '<div class="wf-no">' + String(s.no) + '</div>' +
+               '<div class="wf-main">' +
+                 '<div class="wf-head"><span class="wf-title">' + esc2(s.name) + '</span>' +
+                   '<span class="wf-time">' + esc2(s.time) + '</span>' +
+                   '<span class="wf-auto"' + (s.auto ? '' : ' style="background:#2f3f60;color:#aeb9c8"') + '>' + (s.auto ? '自動' : '人手') + '</span>' +
+                 '</div>' +
+                 '<div class="wf-file">📄 ' + esc2(files) + '</div>' +
+                 '<div class="wf-path">📍 ' + esc2(s.path) + '</div>' +
                '</div>' +
-               '<div class="wf-file">📄 ' + files + '</div>' +
-               '<div class="wf-path">📍 ' + (s.path || '') + '</div>' +
-             '</div>' +
-             '<div class="wf-badge">' + wfBadge(s.status) + '</div>' +
-             '</div>';
-    }).join('');
+               '<div class="wf-badge">' + wfBadge(s.status) + '</div>' +
+               '</div>';
+      }).join('');
+    }
+    list.innerHTML = html;
   }
   const tgl = document.getElementById('wf-toggle');
   const n = (w.steps || []).length;
@@ -1120,6 +1228,24 @@ function wfToggle() {
   const open = list.classList.toggle('collapsed') === false;
   const n = parseInt(list.getAttribute('data-n') || list.children.length || 0, 10) || 0;
   if (tgl) tgl.textContent = open ? '▾ 收起明細' : '▸ 展開 ' + n + ' 步';
+}
+
+/* 「📄 文件名」開關：一個設定，電話同電腦都生效（記喺 localStorage）。
+   起因（2026-10-05 00:35）Benson：「每次對答完，手機都見你列出好多文件…可以取消顯示，
+   但電腦就沒有」→ 所以開關做喺同一份 HTML 上面，邊機開都一样的。 */
+const WF_NOFILE_KEY = 'xq_wf_nofile_v1';
+function wfFileToggle() {
+  const list = document.getElementById('wf-list');
+  const fb = document.getElementById('wf-filebtn');
+  if (!list) return;
+  const off = !list.classList.contains('nofile');
+  if (off) list.classList.add('nofile'); else list.classList.remove('nofile');
+  try { localStorage.setItem(WF_NOFILE_KEY, off ? '1' : '0'); } catch (e) {}
+  if (fb) {
+    fb.setAttribute('aria-pressed', off ? '0' : '1');
+    fb.textContent = off ? '🙈 不顯示文件名' : '📄 文件名';
+  }
+  addLog(off ? '已取消顯示文件名（淨係顯示步驟 + 落地路徑）' : '已顯示文件名', 'info');
 }
 
 // 撳一行 = 複製完整路徑（用手機 / 電腦都得）
@@ -1148,7 +1274,7 @@ async function checkWorkflow() {
   try {
     const r = await fetch('status.json', { cache: 'no-store' });
     const s = await r.json();
-    if (s && s.cdm_workflow) return renderWorkflow(s.cdm_workflow);
+    if (s && s.cdm_workflow) return renderWorkflow(s.cdm_workflow, s.cdm_archive);
     addLog('status.json 冇 cdm_workflow 欄 → 保留現有顯示', 'warn');
   } catch (e) {
     addLog('讀 status.json cdm_workflow 失敗 → 保留現有顯示', 'info');
@@ -1837,8 +1963,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v50';
-  var APP_PUBLISHED = '2026/10/05 00:06';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v51';
+  var APP_PUBLISHED = '2026/10/05 00:44';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');

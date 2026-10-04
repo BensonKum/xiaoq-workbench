@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05 00:01",
+  "generated_at": "2026-10-05 00:37",
   "inventory": {
     "small": 71289,
     "big": 35950,
@@ -39,7 +39,7 @@
     "missing": [],
     "mismatch": [],
     "ok": true,
-    "checked_at": "00:01"
+    "checked_at": "00:37"
   },
   "cdm_workflow": {
     "target_date": "2026-10-07",
@@ -123,7 +123,7 @@
         "path": "WorkBuddy\\Claw\\cdm\\ + WorkBuddy\\{工作區}\\cdm\\",
         "full": "C:\\Users\\benso\\WorkBuddy\\Claw\\cdm ／ C:\\Users\\benso\\WorkBuddy\\2026-09-21-11-40-31\\cdm",
         "status": "ok",
-        "detail": "10 Oct 2026 / 6 檔 / 缺 0 / 唔一致 0（00:01 檢查）",
+        "detail": "10 Oct 2026 / 6 檔 / 缺 0 / 唔一致 0（00:37 檢查）",
         "files": []
       },
       {
@@ -177,6 +177,280 @@
     "done": 5,
     "pending": 2,
     "ok": 5
+  },
+  "cdm_archive": {
+    "items": [
+      {
+        "no": 1,
+        "stage": "① 訂單入庫",
+        "kind": "輸入",
+        "name": "(祐興粉麵廠有限公司)訂單20261007.XLS",
+        "where": "OneDrive\\CDM\\訂單\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\訂單",
+        "status": "pending",
+        "note": "目標日 2026-10-07 嘅 .XLS 仲未 download 落嚟（Yahoo 約 19:00）",
+        "copies": [],
+        "script": "（人類：Yahoo 下載）"
+      },
+      {
+        "no": 2,
+        "stage": "② 落單去重",
+        "kind": "輸出",
+        "name": "delivery_20261007.xlsx — delivery_20261007.pdf",
+        "where": "OneDrive\\CDM\\Archive\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\Archive",
+        "status": "pending",
+        "note": "本月 Archive 仲未見目標日 delivery_*",
+        "copies": [],
+        "script": "_cdm_common.py → Archive"
+      },
+      {
+        "no": 2,
+        "stage": "② 落單去重",
+        "kind": "狀態",
+        "name": "processed_orders.json",
+        "where": "OneDrive\\CDM\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM",
+        "status": "ok",
+        "note": "防重複開關（第二次落同一日會跳過）",
+        "copies": [],
+        "script": "_cdm_common.py"
+      },
+      {
+        "no": 3,
+        "stage": "③ 19:40 主流程",
+        "kind": "輸出",
+        "name": "delivery_20261007_wb.xlsx",
+        "where": "OneDrive\\CDM\\錢大媽發票及執貨表_20261007\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\錢大媽發票及執貨表_20261007",
+        "status": "pending",
+        "note": "target = 今日 + 2（2026-10-07），要等 10/07 嗰晚 19:40 先出",
+        "copies": [],
+        "script": "gen_delivery.py"
+      },
+      {
+        "no": 3,
+        "stage": "③ 19:40 主流程",
+        "kind": "輸出",
+        "name": "delivery_20261007_wb.pdf",
+        "where": "OneDrive\\CDM\\錢大媽發票及執貨表_20261007\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\錢大媽發票及執貨表_20261007",
+        "status": "pending",
+        "note": "target = 今日 + 2（2026-10-07），要等 10/07 嗰晚 19:40 先出",
+        "copies": [],
+        "script": "gen_delivery.py"
+      },
+      {
+        "no": 3,
+        "stage": "③ 19:40 主流程",
+        "kind": "輸出",
+        "name": "invoice_20261007_wb.xls",
+        "where": "OneDrive\\CDM\\錢大媽發票及執貨表_20261007\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\錢大媽發票及執貨表_20261007",
+        "status": "pending",
+        "note": "target = 今日 + 2（2026-10-07），要等 10/07 嗰晚 19:40 先出",
+        "copies": [],
+        "script": "gen_delivery.py"
+      },
+      {
+        "no": 3,
+        "stage": "③ 19:40 主流程",
+        "kind": "輸出",
+        "name": "invoice_20261007_wb.pdf",
+        "where": "OneDrive\\CDM\\錢大媽發票及執貨表_20261007\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\錢大媽發票及執貨表_20261007",
+        "status": "pending",
+        "note": "target = 今日 + 2（2026-10-07），要等 10/07 嗰晚 19:40 先出",
+        "copies": [],
+        "script": "gen_delivery.py"
+      },
+      {
+        "no": 4,
+        "stage": "④ 21:00 Flow1",
+        "kind": "輸出",
+        "name": "inv_07-10-2026.xlsx",
+        "where": "OneDrive\\CDM\\CDM 發票對數\\CDM 發票\\10 Oct 2026\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\CDM 發票對數\\CDM 發票\\10 Oct 2026",
+        "status": "pending",
+        "note": "本月 6 張",
+        "copies": [
+          {
+            "where": "WorkBuddy\\Claw\\cdm\\…\\10 Oct 2026\\",
+            "full": "C:\\Users\\benso\\WorkBuddy\\Claw\\cdm"
+          },
+          {
+            "where": "WorkBuddy\\{工作區}\\cdm\\…\\10 Oct 2026\\",
+            "full": "C:\\Users\\benso\\WorkBuddy\\2026-09-21-11-40-31\\cdm"
+          }
+        ],
+        "script": "gen_invoice_single.py"
+      },
+      {
+        "no": 5,
+        "stage": "⑤ Flow1 三處同步",
+        "kind": "副本",
+        "name": "inv_*（同一批）+ 逐檔 md5",
+        "where": "WorkBuddy\\Claw\\cdm\\CDM 發票對數\\CDM 發票\\10 Oct 2026\\",
+        "full": "C:\\Users\\benso\\WorkBuddy\\Claw\\cdm",
+        "status": "pending",
+        "note": "Flow1 出票後自動 sync_shadow() 回補",
+        "copies": [],
+        "script": ""
+      },
+      {
+        "no": 5,
+        "stage": "⑤ Flow1 三處同步",
+        "kind": "副本",
+        "name": "inv_*（同一批）+ 逐檔 md5",
+        "where": "WorkBuddy\\2026-09-21-11-40-31\\cdm\\CDM 發票對數\\CDM 發票\\10 Oct 2026\\",
+        "full": "C:\\Users\\benso\\WorkBuddy\\2026-09-21-11-40-31\\cdm",
+        "status": "pending",
+        "note": "唯一 writer = benso 部機",
+        "copies": [],
+        "script": ""
+      },
+      {
+        "no": 6,
+        "stage": "⑥ Flow2 合併發票",
+        "kind": "輸出",
+        "name": "Inv_ 01-07 Oct 2026.xlsx",
+        "where": "OneDrive\\CDM\\CDM 發票對數\\CDM 發票\\10 Oct 2026\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\CDM 發票對數\\CDM 發票\\10 Oct 2026",
+        "status": "manual",
+        "note": "未做：要等 Flow1 出齐先可以跑（人口令）",
+        "copies": [
+          {
+            "where": "WorkBuddy\\Claw\\cdm\\…\\10 Oct 2026\\",
+            "full": "C:\\Users\\benso\\WorkBuddy\\Claw\\cdm"
+          },
+          {
+            "where": "WorkBuddy\\{工作區}\\cdm\\…\\10 Oct 2026\\",
+            "full": "C:\\Users\\benso\\WorkBuddy\\2026-09-21-11-40-31\\cdm"
+          }
+        ],
+        "script": "gen_flow23_segment.py --month 2026-10 --segment 01-07"
+      },
+      {
+        "no": 7,
+        "stage": "⑦ Flow3 金額對數",
+        "kind": "輸出",
+        "name": "CDM 金額對數(01-07 Oct 2026).xlsx",
+        "where": "OneDrive\\CDM\\CDM 發票對數\\CDM 發票\\10 Oct 2026\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\CDM 發票對數\\CDM 發票\\10 Oct 2026",
+        "status": "manual",
+        "note": "數字要同 Flow1 M 欄 + 執貨表 Col4 三方對",
+        "copies": [
+          {
+            "where": "WorkBuddy\\Claw\\cdm\\…\\10 Oct 2026\\",
+            "full": "C:\\Users\\benso\\WorkBuddy\\Claw\\cdm"
+          },
+          {
+            "where": "WorkBuddy\\{工作區}\\cdm\\…\\10 Oct 2026\\",
+            "full": "C:\\Users\\benso\\WorkBuddy\\2026-09-21-11-40-31\\cdm"
+          }
+        ],
+        "script": "gen_flow23_segment.py（第二段）"
+      },
+      {
+        "no": 8,
+        "stage": "⑧ 打印 + email",
+        "kind": "人手",
+        "name": "Flow2 / Flow3 打印紙本 + email 存檔",
+        "where": "打印機 TOSHIBA Universal Printer 2 ／ bensonkum86@gmail.com",
+        "full": "",
+        "status": "manual",
+        "note": "Iron rule：淨係 benso 手動撂口令，唔會自動跑",
+        "copies": [],
+        "script": ""
+      },
+      {
+        "no": 2,
+        "stage": "② 落單去重",
+        "kind": "日志",
+        "name": "CDM_log.txt",
+        "where": "OneDrive\\CDM\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM",
+        "status": "ok",
+        "note": "19:40 排程主日志（1.4MB）",
+        "copies": [],
+        "script": "gen_delivery.py"
+      },
+      {
+        "no": 4,
+        "stage": "④ 21:00 Flow1",
+        "kind": "日志",
+        "name": "_logs\\flow1_20261005.log",
+        "where": "OneDrive\\CDM\\_logs\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\_logs",
+        "status": "ok",
+        "note": "Flow1 黑盒日誌（原本零落盤，10/03 修好）",
+        "copies": [],
+        "script": "gen_invoice_single.py"
+      },
+      {
+        "no": 0,
+        "stage": "⑨ 倉存 ．腳本",
+        "kind": "狀態",
+        "name": "膠盒倉存(WB).xlsx",
+        "where": "WorkBuddy\\2026-09-21-11-40-31\\cdm\\",
+        "full": "C:\\Users\\benso\\WorkBuddy\\2026-09-21-11-40-31\\cdm",
+        "status": "ok",
+        "note": "唯一 writer = benso 部機（副本同步落 Claw\\cdm\\）",
+        "copies": [],
+        "script": "update_wb_box.py"
+      },
+      {
+        "no": 0,
+        "stage": "⑨ 倉存 ．腳本",
+        "kind": "腳本",
+        "name": "_cdm_common.py",
+        "where": "OneDrive\\CDM\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM",
+        "status": "ok",
+        "note": "活 pipeline 主腳本",
+        "copies": [],
+        "script": ""
+      },
+      {
+        "no": 0,
+        "stage": "⑨ 倉存 ．腳本",
+        "kind": "腳本",
+        "name": "gen_delivery.py",
+        "where": "OneDrive\\CDM\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM",
+        "status": "ok",
+        "note": "活 pipeline 主腳本",
+        "copies": [],
+        "script": ""
+      },
+      {
+        "no": 0,
+        "stage": "⑨ 倉存 ．腳本",
+        "kind": "腳本",
+        "name": "gen_invoice_single.py",
+        "where": "OneDrive\\CDM\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM",
+        "status": "ok",
+        "note": "活 pipeline 主腳本",
+        "copies": [],
+        "script": ""
+      },
+      {
+        "no": 0,
+        "stage": "⑨ 倉存 ．腳本",
+        "kind": "腳本",
+        "name": "gen_flow23_segment.py",
+        "where": "OneDrive\\CDM\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM",
+        "status": "ok",
+        "note": "活 pipeline 主腳本",
+        "copies": [],
+        "script": ""
+      }
+    ],
+    "total": 20,
+    "target_date": "2026-10-07",
+    "month_folder": "10 Oct 2026"
   },
   "last_backup": "2026-10-02"
 }

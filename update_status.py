@@ -314,6 +314,158 @@ def get_cdm_workflow():
     }
 
 
+def get_cdm_archive():
+    """CDM 全流程「文件歸檔表」：由流程第一步到最後一步，逐個列明
+    「邊份檔 → 擺喺邊度 → 自動定人手 → 出咗未」。
+
+    起因（2026-10-05 00:35）Benson：「把所有，由 CDM 流程而產生嘅文件，都列出放到哪裡。」
+
+    每 item：{ no, stage, kind, name, where, full, status, note, copies[], script }
+      kind = 輸入 / 輸出 / 副本 / 狀態 / 日志 / 人手
+    """
+    now = datetime.now()
+    tgt = now + timedelta(days=2)          # CDM 铁规：target = 今日 + 2
+    tgt_str = tgt.strftime('%Y%m%d')
+    tgt_date = tgt.strftime('%Y-%m-%d')
+    dd, mm, yyyy = tgt.strftime('%d'), tgt.strftime('%m'), tgt.year
+    yyyy_s = str(yyyy)
+    name = '%02d %s %d' % (now.month, _MONTH_ABBR[now.month - 1], now.year)
+    seg_d = '01-%s' % dd                   # Flow2/3 默認段（簡化顯示）
+
+    CLAW_CDM = os.path.join(r'C:\Users\benso\WorkBuddy', 'Claw', 'cdm')
+    WS_CDM = r'C:\Users\benso\WorkBuddy\2026-09-21-11-40-31\cdm'
+
+    inv_rel = os.path.join('CDM 發票對數', 'CDM 發票', name)
+    inv_full, inv_files = _folder_files(ONE_DRIVE_CDM, inv_rel)
+    odir, ofiles = _folder_files(ONE_DRIVE_CDM, '訂單')
+    arch, afiles = _folder_files(ONE_DRIVE_CDM, 'Archive')
+    ddir, dfiles = _folder_files(ONE_DRIVE_CDM, '錢大媽發票及執貨表_%s' % tgt_str)
+
+    items = []
+
+    def add(no, stage, kind, fname, where, full, status, note='', copies=None,
+            script=''):
+        items.append({'no': no, 'stage': stage, 'kind': kind, 'name': fname,
+                      'where': where, 'full': full, 'status': status,
+                      'note': note, 'copies': list(copies or []),
+                      'script': script})
+
+    inv_exists = os.path.exists(os.path.join(
+        ONE_DRIVE_CDM, inv_rel, 'inv_%s-%s-%d.xlsx' % (dd, mm, yyyy)))
+
+    # ① 訂單入庫（輸入，人手）
+    ord_hit = [f for f in sorted(ofiles) if f.upper().endswith('.XLS') and tgt_str in f]
+    add(1, '① 訂單入庫', '輸入',
+        '(祐興粉麵廠有限公司)訂單%s.XLS' % tgt_str,
+        'OneDrive\\Desktop\\CDM\\訂單\\', odir,
+        'ok' if ord_hit else 'pending',
+        note=('已入庫：%s' % ord_hit[-1]) if ord_hit else
+             '目標日 %s 嘅 .XLS 仲未 download 落嚟（Yahoo 約 19:00）' % tgt_date,
+        script='（人類：Yahoo 下載）')
+
+    # ② 落單去重（Archive + processed_orders.json）
+    a_hit = [f for f in afiles if f.startswith('delivery_%s' % tgt_str)]
+    pj = os.path.join(ONE_DRIVE_CDM, 'processed_orders.json')
+    add(2, '② 落單去重', '輸出',
+        'delivery_%s.xlsx — delivery_%s.pdf' % (tgt_str, tgt_str),
+        'OneDrive\\Desktop\\CDM\\Archive\\', arch,
+        'ok' if a_hit else 'pending',
+        note=('已存 %d 份' % len(a_hit)) if a_hit else '本月 Archive 仲未見目標日 delivery_*',
+        script='_cdm_common.py → Archive')
+    add(2, '② 落單去重', '狀態', 'processed_orders.json',
+        'OneDrive\\Desktop\\CDM\\', ONE_DRIVE_CDM,
+        'ok' if os.path.exists(pj) else 'pending',
+        note='防重複開關（第二次落同一日會跳過）',
+        script='_cdm_common.py')
+
+    # ③ 19:40 主流程 → 執貨表 + 發票草稿
+    d_hit = [f for f in dfiles if tgt_str in f]
+    deliv_dir_rel = '錢大媽發票及執貨表_%s' % tgt_str
+    for fn in ['delivery_%s_wb.xlsx' % tgt_str, 'delivery_%s_wb.pdf' % tgt_str,
+               'invoice_%s_wb.xls' % tgt_str, 'invoice_%s_wb.pdf' % tgt_str]:
+        add(3, '③ 19:40 主流程', '輸出', fn,
+            'OneDrive\\Desktop\\CDM\\%s\\' % deliv_dir_rel, ddir,
+            'ok' if (fn in d_hit) else 'pending',
+            note=('target = 今日 + 2（%s），要等 %s 嗰晚 19:40 先出'
+                  % (tgt_date, (now + timedelta(days=2)).strftime('%m/%d')))
+                 if (fn not in d_hit) else '已出',
+            script='gen_delivery.py')
+
+    # ④ 21:00 Flow1 單日發票
+    add(4, '④ 21:00 Flow1', '輸出',
+        'inv_%s-%s-%d.xlsx' % (dd, mm, yyyy),
+        'OneDrive\\Desktop\\CDM\\CDM 發票對數\\CDM 發票\\%s\\' % name,
+        inv_full, 'ok' if inv_exists else 'pending',
+        note='本月 %d 張' % len([f for f in inv_files if f.startswith('inv_')]),
+        copies=[{'where': 'WorkBuddy\\Claw\\cdm\\…\\%s\\' % name, 'full': CLAW_CDM},
+                {'where': 'WorkBuddy\\{工作區}\\cdm\\…\\%s\\' % name, 'full': WS_CDM}],
+        script='gen_invoice_single.py')
+
+    # ⑤ 三處同步（副本）
+    add(5, '⑤ Flow1 三處同步', '副本', 'inv_*（同一批）+ 逐檔 md5',
+        'WorkBuddy\\Claw\\cdm\\CDM 發票對數\\CDM 發票\\%s\\' % name, CLAW_CDM,
+        'ok' if inv_exists else 'pending', note='Flow1 出票後自動 sync_shadow() 回補')
+    add(5, '⑤ Flow1 三處同步', '副本', 'inv_*（同一批）+ 逐檔 md5',
+        'WorkBuddy\\2026-09-21-11-40-31\\cdm\\CDM 發票對數\\CDM 發票\\%s\\' % name,
+        WS_CDM, 'ok' if inv_exists else 'pending',
+        note='唯一 writer = benso 部機')
+
+    # ⑥ Flow2 5/6 日合併（人口令）
+    f2 = 'Inv_ %s-%s %s %d.xlsx' % ('01', dd, _MONTH_ABBR[now.month - 1], yyyy)
+    f2_exist = f2 in inv_files
+    add(6, '⑥ Flow2 合併發票', '輸出', f2,
+        'OneDrive\\Desktop\\CDM\\CDM 發票對數\\CDM 發票\\%s\\' % name,
+        inv_full, 'ok' if f2_exist else 'manual',
+        note=('本月已有 %d 段' % len([f for f in inv_files if f.startswith('Inv_ ')]))
+             if f2_exist else '未做：要等 Flow1 出齐先可以跑（人口令）',
+        copies=[{'where': 'WorkBuddy\\Claw\\cdm\\…\\%s\\' % name, 'full': CLAW_CDM},
+                {'where': 'WorkBuddy\\{工作區}\\cdm\\…\\%s\\' % name, 'full': WS_CDM}],
+        script='gen_flow23_segment.py --month %s-%s --segment 01-%s' % (yyyy_s, mm, dd))
+
+    # ⑦ Flow3 金額對數（人口令）
+    f3 = 'CDM 金額對數(01-%s %s %d).xlsx' % (dd, _MONTH_ABBR[now.month - 1], yyyy)
+    f3_exist = f3 in inv_files
+    add(7, '⑦ Flow3 金額對數', '輸出', f3,
+        'OneDrive\\Desktop\\CDM\\CDM 發票對數\\CDM 發票\\%s\\' % name,
+        inv_full, 'ok' if f3_exist else 'manual',
+        note='數字要同 Flow1 M 欄 + 執貨表 Col4 三方對'
+             if not f3_exist else '本月已有 %d 份' % len([f for f in inv_files if f.startswith('CDM 金額對數')]),
+        copies=[{'where': 'WorkBuddy\\Claw\\cdm\\…\\%s\\' % name, 'full': CLAW_CDM},
+                {'where': 'WorkBuddy\\{工作區}\\cdm\\…\\%s\\' % name, 'full': WS_CDM}],
+        script='gen_flow23_segment.py（第二段）')
+
+    # ⑧ 打印 + email（人手，無檔落地）
+    add(8, '⑧ 打印 + email', '人手', 'Flow2 / Flow3 打印紙本 + email 存檔',
+        '打印機 TOSHIBA Universal Printer 2 ／ bensonkum86@gmail.com', '',
+        'manual', note='Iron rule：淨係 benso 手動撂口令，唔會自動跑')
+
+    # 附加：日志 / 倉存 / 腳本
+    add(2, '② 落單去重', '日志', 'CDM_log.txt',
+        'OneDrive\\Desktop\\CDM\\', ONE_DRIVE_CDM, 'ok',
+        note='19:40 排程主日志（1.4MB）', script='gen_delivery.py')
+    add(4, '④ 21:00 Flow1', '日志', '_logs\\flow1_%s.log' % now.strftime('%Y%m%d'),
+        'OneDrive\\Desktop\\CDM\\_logs\\', os.path.join(ONE_DRIVE_CDM, '_logs'),
+        'ok' if os.path.isdir(os.path.join(ONE_DRIVE_CDM, '_logs')) else 'pending',
+        note='Flow1 黑盒日誌（原本零落盤，10/03 修好）', script='gen_invoice_single.py')
+    add(0, '⑨ 倉存 ．腳本', '狀態', '膠盒倉存(WB).xlsx',
+        'WorkBuddy\\2026-09-21-11-40-31\\cdm\\', WS_CDM, 'ok',
+        note='唯一 writer = benso 部機（副本同步落 Claw\\cdm\\）', script='update_wb_box.py')
+    for sc in ['_cdm_common.py', 'gen_delivery.py', 'gen_invoice_single.py',
+               'gen_flow23_segment.py']:
+        add(0, '⑨ 倉存 ．腳本', '腳本', sc,
+            'OneDrive\\Desktop\\CDM\\', ONE_DRIVE_CDM, 'ok', note='活 pipeline 主腳本')
+
+    for it in items:
+        it['where'] = shorten_path(it.get('where', ''))
+
+    return {
+        'items': items,
+        'total': len(items),
+        'target_date': tgt_date,
+        'month_folder': name,
+    }
+
+
 def get_order_status():
     """檢查訂單狀態"""
     today = datetime.now()
@@ -342,6 +494,7 @@ def main():
     flow1_sync = get_flow1_sync()
 
     wf = get_cdm_workflow()
+    arch = get_cdm_archive()
 
     status = {
         'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M'),
@@ -350,6 +503,7 @@ def main():
         'orders': get_order_status(),
         'flow1_sync': flow1_sync,
         'cdm_workflow': wf,
+        'cdm_archive': arch,
         'last_backup': '2026-10-02'  # 從日誌讀取
     }
 
@@ -366,6 +520,10 @@ def main():
           f'／缺 {len(flow1_sync["missing"])}／唔一致 {len(flow1_sync["mismatch"])}）')
     print(f'   CDM 全流程跟進表: {wf["done"]}/{wf["total"]} 步完成'
           f'（{wf["pending"]} 待做；目標日 {wf["target_date"]}）')
+    print(f'   CDM 文件歸檔表: {arch["total"]} 份文件（目標日 {arch["target_date"]}）')
+    for it in arch['items']:
+        print('     %-2s %-22s %-6s %s'
+              % (it['no'] or '-', it['stage'], it['kind'], it['name']))
 
     return status
 
