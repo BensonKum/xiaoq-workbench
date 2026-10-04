@@ -1,37 +1,45 @@
 {
-  "generated_at": "2026-10-03 22:59",
+  "generated_at": "2026-10-04 22:02",
   "inventory": {
-    "small": 73751,
-    "big": 36464,
-    "date": "2026-10-05"
+    "small": 71289,
+    "big": 35950,
+    "date": "2026-10-06"
   },
   "cdm": {
     "ran_today": true,
-    "target_date": "20261003",
+    "target_date": "20261004",
     "pdf_ready": true,
     "invoice_ready": true,
     "files": [
-      {
-        "date": "20261002",
-        "has_pdf": true,
-        "has_xlsx": true,
-        "folder": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\錢大媽發票及執貨表_20261002"
-      },
       {
         "date": "20261003",
         "has_pdf": true,
         "has_xlsx": true,
         "folder": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\錢大媽發票及執貨表_20261003"
+      },
+      {
+        "date": "20261004",
+        "has_pdf": true,
+        "has_xlsx": true,
+        "folder": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\錢大媽發票及執貨表_20261004"
       }
     ],
-    "invoice_count": 5
+    "invoice_count": 6
   },
   "orders": {
     "today_count": 1,
     "today_files": [
-      "(祐興粉麵廠有限公司)訂單20261003.XLS"
+      "(祐興粉麵廠有限公司)訂單20261004.XLS"
     ],
-    "pending_count": 10
+    "pending_count": 12
+  },
+  "flow1_sync": {
+    "folder": "10 Oct 2026",
+    "files": 6,
+    "missing": [],
+    "mismatch": [],
+    "ok": true,
+    "checked_at": "22:02"
   },
   "last_backup": "2026-10-02"
 }

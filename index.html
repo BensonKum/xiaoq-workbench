@@ -578,6 +578,14 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
         <div class="flow-tags"><span class="flow-tag">實時更新</span></div>
         <div class="flow-done">📅 完成日期：<span class="done-when" id="done-inventory">-</span></div>
       </div>
+      <div class="flow-card media" data-id="flow1-sync" onclick="showFlow('flow1-sync')">
+        <div class="flow-icon">🗂️</div>
+        <div class="flow-name">⑩ Flow1 單日發票 · 三處同步</div>
+        <div class="flow-desc">OneDrive 真帳 / Claw 副本 / 工作區副本，逐檔 md5 核對</div>
+        <div class="flow-status" id="status-flow1">● 讀取中...</div>
+        <div class="flow-tags"><span class="flow-tag">21:00</span><span class="flow-tag">自動同步</span><span class="flow-tag" id="tag-flow1-files">-</span></div>
+        <div class="flow-done">📅 同步：<span class="done-when" id="done-flow1">-</span><span id="flow1-detail" style="color:var(--muted);font-weight:700"></span></div>
+      </div>
     </div>
   </div>
 
@@ -693,6 +701,7 @@ async function refreshAll() {
   try {
     await checkInventory();
     await checkCDM();
+    await checkFlow1();
     
     document.getElementById('status-text').textContent = '已更新';
     var fbR = document.getElementById('fb-val-refresh');
@@ -798,6 +807,13 @@ function executeFlow() {
         addLog('CDM 檢查失敗: ' + e.message, 'error');
       });
       break;
+    case 'flow1-sync':
+      checkFlow1().then(() => {
+        addLog('Flow1 三處同步檢查完成', 'success');
+      }).catch(e => {
+        addLog('Flow1 同步檢查失敗: ' + e.message, 'error');
+      });
+      break;
     case 'quote':
       addLog('正在生成報價單...', 'info');
       setTimeout(() => {
@@ -837,7 +853,8 @@ const FLOWS = {
   'quote': { title: '⑥ 祐興報價單 Excel', steps: ['跑 gen_quote_xlsx.py', '配圖 images/（缺相用預留位）', '11 分類分組 + 分類 header（橙）', '發微信 / 或加 E 欄網站連結', '現狀：103 款；v4 待 Ben 確認公司名/Logo/電話地址'] },
   'ad-video': { title: '⑦ Beatra 15秒廣告片', steps: ['充值 console.beatra.ai/topup starter ¥29 = 11,000 credits（勿揀 ¥198）', '收素材：hero 相 + 食材相（已收 AI 圖，建議補實物照）', 'render：image_to_video seedance-2-mini 720p / 16:9 / 15秒', '輸出約 5,550 credits → MP4', '產品：芝士番茄鮮肉餃'] },
   'inspect': { title: '⑧ 每日自動巡檢', steps: ['21:40 cron 自動跑 cdm_check_today.py', '查 marker 確認今晚 CDM 跑了未（target=今日+2）', '查輸出目錄 PDF 齊不齊', '微信 report 自動 send'] },
-  'inventory': { title: '⑨ 膠盒倉存', steps: ['讀取膠盒倉存(WB).xlsx 當月頁最新日嘅結餘', '小膠盒 = F 欄 / 大膠盒 = G 欄', '本地 API 8083 或 status.json 兩邊同源顯示', '實時更新顯示'] }
+  'inventory': { title: '⑨ 膠盒倉存', steps: ['讀取膠盒倉存(WB).xlsx 當月頁最新日嘅結餘', '小膠盒 = F 欄 / 大膠盒 = G 欄', '本地 API 8083 或 status.json 兩邊同源顯示', '實時更新顯示'] },
+  'flow1-sync': { title: '⑩ Flow1 單日發票 · 三處同步', steps: ['21:00 排程跑 gen_invoice_single.py，逐日出 inv_{DD}-{MM}-{YYYY}.xlsx', '出票後自動 sync_shadow()：cp 落 Claw 副本 + 工作區副本，印 md5 核對', 'status.json 嘅 flow1_sync 欄 = 逐檔 md5 對一次（缺 / 唔一致會列出）', '手機呢張卡即時显示「幾多檔 / 有冇缺 / 幾時 Check 過」', '目標：三處 md5 全一致，唔使再人手 ls 補'] }
 };
 
 // 從本地 API 讀取庫存數據
@@ -917,6 +934,9 @@ async function loadStatus() {
       document.getElementById('inventory-status').className = 'flow-status';
     }
 
+    // Flow1 三處同步（同一源，線上版都由 status.json 出）
+    if (data.flow1_sync) renderFlow1Sync(data.flow1_sync);
+
   } catch (e) {
     addLog('讀取狀態失敗: ' + e.message, 'error');
   }
@@ -939,6 +959,47 @@ function setDone(id, raw) {
   const s = fmtDateString(raw);
   el.textContent = s ? s : todayStr();
   el.style.color = s ? 'var(--primary)' : 'var(--muted)';
+}
+
+/* ===== ⑩ Flow1 單日發票 · 三處同步（2026-10-04 加）
+   status.json['flow1_sync'] = { folder, files, missing[], mismatch[], ok, checked_at }
+   讀唔到就保留「讀取中」，千祈唔好寫死任何舊值。 */
+function renderFlow1Sync(f) {
+  const st = document.getElementById('status-flow1');
+  const dn = document.getElementById('done-flow1');
+  const dt = document.getElementById('flow1-detail');
+  const tg = document.getElementById('tag-flow1-files');
+  if (!st || !f) return false;
+
+  const n = Number(f.files) || 0;
+  if (tg) tg.textContent = n ? n + ' 檔' : '-';
+  if (dn) {
+    dn.textContent = (f.checked_at ? f.checked_at : todayStr());
+    dn.style.color = f.ok ? 'var(--primary)' : '#fca5a5';
+  }
+  if (dt) {
+    const bad = (f.missing || []).length + (f.mismatch || []).length;
+    dt.textContent = bad === 0 ? '✅ 三處一致' : ('❌ 缺 ' + (f.missing || []).length + ' ／ 唔一致 ' + (f.mismatch || []).length);
+    dt.style.color = bad === 0 ? '' : '#fca5a5';
+  }
+  st.textContent = f.ok ? '● 同步一致' : '● 有缺 / 唔一致';
+  st.className = 'flow-status' + (f.ok ? '' : ' pending');
+  if (f.ok) addLog(`Flow1 三處同步 ✅：${f.folder} / ${n} 檔一致（${f.checked_at} 檢查）`, 'success');
+  else addLog(`Flow1 三處同步 ❌：缺 ${(f.missing || []).length} / 唔一致 ${(f.mismatch || []).length}`, 'error');
+  return true;
+}
+
+// 本地 status.json 讀 flow1_sync（桌面用；失敗就保留現值）
+async function checkFlow1() {
+  try {
+    const r = await fetch('status.json', { cache: 'no-store' });
+    const s = await r.json();
+    if (s && s.flow1_sync) return renderFlow1Sync(s.flow1_sync);
+    addLog('status.json 冇 flow1_sync 欄 → 保留現有顯示', 'warn');
+  } catch (e) {
+    addLog('讀 status.json flow1_sync 失敗 → 保留現有顯示', 'info');
+  }
+  return false;
 }
 
 /* ===== 模塊拖動排序（Bento Drag，FLIP + 吸附） ===== */
@@ -1622,8 +1683,8 @@ function setDone(id, raw) {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v47';
-  var APP_PUBLISHED = '2026/10/03 23:01';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v48';
+  var APP_PUBLISHED = '2026/10/04 22:03';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');

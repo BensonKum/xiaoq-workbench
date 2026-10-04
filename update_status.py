@@ -84,6 +84,52 @@ def get_cdm_status():
     
     return status
 
+def _md5(path):
+    import hashlib
+    h = hashlib.md5()
+    with open(path, 'rb') as f:
+        for blk in iter(lambda: f.read(1 << 20), b''):
+            h.update(blk)
+    return h.hexdigest()
+
+
+def get_flow1_sync():
+    """Flow 1 單日發票「三處一致性」（OneDrive 真帳 vs Claw 副本 vs 工作區副本）
+
+    起因（2026-10-04 21:55）：shadow 一向淨係同步 .py、唔同步 outputs，
+    每晚 Flow1 出完新票 Claw 就差一張，要靠人手 ls 先發現。10/04 起
+    Flow1 出票後會自動 sync_shadow()，呢度就負責「 reporting 出嚟」——
+    用手機工作台（status.json）一眼睇到有冇缺 / 唔一致，唔使再靠人。
+    """
+    now = datetime.now()
+    MONTH_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    name = '%02d %s %d' % (now.month, MONTH_ABBR[now.month - 1], now.year)
+    src = os.path.join(ONE_DRIVE_CDM, 'CDM 發票對數', 'CDM 發票', name)
+    shadows = [
+        (os.path.join(r'C:\Users\benso\WorkBuddy', 'Claw', 'cdm'), 'Claw 副本'),
+        (r'C:\Users\benso\WorkBuddy\2026-09-21-11-40-31\cdm', '工作區副本'),
+    ]
+    out = {'folder': name, 'files': 0, 'missing': [], 'mismatch': [],
+           'ok': True, 'checked_at': now.strftime('%H:%M')}
+    if not os.path.isdir(src):
+        return out
+    files = sorted(f for f in os.listdir(src)
+                   if f.startswith('inv_') and f.endswith('.xlsx'))
+    out['files'] = len(files)
+    for fn in files:
+        m = _md5(os.path.join(src, fn))
+        for base, label in shadows:
+            dp = os.path.join(base, 'CDM 發票對數', 'CDM 發票', name, fn)
+            if not os.path.exists(dp):
+                out['missing'].append('%s ／ %s' % (fn, label))
+                out['ok'] = False
+            elif _md5(dp) != m:
+                out['mismatch'].append('%s ／ %s' % (fn, label))
+                out['ok'] = False
+    return out
+
+
 def get_order_status():
     """檢查訂單狀態"""
     today = datetime.now()
@@ -109,23 +155,29 @@ def get_order_status():
 def main():
     print('正在生成工作台狀態...')
     
+    flow1_sync = get_flow1_sync()
+
     status = {
         'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M'),
         'inventory': get_inventory_data(),
         'cdm': get_cdm_status(),
         'orders': get_order_status(),
+        'flow1_sync': flow1_sync,
         'last_backup': '2026-10-02'  # 從日誌讀取
     }
-    
+
     # 寫入文件
     with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
         json.dump(status, f, ensure_ascii=False, indent=2)
-    
+
     print(f'✅ 狀態已生成: {OUTPUT_FILE}')
     print(f'   膠盒倉存: 小{status["inventory"]["small"]} / 大{status["inventory"]["big"]}')
     print(f'   CDM: {"正常" if status["cdm"]["ran_today"] else "未運行"}')
     print(f'   發票: {status["cdm"]["invoice_count"]} 張')
-    
+    print(f'   Flow1 三處同步: {"✅ 一致" if flow1_sync["ok"] else "❌ 有缺/唔一致"}'
+          f'（{flow1_sync["folder"]} / {flow1_sync["files"]} 檔'
+          f'／缺 {len(flow1_sync["missing"])}／唔一致 {len(flow1_sync["mismatch"])}）')
+
     return status
 
 if __name__ == '__main__':
