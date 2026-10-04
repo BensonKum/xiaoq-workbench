@@ -142,6 +142,19 @@ def _folder_files(base, rel):
     return p, sorted(os.listdir(p))
 
 
+def shorten_path(disp, full=''):
+    """卡片上一行放得落嘅短路徑（OneDrive\\Desktop\\CDM\\... → OneDrive\\CDM\\...）。
+
+    status.json 嘅 step['path'] Keep 短；完整絕對路徑 Keep喺 step['full']，
+    撳行 wfCopy() 複製用。起因：Benson 話新卡「太長太大」，
+    長路徑 word-break:break-all 折行 → 每行爆到 4 行高。
+    """
+    p = str(disp).replace('/', '\\').replace('\\\\', '\\')
+    p = p.replace('C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\', 'OneDrive\\CDM\\', 1)
+    p = p.replace('OneDrive\\Desktop\\CDM\\', 'OneDrive\\CDM\\', 1)
+    return p
+
+
 def get_cdm_workflow():
     """CDM 全流程跟進表（實讀檔案系統，逐步出檔案名 + 落地路徑 + 狀態）
 
@@ -284,6 +297,10 @@ def get_cdm_workflow():
         'detail': 'Iron rule：Flow2/3 淨係 benso 手動撂口令，唔會自動跑',
         'files': [],
     })
+
+    # 路徑改短顯示（卡片一行放得落）；完整絕對路徑保留喺 'full'，撳行複製用
+    for s in steps:
+        s['path'] = shorten_path(s.get('path', ''), s.get('full', ''))
 
     total = len(steps)
     done = sum(1 for s in steps if s['status'] == 'ok')

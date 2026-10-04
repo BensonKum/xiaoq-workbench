@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04 22:37",
+  "generated_at": "2026-10-05 00:01",
   "inventory": {
     "small": 71289,
     "big": 35950,
@@ -7,21 +7,21 @@
   },
   "cdm": {
     "ran_today": true,
-    "target_date": "20261004",
+    "target_date": "20261005",
     "pdf_ready": true,
     "invoice_ready": true,
     "files": [
-      {
-        "date": "20261003",
-        "has_pdf": true,
-        "has_xlsx": true,
-        "folder": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\錢大媽發票及執貨表_20261003"
-      },
       {
         "date": "20261004",
         "has_pdf": true,
         "has_xlsx": true,
         "folder": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\錢大媽發票及執貨表_20261004"
+      },
+      {
+        "date": "20261005",
+        "has_pdf": true,
+        "has_xlsx": true,
+        "folder": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\錢大媽發票及執貨表_20261005"
       }
     ],
     "invoice_count": 6
@@ -29,7 +29,7 @@
   "orders": {
     "today_count": 1,
     "today_files": [
-      "(祐興粉麵廠有限公司)訂單20261004.XLS"
+      "(祐興粉麵廠有限公司)訂單20261005.XLS"
     ],
     "pending_count": 12
   },
@@ -39,10 +39,10 @@
     "missing": [],
     "mismatch": [],
     "ok": true,
-    "checked_at": "22:37"
+    "checked_at": "00:01"
   },
   "cdm_workflow": {
-    "target_date": "2026-10-06",
+    "target_date": "2026-10-07",
     "month_folder": "10 Oct 2026",
     "steps": [
       {
@@ -53,14 +53,14 @@
         "auto": false,
         "script": "（人類：Yahoo 下載祐興定單附件）",
         "artifact": "訂單\\{YYYYMMDD}*.XLS",
-        "path": "OneDrive\\Desktop\\CDM\\訂單\\",
+        "path": "OneDrive\\CDM\\訂單\\",
         "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\訂單",
         "status": "ok",
-        "detail": "揾到 171 個 .XLS",
+        "detail": "本月揾到 6 個 .XLS",
         "files": [
-          "(祐興粉麵廠有限公司)訂單20260401.XLS",
-          "(祐興粉麵廠有限公司)訂單20260402.XLS",
-          "(祐興粉麵廠有限公司)訂單20260408.XLS"
+          "(祐興粉麵廠有限公司)訂單20261004.XLS",
+          "(祐興粉麵廠有限公司)訂單20261005.XLS",
+          "(祐興粉麵廠有限公司)訂單20261006.XLS"
         ]
       },
       {
@@ -71,12 +71,11 @@
         "auto": true,
         "script": "_cdm_common.py → Archive",
         "artifact": "Archive\\delivery_{YYYYMMDD}.xlsx",
-        "path": "OneDrive\\Desktop\\CDM\\Archive\\",
+        "path": "OneDrive\\CDM\\Archive\\",
         "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\Archive",
         "status": "ok",
-        "detail": "Archive 有 175 份 delivery_*；processed_orders.json 存在",
+        "detail": "本月 Archive 2 份 delivery_*（共 175 份歷史）｜processed_orders.json 存在",
         "files": [
-          "delivery_20260926.xlsx",
           "delivery_20261004.xlsx",
           "delivery_20261004_wb.xlsx"
         ]
@@ -89,15 +88,11 @@
         "auto": true,
         "script": "gen_delivery.py",
         "artifact": "錢大媽發票及執貨表_{YYYYMMDD}\\delivery_{YYYYMMDD}_wb.xlsx + .pdf",
-        "path": "OneDrive\\Desktop\\CDM\\錢大媽發票及執貨表_{YYYYMMDD}\\",
-        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\錢大媽發票及執貨表_20261006",
-        "status": "ok",
-        "detail": "目標日 2026-10-06：輸出 3 個檔",
-        "files": [
-          "delivery_20261006_wb.pdf",
-          "delivery_20261006_wb.xlsx",
-          "invoice_20261006_wb.pdf"
-        ]
+        "path": "OneDrive\\CDM\\錢大媽發票及執貨表_{YYYYMMDD}\\",
+        "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\錢大媽發票及執貨表_20261007",
+        "status": "pending",
+        "detail": "目標日 2026-10-07：執貨表還未到（要等 target 日 -2 嗰晚 19:40 先出）",
+        "files": []
       },
       {
         "id": "w04",
@@ -107,10 +102,10 @@
         "auto": true,
         "script": "gen_invoice_single.py",
         "artifact": "inv_{DD}-{MM}-{YYYY}.xlsx",
-        "path": "OneDrive\\Desktop\\CDM\\CDM 發票對數\\CDM 發票\\{月文件夹}\\",
+        "path": "OneDrive\\CDM\\CDM 發票對數\\CDM 發票\\{月文件夹}\\",
         "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\CDM 發票對數\\CDM 發票\\10 Oct 2026",
-        "status": "ok",
-        "detail": "本月 6 張（最新 inv_06-10-2026.xlsx）｜目標 2026-10-06：已出",
+        "status": "pending",
+        "detail": "本月 6 張（最新 inv_06-10-2026.xlsx）｜目標 2026-10-07：未出",
         "files": [
           "inv_04-10-2026.xlsx",
           "inv_05-10-2026.xlsx",
@@ -128,7 +123,7 @@
         "path": "WorkBuddy\\Claw\\cdm\\ + WorkBuddy\\{工作區}\\cdm\\",
         "full": "C:\\Users\\benso\\WorkBuddy\\Claw\\cdm ／ C:\\Users\\benso\\WorkBuddy\\2026-09-21-11-40-31\\cdm",
         "status": "ok",
-        "detail": "10 Oct 2026 / 6 檔 / 缺 0 / 唔一致 0（22:37 檢查）",
+        "detail": "10 Oct 2026 / 6 檔 / 缺 0 / 唔一致 0（00:01 檢查）",
         "files": []
       },
       {
@@ -139,7 +134,7 @@
         "auto": false,
         "script": "gen_flow23_segment.py --month YYYY-MM --segment DD-DD",
         "artifact": "Inv_ {DD}-{DD} MMM YYYY.xlsx",
-        "path": "OneDrive\\Desktop\\CDM\\CDM 發票對數\\CDM 發票\\{月文件夹}\\",
+        "path": "OneDrive\\CDM\\CDM 發票對數\\CDM 發票\\{月文件夹}\\",
         "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\CDM 發票對數\\CDM 發票\\10 Oct 2026",
         "status": "ok",
         "detail": "本月已有 1 段：Inv_ 01-05 Oct 2026.xlsx",
@@ -155,7 +150,7 @@
         "auto": false,
         "script": "gen_flow23_segment.py（同一腳本第二段）",
         "artifact": "CDM 金額對數({DD}-{DD} MMM YYYY).xlsx",
-        "path": "OneDrive\\Desktop\\CDM\\CDM 發票對數\\CDM 發票\\{月文件夹}\\",
+        "path": "OneDrive\\CDM\\CDM 發票對數\\CDM 發票\\{月文件夹}\\",
         "full": "C:\\Users\\benso\\OneDrive\\Desktop\\CDM\\CDM 發票對數\\CDM 發票\\10 Oct 2026",
         "status": "ok",
         "detail": "本月已有 1 份：CDM 金額對數(01-05 Oct 2026).xlsx",
@@ -179,9 +174,9 @@
       }
     ],
     "total": 8,
-    "done": 7,
-    "pending": 0,
-    "ok": 7
+    "done": 5,
+    "pending": 2,
+    "ok": 5
   },
   "last_backup": "2026-10-02"
 }

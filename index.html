@@ -124,33 +124,37 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .flow-card .flow-done { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); font-size: 16px; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .flow-card .flow-done .done-when { color: var(--primary); font-weight: 800; }
 
-/* ===== ⑪ CDM 全流程跟進表（闊卡，2026-10-04 加） ===== */
-.flow-card.wide { flex-basis: 100% !important; aspect-ratio: auto; padding: 16px 16px 14px; min-height: 0; }
-.flow-card.wide .flow-icon { font-size: 30px; margin-bottom: 6px; }
-.flow-card.wide .flow-name { font-size: 19px; }
-.flow-card.wide .flow-desc { font-size: 15px; margin-bottom: 8px; }
-.wf-progress { height: 6px; border-radius: 4px; background: #2f3f60; overflow: hidden; margin: 8px 0 10px; }
-.wf-progress > div { height: 100%; border-radius: 4px; background: var(--primary); transition: width .4s ease; }
-.wf-list { margin-top: 10px; display: flex; flex-direction: column; gap: 7px; }
+/* ===== ⑪ CDM 全流程跟進表（闊卡，2026-10-04 加 · 2026-10-05 改細版） =====
+   改細重點：默認收起（淨係顯示進度條 + 一行摘要），撳「展開 N 步」先出各行；
+   每行淨係 2 行文字（檔名 / 短路徑），路徑不再 break-all 折行。 */
+.flow-card.wide { flex-basis: 100% !important; aspect-ratio: auto; padding: 12px 13px 11px; min-height: 0; }
+.flow-card.wide .flow-icon { font-size: 24px; margin-bottom: 3px; }
+.flow-card.wide .flow-name { font-size: 17px; }
+.flow-card.wide .flow-desc { font-size: 13px; margin-bottom: 5px; line-height: 1.3; }
+.wf-progress { height: 5px; border-radius: 3px; background: #2f3f60; overflow: hidden; margin: 5px 0 7px; }
+.wf-progress > div { height: 100%; border-radius: 3px; background: var(--primary); transition: width .4s ease; }
+.wf-toggle { display: inline-flex; align-items: center; gap: 5px; margin-top: 3px; font-size: 12px; font-weight: 800; color: #9fc6f5; background: #2f3f60; border: none; border-radius: 7px; padding: 6px 11px; cursor: pointer; }
+.wf-toggle:active { transform: scale(.97); }
+.wf-list { margin-top: 7px; display: flex; flex-direction: column; gap: 4px; }
+.wf-list.collapsed { display: none; }
 .wf-row {
-  display: flex; align-items: flex-start; gap: 10px; padding: 9px 10px;
-  background: var(--card-2); border: 1px solid var(--line); border-left: 4px solid var(--line);
-  border-radius: 10px; cursor: pointer;
+  display: flex; align-items: center; gap: 7px; padding: 5px 8px;
+  background: var(--card-2); border: 1px solid var(--line); border-left: 3px solid var(--line);
+  border-radius: 7px; cursor: pointer; overflow: hidden;
 }
 .wf-row:hover { border-color: #47566b; }
 .wf-row.wf-ok { border-left-color: var(--primary); }
 .wf-row.wf-pending { border-left-color: #e2b33c; }
 .wf-row.wf-manual { border-left-color: #6b7a90; }
-.wf-no { flex: 0 0 26px; font-size: 18px; font-weight: 800; color: #7cb8f0; line-height: 1.2; }
+.wf-no { flex: 0 0 17px; font-size: 14px; font-weight: 800; color: #7cb8f0; }
 .wf-main { flex: 1 1 auto; min-width: 0; }
-.wf-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-.wf-title { font-size: 16px; font-weight: 800; color: #ffffff; }
-.wf-time { font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: 6px; background: #2f3f60; color: #aeb9c8; }
-.wf-auto { font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 6px; background: rgba(74,222,128,.14); color: #86efac; }
-.wf-file { font-size: 14px; font-weight: 700; color: #ffd28a; word-break: break-all; margin-top: 2px; }
-.wf-path { font-size: 12px; font-weight: 700; color: #8fa3bb; word-break: break-all; margin-top: 1px; }
-.wf-note { font-size: 12px; font-weight: 700; color: var(--muted); margin-top: 3px; line-height: 1.4; }
-.wf-badge { flex: 0 0 auto; font-size: 17px; font-weight: 800; padding: 2px 8px; border-radius: 8px; background: #2f3f60; color: #eaf1fa; }
+.wf-head { display: flex; align-items: center; gap: 6px; line-height: 1.25; }
+.wf-title { font-size: 14px; font-weight: 800; color: #ffffff; white-space: nowrap; }
+.wf-time { flex: 0 0 auto; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 5px; background: #2f3f60; color: #aeb9c8; }
+.wf-auto { flex: 0 0 auto; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 5px; background: rgba(74,222,128,.14); color: #86efac; }
+.wf-file { font-size: 11px; font-weight: 700; color: #ffd28a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+.wf-path { font-size: 10px; font-weight: 700; color: #8fa3bb; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wf-badge { flex: 0 0 auto; font-size: 14px; font-weight: 800; }
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
 .modal-overlay.active { display: flex; }
 .modal { background: #1b2740; border-radius: 16px; padding: 24px; width: 480px; max-width: 90vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
@@ -617,11 +621,12 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
       <div class="flow-card cdm wide" data-id="cdm-flow" onclick="showFlow('cdm-flow')">
         <div class="flow-icon">🗺️</div>
         <div class="flow-name">⑪ CDM 全流程跟進表</div>
-        <div class="flow-desc">由定單入庫到打印交收，8 步逐項列明檔案名 + 落地路徑 · 撳任意一行可複製完整路徑</div>
+        <div class="flow-desc">定單入庫 → 打印交收 8 步，列明檔案名 + 落地路徑 · 撳行複製完整路徑</div>
         <div class="flow-status" id="status-wf">● 讀取中...</div>
         <div class="wf-progress"><div id="wf-bar" style="width:0%"></div></div>
-        <div class="wf-list" id="wf-list"></div>
-        <div class="flow-tags"><span class="flow-tag">19:40 主流程</span><span class="flow-tag">21:00 Flow1</span><span class="flow-tag">人口令 Flow2/3</span><span class="flow-tag" id="tag-wf-target">-</span></div>
+        <button class="wf-toggle" id="wf-toggle" onclick="event.stopPropagation();wfToggle()">▸ 展開全部步驟</button>
+        <div class="wf-list collapsed" id="wf-list"></div>
+        <div class="flow-tags"><span class="flow-tag" id="tag-wf-target">-</span></div>
         <div class="flow-done">🎯 目標：<span class="done-when" id="done-wf">-</span><span id="wf-detail" style="color:var(--muted);font-weight:700"></span></div>
       </div>
     </div>
@@ -1075,31 +1080,52 @@ function renderWorkflow(w) {
   st.className = 'flow-status' + ((w.pending) ? ' pending' : '');
 
   if (list) {
+    // 首次渲染（冇 data-n）必定收起，之後尊重用家開／關嘅狀態
+    if (!list.getAttribute('data-n')) list.classList.add('collapsed');
     list.innerHTML = w.steps.map(function (s) {
       const files = (s.files && s.files.length) ? s.files.join('　·　') : (s.artifact || '');
       return '<div class="wf-row wf-' + s.status + '" data-full="' +
              String(s.full || '').replace(/"/g, '&quot;') + '" ' +
-             'onclick="wfCopy(this)">' +
+             'title="' + String(s.detail || '').replace(/"/g, '&quot;') + '" ' +
+             'onclick="wfCopy(event,this)">' +
              '<div class="wf-no">' + String(s.no) + '</div>' +
              '<div class="wf-main">' +
                '<div class="wf-head"><span class="wf-title">' + s.name + '</span>' +
                  '<span class="wf-time">' + s.time + '</span>' +
-                 (s.auto ? '<span class="wf-auto">自動</span>' : '<span class="wf-auto" style="background:#2f3f60;color:#aeb9c8">人手</span>') +
+                 '<span class="wf-auto"' + (s.auto ? '' : ' style="background:#2f3f60;color:#aeb9c8"') + '>' + (s.auto ? '自動' : '人手') + '</span>' +
                '</div>' +
                '<div class="wf-file">📄 ' + files + '</div>' +
                '<div class="wf-path">📍 ' + (s.path || '') + '</div>' +
-               '<div class="wf-note">' + (s.detail || '') + '</div>' +
              '</div>' +
              '<div class="wf-badge">' + wfBadge(s.status) + '</div>' +
              '</div>';
     }).join('');
   }
+  const tgl = document.getElementById('wf-toggle');
+  const n = (w.steps || []).length;
+  if (list) list.setAttribute('data-n', n);   // 記步數，wfToggle 用（唔靠 children.length）
+  if (tgl) {
+    tgl.textContent = (list && list.classList.contains('collapsed'))
+      ? '▸ 展開 ' + n + ' 步' : '▾ 收起明細';
+  }
   addLog('CDM 全流程跟進表：' + (w.done || 0) + '/' + (w.total || 0) + ' 步已出', 'success');
   return true;
 }
 
+// 展開／收起跟進表明細（默認收起，免張卡長到落 screen 底）
+function wfToggle() {
+  const list = document.getElementById('wf-list');
+  const tgl = document.getElementById('wf-toggle');
+  if (!list) return;
+  const open = list.classList.toggle('collapsed') === false;
+  const n = parseInt(list.getAttribute('data-n') || list.children.length || 0, 10) || 0;
+  if (tgl) tgl.textContent = open ? '▾ 收起明細' : '▸ 展開 ' + n + ' 步';
+}
+
 // 撳一行 = 複製完整路徑（用手機 / 電腦都得）
-function wfCopy(row) {
+function wfCopy(evt, row) {
+  if (evt && evt.stopPropagation) evt.stopPropagation();
+  row = row || this;
   const v = row.getAttribute('data-full') || '';
   if (!v) return;
   const done = function () {
@@ -1811,8 +1837,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v49';
-  var APP_PUBLISHED = '2026/10/04 22:46';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v50';
+  var APP_PUBLISHED = '2026/10/05 00:06';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
