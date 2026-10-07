@@ -507,6 +507,17 @@ def main():
         'last_backup': '2026-10-02'  # 從日誌讀取
     }
 
+    # 保留 app_version（否則每次跑 update_status.py 都會清走版本號，
+    # 令儀表板版本 chip 顯示唔到 / 變空白）
+    if os.path.exists(OUTPUT_FILE):
+        try:
+            with open(OUTPUT_FILE, 'r', encoding='utf-8') as _f:
+                _old = json.load(_f)
+            if 'app_version' in _old:
+                status['app_version'] = _old['app_version']
+        except Exception:
+            pass
+
     # 寫入文件
     with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
         json.dump(status, f, ensure_ascii=False, indent=2)
