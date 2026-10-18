@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-18 00:46",
+  "generated_at": "2026-10-18 20:29",
   "inventory": {
-    "small": 40583,
-    "big": 29331,
-    "date": "2026-10-19"
+    "small": 38079,
+    "big": 28784,
+    "date": "2026-10-20"
   },
   "cdm": {
     "ran_today": true,
@@ -56,7 +56,7 @@
     ],
     "mismatch": [],
     "ok": false,
-    "checked_at": "00:46"
+    "checked_at": "20:29"
   },
   "cdm_workflow": {
     "target_date": "2026-10-20",
@@ -141,7 +141,7 @@
         "path": "WorkBuddy\\Claw\\cdm\\ + WorkBuddy\\{工作區}\\cdm\\",
         "full": "C:\\Users\\benso\\WorkBuddy\\Claw\\cdm ／ C:\\Users\\benso\\WorkBuddy\\2026-09-21-11-40-31\\cdm",
         "status": "pending",
-        "detail": "10 Oct 2026 / 26 檔 / 缺 16 / 唔一致 0（00:46 檢查）",
+        "detail": "10 Oct 2026 / 26 檔 / 缺 16 / 唔一致 0（20:29 檢查）",
         "files": []
       },
       {
