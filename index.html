@@ -152,6 +152,44 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 @media (max-width: 560px) {
   .worklog-card { flex: 0 0 100%; }
 }
+/* 點按手勢（click 在手機/桌面都觸發，唔包 hover media query，因為係按下動作） */
+.worklog-card { cursor: pointer; }
+.worklog-card:active { transform: scale(.97); }
+/* ===== 工作紀錄彈出詳情（點按卡片跳出 modal，2026-10-24 加） ===== */
+.wl-modal-mask {
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(8,12,22,.66); backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center; padding: 18px;
+  opacity: 0; pointer-events: none; transition: opacity .22s ease;
+}
+.wl-modal-mask.open { opacity: 1; pointer-events: auto; }
+.wl-modal {
+  width: min(460px, 100%); max-height: 86vh; overflow: auto;
+  background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+  padding: 22px 22px 20px; position: relative;
+  box-shadow: 0 30px 70px rgba(0,0,0,.6);
+  transform: translateY(26px) scale(.86);
+  transition: transform .26s cubic-bezier(.2,.9,.3,1.25);
+}
+.wl-modal-mask.open .wl-modal { transform: translateY(0) scale(1); }
+.wl-modal .wlm-ico { font-size: 42px; line-height: 1; }
+.wl-modal .wlm-name { font-size: 20px; font-weight: 800; color: #ffffff; margin: 8px 0 4px; letter-spacing: .3px; }
+.wl-modal .wlm-status { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 800; padding: 3px 10px; border-radius: 12px; background: rgba(74,222,128,.16); color: #86efac; }
+.wl-modal .wlm-status.doing { background: rgba(77,141,255,.16); color: #9fc6f5; }
+.wl-modal .wlm-status.plan { background: rgba(226,179,60,.16); color: #f7cf6d; }
+.wl-modal .wlm-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; }
+.wl-modal .wlm-tag { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 6px; background: #2f3f60; color: #aeb9c8; }
+.wl-modal .wlm-detail { font-size: 14px; line-height: 1.7; color: var(--muted); font-weight: 600; margin-top: 14px; white-space: pre-line; border-top: 1px solid var(--line); padding-top: 12px; }
+.wl-modal .wlm-close {
+  position: absolute; top: 12px; right: 14px; width: 32px; height: 32px;
+  border: none; border-radius: 50%; background: #2f3f60; color: #cfd8e3;
+  font-size: 18px; font-weight: 800; cursor: pointer; line-height: 1;
+}
+.wl-modal .wlm-close:hover { background: #3c4d70; color: #fff; }
+@media (prefers-reduced-motion: reduce) {
+  .wl-modal-mask, .wl-modal, .worklog-card:active { transition: none; }
+  .wl-modal { transform: none; }
+}
 
 /* ===== ⑪ CDM 全流程跟進表（闊卡，2026-10-04 加 · 2026-10-05 改細版） =====
    改細重點：默認收起（淨係顯示進度條 + 一行摘要），撳「展開 N 步」先出各行；
@@ -756,49 +794,80 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
   <div class="section">
     <div class="section-title"><span class="dot" style="background:linear-gradient(90deg,#4d8dff,#00d4a0)"></span>📋 小Buddy 工作紀錄<span class="drag-hint">· 由「小Buddy 工作整理」搬過嚟嘅獨有工作（dashboard 嗰邊有，原本工作台冇）</span></div>
     <div class="worklog-grid">
-      <div class="worklog-card">
+      <div class="worklog-card" data-detail="工作範圍：
+• 修正 update_status.py 讀取過時路徑（OneDrive / 舊 workspace → C:\CDM 與 Claw\cdm）
+• 修正 api.py 的 CDM_DIR
+• 重生 status.json 快照
+• 後台啟動 8082(Web)/8083(API) server
+• 修復 .bak 假告警，令手機端能讀到即時數據">
         <div class="wl-ico">📱</div>
         <div class="wl-name">手機工作台「資料未更新」修復</div>
         <div class="wl-desc">修正過時路徑(OneDrive/舊workspace→C:/CDM 與 Claw)；重生 status.json；啟 server</div>
         <div class="wl-status">● 完成</div>
         <div class="wl-tags"><span class="wl-tag">2026-10-23</span><span class="wl-tag">tools-hub</span></div>
       </div>
-      <div class="worklog-card">
+      <div class="worklog-card" data-detail="工作範圍：
+• Windows Startup 資料夾建立 start_tools_hub.bat
+• 清除 HTTP 代理（127.0.0.1:60964）避免訪問 localhost 出錯
+• netstat 端口檢查防重複啟動
+• system Python 3.12 起 8083(API) + 8082(Web)
+• 測試 PowerShell 禁用 call 的替代方案">
         <div class="wl-ico">🚀</div>
         <div class="wl-name">開機自啟工作台 server</div>
         <div class="wl-desc">登入 Windows 自動起 8082/8083（system Python 3.12，端口檢查防重複）</div>
         <div class="wl-status">● 完成</div>
         <div class="wl-tags"><span class="wl-tag">2026-10-23</span><span class="wl-tag">Startup</span></div>
       </div>
-      <div class="worklog-card">
+      <div class="worklog-card" data-detail="工作範圍：
+• 設 benso 帳戶 AutoAdminLogon 空白密碼免密碼開機
+• 目的：令「開機自啟 server」可真正自動執行（唔使人手登入）
+• 狀態：待用戶以管理員身分執行註冊表/設定，目前未完成">
         <div class="wl-ico">🔐</div>
         <div class="wl-name">本機自動登入設定</div>
         <div class="wl-desc">設 benso 空白密碼免密碼開機（AutoAdminLogon）</div>
         <div class="wl-status doing">● 跟進中</div>
         <div class="wl-tags"><span class="wl-tag">待用戶以管理員執行</span></div>
       </div>
-      <div class="worklog-card">
+      <div class="worklog-card" data-detail="工作範圍：
+• 祐興粉麵品牌 IP 動畫製作
+• 採 doodle-anim（Canvas 2D 手繪風，零圖像素材）
+• Windows MP4 渲染需正式版 ffmpeg（Playwright 自帶版缺 libx264）
+• 已打通正式版 ffmpeg：C:\Users\benso\.workbuddy\binaries\bin\ffmpeg.exe
+• 採完整 Chromium（channel:'chromium'）渲染">
         <div class="wl-ico">🎬</div>
         <div class="wl-name">祐興 IP 動畫（doodle-anim）</div>
         <div class="wl-desc">祐興粉麵品牌 IP 動畫，Windows MP4 渲染需正式 ffmpeg</div>
         <div class="wl-status doing">● 跟進中</div>
         <div class="wl-tags"><span class="wl-tag">祐興</span><span class="wl-tag">IP</span></div>
       </div>
-      <div class="worklog-card">
+      <div class="worklog-card" data-detail="工作範圍：
+• 與 Super Tri 嚴格隔離（兩份獨立報價單，產品/價格/規格全不同，絕不跨撈）
+• 供應商主要 Kai Shing（Food Index (Kai Shing XXXX).xlsx）
+• 2026 全年按月夾（01 Jan ~ 10 Oct）
+• 改價 / 查價 / 生成 XPS（PrintOut + Microsoft XPS Document Writer）
+• 微信通道（weixinClawBot）整合查價">
         <div class="wl-ico">🍜</div>
         <div class="wl-name">Food Index 報價單</div>
         <div class="wl-desc">與 Super Tri 嚴格隔離；改價/查價/生成 XPS</div>
         <div class="wl-status plan">● 計劃中</div>
         <div class="wl-tags"><span class="wl-tag">報價</span><span class="wl-tag">隔離鐵規</span></div>
       </div>
-      <div class="worklog-card">
+      <div class="worklog-card" data-detail="工作範圍：
+• 6 家供應商報價單（HKY / KYW / KYP / KKG / KDS / Kai Shing）
+• 表格結構：Row1 標題、Row51-52 欄位（Code/Description/Packing/Case HK$/Unit/散價）、Row53 起產品
+• 與 Food Index 嚴格隔離鐵規
+• 改價 / 查價 / 生成 XPS">
         <div class="wl-ico">📦</div>
         <div class="wl-name">Super Tri 報價單</div>
         <div class="wl-desc">6 家供應商報價單（HKY/KYW/KYP/KKG/KDS/Kai Shing）</div>
         <div class="wl-status plan">● 計劃中</div>
         <div class="wl-tags"><span class="wl-tag">報價</span><span class="wl-tag">6 供應商</span></div>
       </div>
-      <div class="worklog-card">
+      <div class="worklog-card" data-detail="工作範圍：
+• 恒指 32 支成份股技術分析（yfinance 90 日線，MA/RSI/MACD/KDJ）
+• 股票投資記錄.xlsx 盈虧自動計算（綠=盈、紅=虧）
+• hk_stocks_analysis.py 技術分析腳本
+• 每週報告 + email 推送">
         <div class="wl-ico">📈</div>
         <div class="wl-name">股票技術分析</div>
         <div class="wl-desc">恒指 32 支成份股技術分析（MA/RSI/MACD/KDJ）</div>
@@ -2047,8 +2116,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v52';
-  var APP_PUBLISHED = '2026/10/24 11:42';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v53';
+  var APP_PUBLISHED = '2026/10/24 11:53';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
@@ -2307,6 +2376,47 @@ async function checkWorkflow() {
       if (ev.key === 'Escape' && card.classList.contains('open')) collapse();
     });
   });
+})();
+</script>
+<!-- 工作紀錄：點按卡片跳出詳情 modal（2026-10-24 加） -->
+<div class="wl-modal-mask" id="wlModal">
+  <div class="wl-modal" role="dialog" aria-modal="true">
+    <button class="wlm-close" id="wlClose" aria-label="關閉">×</button>
+    <div class="wlm-ico" id="wlmIco"></div>
+    <div class="wlm-name" id="wlmName"></div>
+    <span class="wlm-status" id="wlmStatus"></span>
+    <div class="wlm-tags" id="wlmTags"></div>
+    <div class="wlm-detail" id="wlmDetail"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var mask = document.getElementById('wlModal');
+  var elIco = document.getElementById('wlmIco');
+  var elName = document.getElementById('wlmName');
+  var elStatus = document.getElementById('wlmStatus');
+  var elTags = document.getElementById('wlmTags');
+  var elDetail = document.getElementById('wlmDetail');
+  function openModal(card){
+    var ico = card.querySelector('.wl-ico');
+    var name = card.querySelector('.wl-name');
+    var st = card.querySelector('.wl-status');
+    elIco.textContent = ico ? ico.textContent : '';
+    elName.textContent = name ? name.textContent : '';
+    if(st){ elStatus.textContent = st.textContent; elStatus.className = 'wlm-status' + (st.classList.contains('doing') ? ' doing' : (st.classList.contains('plan') ? ' plan' : '')); }
+    else { elStatus.textContent = ''; elStatus.className = 'wlm-status'; }
+    elTags.innerHTML = '';
+    card.querySelectorAll('.wl-tag').forEach(function(t){ var s = document.createElement('span'); s.className = 'wlm-tag'; s.textContent = t.textContent; elTags.appendChild(s); });
+    elDetail.textContent = card.getAttribute('data-detail') || '';
+    mask.classList.add('open');
+  }
+  function closeModal(){ mask.classList.remove('open'); }
+  document.querySelectorAll('.worklog-card').forEach(function(c){
+    c.addEventListener('click', function(e){ e.stopPropagation(); openModal(c); });
+  });
+  document.getElementById('wlClose').addEventListener('click', closeModal);
+  mask.addEventListener('click', function(e){ if(e.target === mask) closeModal(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
 })();
 </script>
 </body>

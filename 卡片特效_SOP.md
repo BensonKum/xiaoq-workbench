@@ -106,7 +106,7 @@ publish 完：情人節藍色 ⟳ 檢查更新 vXX 位.Update → 手機 PWA 撳
 2. **hover 一定要包 `@media (hover: hover) and (pointer: fine)`**，否則手機黏住。
 3. **publish 淨係 `python _publish.py` + sites deploy**；唔准喺第二部機 deploy（url 綁雲端 app ID → 線上會倒退 9/18 舊版、PWA 整冇）。
 4. **倉存數字淨係一個源**：`api.py::read_box_latest()`（當月 sheet + 最後有日期行 + col6/col7），front_end 兩邊都讀佢。
-5. **新卡唔好自己起 class**，用第 一節 6 款；要新 class 先講一聲。
+5. **新卡唔好自己起 class**，用第 一節 6 款；要新 class 先講一聲。（例外：`.worklog-card` 係 2026-10-24 經 Benson 批准嘅第 7 款，專用於「📋 小Buddy 工作紀錄」section，獨立容器、唔介入 drag/showFlow）
 
 ---
 
@@ -120,3 +120,38 @@ publish 完：情人節藍色 ⟳ 檢查更新 vXX 位.Update → 手機 PWA 撳
 - [ ] 6️⃣ `python _publish.py` → sites deploy → 線上對卡
 - [ ] 7️⃣ 手機 PWA 撳「⟳ 檢查更新 vXX」睇到新卡
 - [ ] 8️⃣ HANDOFF + MEMORY 記一筆
+
+---
+
+## 五、第 7 款 worklog-card（2026-10-24 加 · 經 Benson 批准例外）
+
+> 用途：喺「📋 小Buddy 工作紀錄」section 列出「小Buddy 工作整理」dashboard 獨有、原本工作台冇嘅工作項目。
+> 獨立 `.worklog-grid` 容器 + 專屬 class，**唔介入 drag / showFlow**（唔帶 `onclick`/`data-id`，唔落 `.flow-grid`）。
+
+| # | 卡名 | class | 用喺邊 | 特效重點 | 數據點 |
+|---|---|---|---|---|---|
+| ⑦ | 工作紀錄卡 | `.worklog-card` | 「📋 小Buddy 工作紀錄」section（7 張靜態卡） | hover `scale(1.04)` + 深陰影（包 `@media (hover:hover) and (pointer:fine)`）；頂條 `var(--primary)` | 手寫 DOM（靜態，無 JS 生成） |
+
+```css
+.worklog-card {
+  flex: 0 0 calc(50% - 7px);
+  background: var(--card); border-radius: 18px; padding: 14px 15px; border: 1px solid var(--line);
+  position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 4px;
+  transition: box-shadow .22s ease, transform .22s ease, border-color .2s;
+}
+.worklog-card::before { content:''; position:absolute; top:0; left:0; right:0; height:5px; background: var(--primary); }
+@media (hover:hover) and (pointer:fine) {
+  .worklog-card:hover { transform: scale(1.04); box-shadow: 0 12px 26px rgba(0,0,0,.6); border-color: #47566b; z-index: 2; }
+}
+@media (max-width: 560px) { .worklog-card { flex: 0 0 100%; } }
+```
+DOM（每張卡）：
+```html
+<div class="worklog-card">
+  <div class="wl-ico">📱</div>
+  <div class="wl-name">標題</div>
+  <div class="wl-desc">簡述</div>
+  <div class="wl-status">● 完成</div>            <!-- doing=跟進中 / plan=計劃中 -->
+  <div class="wl-tags"><span class="wl-tag">標籤</span></div>
+</div>
+```
