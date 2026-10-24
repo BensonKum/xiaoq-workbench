@@ -79,6 +79,8 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 }
 .flow-card.linked .flow-icon, .cmd-card.linked .cmd-ico { transform: scale(1.12); }
 .flow-card, .cmd-card, .skill-card { transition: flex-basis .3s cubic-bezier(.2,0,.2,1), box-shadow .22s ease, transform .22s ease, border-color .25s ease; }
+/* 拖動排序需要 pointermove 可靠觸發：手機上唔俾瀏覽器搶手勢去 scroll */
+.flow-card { touch-action: none; }
 @media (max-width: 860px) {
   .filter-bar { flex-wrap: wrap; }
   .fb-label { display: none; }
@@ -155,40 +157,25 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 /* 點按手勢（click 在手機/桌面都觸發，唔包 hover media query，因為係按下動作） */
 .worklog-card { cursor: pointer; }
 .worklog-card:active { transform: scale(.97); }
-/* ===== 工作紀錄彈出詳情（點按卡片跳出 modal，2026-10-24 加） ===== */
-.wl-modal-mask {
-  position: fixed; inset: 0; z-index: 999;
-  background: rgba(8,12,22,.66); backdrop-filter: blur(3px);
-  display: flex; align-items: center; justify-content: center; padding: 18px;
-  opacity: 0; pointer-events: none; transition: opacity .22s ease;
+/* ===== 工作紀錄卡片：點按 inline 展開／收起（同 flow-card 一致，2026-10-24 改） ===== */
+.worklog-card .wl-chev {
+  margin-left: auto; align-self: flex-start; font-size: 12px; color: var(--muted);
+  transition: transform .2s ease; line-height: 1.2;
 }
-.wl-modal-mask.open { opacity: 1; pointer-events: auto; }
-.wl-modal {
-  width: min(460px, 100%); max-height: 86vh; overflow: auto;
-  background: var(--card); border: 1px solid var(--line); border-radius: 20px;
-  padding: 22px 22px 20px; position: relative;
-  box-shadow: 0 30px 70px rgba(0,0,0,.6);
-  transform: translateY(26px) scale(.86);
-  transition: transform .26s cubic-bezier(.2,.9,.3,1.25);
+.worklog-card.open .wl-chev { transform: rotate(180deg); }
+.worklog-card .wl-body {
+  display: none;
+  margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line);
+  font-size: 13px; line-height: 1.75; color: var(--muted); font-weight: 600;
+  white-space: pre-line;
 }
-.wl-modal-mask.open .wl-modal { transform: translateY(0) scale(1); }
-.wl-modal .wlm-ico { font-size: 42px; line-height: 1; }
-.wl-modal .wlm-name { font-size: 20px; font-weight: 800; color: #ffffff; margin: 8px 0 4px; letter-spacing: .3px; }
-.wl-modal .wlm-status { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 800; padding: 3px 10px; border-radius: 12px; background: rgba(74,222,128,.16); color: #86efac; }
-.wl-modal .wlm-status.doing { background: rgba(77,141,255,.16); color: #9fc6f5; }
-.wl-modal .wlm-status.plan { background: rgba(226,179,60,.16); color: #f7cf6d; }
-.wl-modal .wlm-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; }
-.wl-modal .wlm-tag { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 6px; background: #2f3f60; color: #aeb9c8; }
-.wl-modal .wlm-detail { font-size: 14px; line-height: 1.7; color: var(--muted); font-weight: 600; margin-top: 14px; white-space: pre-line; border-top: 1px solid var(--line); padding-top: 12px; }
-.wl-modal .wlm-close {
-  position: absolute; top: 12px; right: 14px; width: 32px; height: 32px;
-  border: none; border-radius: 50%; background: #2f3f60; color: #cfd8e3;
-  font-size: 18px; font-weight: 800; cursor: pointer; line-height: 1;
+.worklog-card.open .wl-body { display: block; }
+.worklog-card.open {
+  border-color: #47566b;
+  box-shadow: 0 12px 26px rgba(0,0,0,.6);
 }
-.wl-modal .wlm-close:hover { background: #3c4d70; color: #fff; }
 @media (prefers-reduced-motion: reduce) {
-  .wl-modal-mask, .wl-modal, .worklog-card:active { transition: none; }
-  .wl-modal { transform: none; }
+  .worklog-card:active, .worklog-card .wl-chev { transition: none; }
 }
 
 /* ===== ⑪ CDM 全流程跟進表（闊卡，2026-10-04 加 · 2026-10-05 改細版） =====
@@ -2143,8 +2130,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v56';
-  var APP_PUBLISHED = '2026/10/24 14:30';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v57';
+  var APP_PUBLISHED = '2026/10/24 14:42';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
@@ -2422,45 +2409,32 @@ async function checkWorkflow() {
   });
 })();
 </script>
-<!-- 工作紀錄：點按卡片跳出詳情 modal（2026-10-24 加） -->
-<div class="wl-modal-mask" id="wlModal">
-  <div class="wl-modal" role="dialog" aria-modal="true">
-    <button class="wlm-close" id="wlClose" aria-label="關閉">×</button>
-    <div class="wlm-ico" id="wlmIco"></div>
-    <div class="wlm-name" id="wlmName"></div>
-    <span class="wlm-status" id="wlmStatus"></span>
-    <div class="wlm-tags" id="wlmTags"></div>
-    <div class="wlm-detail" id="wlmDetail"></div>
-  </div>
-</div>
+<!-- 工作紀錄：點按卡片 inline 展開／收起（同 flow-card 一致，2026-10-24 改） -->
 <script>
 (function(){
-  var mask = document.getElementById('wlModal');
-  var elIco = document.getElementById('wlmIco');
-  var elName = document.getElementById('wlmName');
-  var elStatus = document.getElementById('wlmStatus');
-  var elTags = document.getElementById('wlmTags');
-  var elDetail = document.getElementById('wlmDetail');
-  function openModal(card){
-    var ico = card.querySelector('.wl-ico');
-    var name = card.querySelector('.wl-name');
-    var st = card.querySelector('.wl-status');
-    elIco.textContent = ico ? ico.textContent : '';
-    elName.textContent = name ? name.textContent : '';
-    if(st){ elStatus.textContent = st.textContent; elStatus.className = 'wlm-status' + (st.classList.contains('doing') ? ' doing' : (st.classList.contains('plan') ? ' plan' : '')); }
-    else { elStatus.textContent = ''; elStatus.className = 'wlm-status'; }
-    elTags.innerHTML = '';
-    card.querySelectorAll('.wl-tag').forEach(function(t){ var s = document.createElement('span'); s.className = 'wlm-tag'; s.textContent = t.textContent; elTags.appendChild(s); });
-    elDetail.textContent = card.getAttribute('data-detail') || '';
-    mask.classList.add('open');
-  }
-  function closeModal(){ mask.classList.remove('open'); }
+  /* 工作紀錄卡片：點按 inline 展開／收起（同 flow-card 一致）。
+     加一個 ▾ 提示 + 隱藏嘅細節 body；撳開→再撳收起，唔使 modal 遮住張卡。 */
   document.querySelectorAll('.worklog-card').forEach(function(c){
-    c.addEventListener('click', function(e){ e.stopPropagation(); openModal(c); });
+    var chev = document.createElement('span');
+    chev.className = 'wl-chev';
+    chev.textContent = '▾';
+    c.appendChild(chev);
+    var body = document.createElement('div');
+    body.className = 'wl-body';
+    body.textContent = c.getAttribute('data-detail') || '';
+    c.appendChild(body);
+    var open = false;
+    c.addEventListener('click', function(e){
+      e.stopPropagation();
+      open = !open;
+      c.classList.toggle('open', open);
+    });
   });
-  document.getElementById('wlClose').addEventListener('click', closeModal);
-  mask.addEventListener('click', function(e){ if(e.target === mask) closeModal(); });
-  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      document.querySelectorAll('.worklog-card.open').forEach(function(c){ c.classList.remove('open'); });
+    }
+  });
 })();
 </script>
 </body>
