@@ -2143,8 +2143,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v55';
-  var APP_PUBLISHED = '2026/10/24 13:06';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v56';
+  var APP_PUBLISHED = '2026/10/24 14:30';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
@@ -2177,7 +2177,9 @@ async function checkWorkflow() {
       if (_updDone) return; _updDone = true;
       if (updTxt) updTxt.textContent = '檢查更新';
       updBtn.classList.remove('run');
-      try { location.reload(true); } catch (_) { location.href = location.href; }
+      /* 加 cache-busting 參數硬刷：繞開 CDN/瀏覽器緩存，一定攞到最新 index.html */
+      var p = location.pathname + (location.pathname.indexOf('?') >= 0 ? '&' : '?') + 'cb=' + Date.now();
+      try { location.href = p; } catch (_) { try { location.reload(true); } catch (__){ location.href = location.href; } }
     }
     updBtn.addEventListener('click', function () {
       /* ① 即時反應：變「檢查中…」 */
@@ -2215,6 +2217,10 @@ async function checkWorkflow() {
 
   /* 註冊 Service Worker（離線可開 + 令 Chrome 識別為可安裝 PWA） */
   if ('serviceWorker' in navigator) {
+    /* 新版 SW 接手時自動重載，套用最新頁面（雙重保障，唔使撳掣） */
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      try { window.location.reload(); } catch (_) {}
+    });
     window.addEventListener('load', function () {
       navigator.serviceWorker.register('sw.js').catch(function () {});
     });

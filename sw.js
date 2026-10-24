@@ -1,7 +1,7 @@
 /* 祐興工作台 Service Worker —— 離線快取 + 令 PWA 可安裝
  * 版本號必須同 index.html 嘅 APP_VERSION 一致（用 _bump_sw.py 自動同步）
  */
-const APP_VER = 'v55';
+const APP_VER = 'v56';
 const CACHE = 'xq-workbench-' + APP_VER;
 const ASSETS = [
   './', './index.html', './manifest.json',
@@ -63,5 +63,12 @@ self.addEventListener('activate', (e) => {
     caches.keys()
       .then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
+      .then(() => {
+        /* 根治「舊 SW 鎖死緩存、頁面卡住唔更新」：新版 SW 一接手，
+           強制所有已開頁面重新導航去最新版（network-first 會攞到新頁）。
+           只喺版本變更時 activate 一次，唔會無限 loop。 */
+        return self.clients.matchAll({ includeUncontrolled: true, type: 'window' })
+          .then((cs) => cs.forEach((c) => { try { c.navigate(c.url); } catch (_) {} }));
+      })
   );
 });
