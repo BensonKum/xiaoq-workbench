@@ -130,43 +130,43 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
    用途：列出「小Buddy 工作整理」dashboard 獨有、但 Benson x WorkBuddy 原本冇嘅工作項目。
    規格：沿用深色配色（var(--card)）；hover 必包 @media (hover:hover) and (pointer:fine)（手機唔黏住）；
          獨立 .worklog-grid 容器 + 專屬 class，唔介入 drag / showFlow。 */
-.worklog-grid { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; max-width: 640px; }
+.worklog-grid { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; max-width: 640px; }
 .worklog-card {
-  flex: 0 0 calc(50% - 7px);
-  background: var(--card); border-radius: 18px; padding: 14px 15px; border: 1px solid var(--line);
+  flex: 0 0 calc(25% - 8px);
+  background: var(--card); border-radius: 14px; padding: 9px 10px; border: 1px solid var(--line);
   position: relative; overflow: hidden;
   display: flex; flex-direction: column; gap: 4px;
   transition: box-shadow .22s ease, transform .22s ease, border-color .2s;
   user-select: none; -webkit-user-select: none;
 }
 .worklog-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: var(--primary); }
-.worklog-card .wl-ico { font-size: 26px; }
-.worklog-card .wl-name { font-size: 17px; font-weight: 800; color: #ffffff; letter-spacing: .3px; }
-.worklog-card .wl-desc { font-size: 13px; font-weight: 700; color: var(--muted); line-height: 1.4; }
-.worklog-card .wl-status { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 800; padding: 3px 10px; border-radius: 12px; background: rgba(74,222,128,.16); color: #86efac; align-self: flex-start; }
+.worklog-card .wl-ico { font-size: 16px; line-height: 1.1; }
+.worklog-card .wl-name { font-size: 12px; font-weight: 800; color: #ffffff; letter-spacing: .2px; }
+.worklog-card .wl-desc { font-size: 10px; font-weight: 700; color: var(--muted); line-height: 1.35; }
+.worklog-card .wl-status { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 10px; background: rgba(74,222,128,.16); color: #86efac; align-self: flex-start; }
 .worklog-card .wl-status.doing { background: rgba(77,141,255,.16); color: #9fc6f5; }
 .worklog-card .wl-status.plan { background: rgba(226,179,60,.16); color: #f7cf6d; }
-.worklog-card .wl-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
-.worklog-card .wl-tag { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 6px; background: #2f3f60; color: #aeb9c8; }
+.worklog-card .wl-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+.worklog-card .wl-tag { font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 5px; background: #2f3f60; color: #aeb9c8; }
 @media (hover:hover) and (pointer:fine) {
   .worklog-card:hover { transform: scale(1.04); box-shadow: 0 12px 26px rgba(0,0,0,.6); border-color: #47566b; z-index: 2; }
 }
 @media (max-width: 560px) {
-  .worklog-card { flex: 0 0 100%; }
+  .worklog-card { flex: 0 0 calc(50% - 5px); }
 }
 /* 點按手勢（click 在手機/桌面都觸發，唔包 hover media query，因為係按下動作） */
 .worklog-card { cursor: pointer; }
 .worklog-card:active { transform: scale(.97); }
 /* ===== 工作紀錄卡片：點按 inline 展開／收起（同 flow-card 一致，2026-10-24 改） ===== */
 .worklog-card .wl-chev {
-  margin-left: auto; align-self: flex-start; font-size: 12px; color: var(--muted);
+  margin-left: auto; align-self: flex-start; font-size: 10px; color: var(--muted);
   transition: transform .2s ease; line-height: 1.2;
 }
 .worklog-card.open .wl-chev { transform: rotate(180deg); }
 .worklog-card .wl-body {
   display: none;
-  margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line);
-  font-size: 13px; line-height: 1.75; color: var(--muted); font-weight: 600;
+  margin-top: 7px; padding-top: 7px; border-top: 1px dashed var(--line);
+  font-size: 10px; line-height: 1.6; color: var(--muted); font-weight: 600;
   white-space: pre-line;
 }
 .worklog-card.open .wl-body { display: block; }
@@ -2130,8 +2130,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v57';
-  var APP_PUBLISHED = '2026/10/24 14:42';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v58';
+  var APP_PUBLISHED = '2026/10/24 16:07';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
