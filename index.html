@@ -615,7 +615,12 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .bc-chart::-webkit-scrollbar { height: 8px; }
 .bc-chart::-webkit-scrollbar-thumb { background: #2c3a55; border-radius: 4px; }
 .bc-day { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
-.bc-bars { display: flex; align-items: flex-end; gap: 3px; height: 300px; }
+.bc-bars { display: flex; align-items: flex-end; gap: 3px; height: 300px;
+  background-image: repeating-linear-gradient(to top, rgba(120,140,170,0.16) 0, rgba(120,140,170,0.16) 1px, transparent 1px, transparent 25%); }
+.bc-yaxis { flex: 0 0 46px; position: sticky; left: 0; z-index: 3; background: #1b2740; border-right: 1px solid #2c3a55; display: flex; flex-direction: column; }
+.bc-yinner { position: relative; height: 300px; }
+.bc-yaxis .ytick { position: absolute; right: 5px; transform: translateY(50%); font-size: 9px; color: #9fb0c8; white-space: nowrap; }
+.bc-yaxis .ytick.top { transform: translateY(100%); }
 .bc-col { width: 22px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; cursor: pointer; }
 .bc-val { font-size: 9px; color: #dbe4f2; margin-bottom: 2px; white-space: nowrap; }
 .bc-bar { width: 100%; border-radius: 4px 4px 0 0; min-height: 2px; transition: filter .15s; }
@@ -1002,6 +1007,20 @@ function renderBoxChart(data) {
     if (b > max) max = b;
   });
   chart.innerHTML = '';
+  // 左側 Y 軸刻度（0 / ¼ / ½ / ¾ / max），橫向滾動時 sticky 保持可見
+  var yaxis = document.createElement('div');
+  yaxis.className = 'bc-yaxis';
+  var yinner = document.createElement('div');
+  yinner.className = 'bc-yinner';
+  [1, 0.75, 0.5, 0.25, 0].forEach(function (f) {
+    var t = document.createElement('span');
+    t.className = 'ytick' + (f === 1 ? ' top' : '');
+    t.style.bottom = (f * 100) + '%';
+    t.textContent = Math.round(max * f).toLocaleString();
+    yinner.appendChild(t);
+  });
+  yaxis.appendChild(yinner);
+  chart.appendChild(yaxis);
   rows.forEach(function (r, i) {
     var s = r.small_used||0, b = r.big_used||0;
     var hs = Math.round(s / max * 100);
@@ -2279,8 +2298,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v62';
-  var APP_PUBLISHED = '2026/10/25 05:56';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v63';
+  var APP_PUBLISHED = '2026/10/25 06:02';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
