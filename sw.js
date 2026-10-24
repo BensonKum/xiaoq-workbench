@@ -1,7 +1,7 @@
 /* 祐興工作台 Service Worker —— 離線快取 + 令 PWA 可安裝
  * 版本號必須同 index.html 嘅 APP_VERSION 一致（用 _bump_sw.py 自動同步）
  */
-const APP_VER = 'v58';
+const APP_VER = 'v59';
 const CACHE = 'xq-workbench-' + APP_VER;
 const ASSETS = [
   './', './index.html', './manifest.json',
@@ -14,6 +14,13 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== location.origin) return;
+
+  /* sw.js 自己：永遠網絡優先、唔入快取。否則舊 SW 會快取自己，
+     令瀏覽器嘅 SW update 檢查永遠攞唔到新版（手機卡死主因）。 */
+  if (url.pathname.endsWith('/sw.js')) {
+    e.respondWith(fetch(req));
+    return;
+  }
 
   if (req.mode === 'navigate' || (req.headers.get('accept') || '').indexOf('text/html') > -1) {
     e.respondWith(

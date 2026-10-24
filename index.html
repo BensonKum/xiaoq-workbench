@@ -2130,8 +2130,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v58';
-  var APP_PUBLISHED = '2026/10/24 16:07';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v59';
+  var APP_PUBLISHED = '2026/10/24 16:26';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
@@ -2209,7 +2209,11 @@ async function checkWorkflow() {
       try { window.location.reload(); } catch (_) {}
     });
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('sw.js').catch(function () {});
+      var swUrl = 'sw.js?v=' + (window.APP_VERSION || '');
+      navigator.serviceWorker.register(swUrl).catch(function () {});
+      navigator.serviceWorker.getRegistration().then(function (reg) {
+        if (reg) { try { reg.update(); } catch (_) {} }
+      });
     });
   }
 
