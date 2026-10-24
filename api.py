@@ -9,6 +9,7 @@ import json
 import re
 from datetime import datetime
 from http.server import HTTPServer, BaseHTTPRequestHandler
+from urllib.parse import urlparse, parse_qs
 import openpyxl
 
 # 文件路徑
@@ -57,10 +58,72 @@ def read_box_latest(path=INVENTORY_FILE):
     finally:
         wb.close()
 
+
+def read_box_history(month=None):
+    """回 {success, month, months, rows:[{date,small_bal,big_bal,small_used,big_used}], updated_at}
+       讀指定月份 sheet 嘅每日結餘/用量。欄位用 header(row2) 配對，兼容 8 欄新格式同 5 欄舊格式。"""
+    wb = openpyxl.load_workbook(INVENTORY_FILE, data_only=True)
+    try:
+        months = list(wb.sheetnames)
+        sheet = None
+        if month and month in months:
+            sheet = wb[month]
+        else:
+            today = datetime.now()
+            name = '%d月' % today.month
+            sheet = wb[name] if name in months else wb[months[-1]]
+            month = sheet.title
+
+        # 用 header(row2) 配對欄位（兼容 5 欄舊 / 8 欄新）
+        hdr = {}
+        for c in range(1, sheet.max_column + 1):
+            v = sheet.cell(2, c).value
+            if v is None:
+                continue
+            s = str(v).strip()
+            if '日期' in s:
+                hdr.setdefault('date', c)
+            elif '1-10' in s and '結餘' in s:
+                hdr.setdefault('small_bal', c)
+            elif '11-12' in s and '結餘' in s:
+                hdr.setdefault('big_bal', c)
+            elif '1-10' in s and '用量' in s:
+                hdr.setdefault('small_used', c)
+            elif '11-12' in s and '用量' in s:
+                hdr.setdefault('big_used', c)
+        date_c = hdr.get('date', 1)
+        small_bal_c = hdr.get('small_bal', 4 if sheet.max_column <= 5 else 6)
+        big_bal_c = hdr.get('big_bal', 5 if sheet.max_column <= 5 else 7)
+        small_used_c = hdr.get('small_used', 2)
+        big_used_c = hdr.get('big_used', 3)
+
+        rows = []
+        for r in range(3, sheet.max_row + 1):
+            v = sheet.cell(r, date_c).value
+            if v is None:
+                continue
+            if not DATE_RE.match(str(v).strip()):
+                continue  # 跳過 總用量 / 期末結餘 等 summary 行
+            def _int(x):
+                return int(x) if isinstance(x, (int, float)) else 0
+            rows.append({
+                'date': str(v)[:10],
+                'small_bal': _int(sheet.cell(r, small_bal_c).value),
+                'big_bal': _int(sheet.cell(r, big_bal_c).value),
+                'small_used': _int(sheet.cell(r, small_used_c).value),
+                'big_used': _int(sheet.cell(r, big_used_c).value),
+            })
+        return {'month': month, 'months': months, 'rows': rows,
+                'updated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+    finally:
+        wb.close()
+
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/api/inventory':
             self.send_inventory()
+        elif self.path.startswith('/api/box_history'):
+            self.send_box_history()
         elif self.path == '/api/cdm-status':
             self.send_cdm_status()
         elif self.path == '/api/check-all':
@@ -79,6 +142,17 @@ class Handler(BaseHTTPRequestHandler):
                 'last_update': box['date'],
                 'file_path': INVENTORY_FILE
             }
+            self.send_json(data)
+        except Exception as e:
+            self.send_json({'success': False, 'error': str(e)})
+
+    def send_box_history(self):
+        """讀取膠盒倉存整月每日資料（?month=10月）"""
+        try:
+            q = parse_qs(urlparse(self.path).query)
+            month = q.get('month', [None])[0]
+            data = read_box_history(month)
+            data['success'] = True
             self.send_json(data)
         except Exception as e:
             self.send_json({'success': False, 'error': str(e)})
