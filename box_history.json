@@ -1,0 +1,1379 @@
+{
+ "generated_at": "2026-10-25 04:48:55",
+ "months": [
+  "4月",
+  "5月",
+  "6月",
+  "7月",
+  "8月",
+  "9月",
+  "10月"
+ ],
+ "by_month": {
+  "4月": {
+   "month": "4月",
+   "rows": [
+    {
+     "date": "2026-04-21",
+     "small_bal": 127860,
+     "big_bal": 29479,
+     "small_used": 2140,
+     "big_used": 521
+    },
+    {
+     "date": "2026-04-22",
+     "small_bal": 125748,
+     "big_bal": 28974,
+     "small_used": 2112,
+     "big_used": 505
+    },
+    {
+     "date": "2026-04-23",
+     "small_bal": 123623,
+     "big_bal": 28479,
+     "small_used": 2125,
+     "big_used": 495
+    },
+    {
+     "date": "2026-04-24",
+     "small_bal": 121568,
+     "big_bal": 28005,
+     "small_used": 2055,
+     "big_used": 474
+    },
+    {
+     "date": "2026-04-25",
+     "small_bal": 119504,
+     "big_bal": 27531,
+     "small_used": 2064,
+     "big_used": 474
+    },
+    {
+     "date": "2026-04-26",
+     "small_bal": 117526,
+     "big_bal": 27069,
+     "small_used": 1978,
+     "big_used": 462
+    },
+    {
+     "date": "2026-04-27",
+     "small_bal": 115198,
+     "big_bal": 26520,
+     "small_used": 2328,
+     "big_used": 549
+    },
+    {
+     "date": "2026-04-28",
+     "small_bal": 112976,
+     "big_bal": 26000,
+     "small_used": 2222,
+     "big_used": 520
+    },
+    {
+     "date": "2026-04-29",
+     "small_bal": 110837,
+     "big_bal": 25511,
+     "small_used": 2139,
+     "big_used": 489
+    },
+    {
+     "date": "2026-04-30",
+     "small_bal": 108831,
+     "big_bal": 25030,
+     "small_used": 2006,
+     "big_used": 481
+    }
+   ],
+   "updated_at": "2026-10-25 04:48:53"
+  },
+  "5月": {
+   "month": "5月",
+   "rows": [
+    {
+     "date": "2026-05-01",
+     "small_bal": 107012,
+     "big_bal": 24596,
+     "small_used": 1819,
+     "big_used": 434
+    },
+    {
+     "date": "2026-05-02",
+     "small_bal": 105090,
+     "big_bal": 24151,
+     "small_used": 1922,
+     "big_used": 445
+    },
+    {
+     "date": "2026-05-03",
+     "small_bal": 103172,
+     "big_bal": 23703,
+     "small_used": 1918,
+     "big_used": 448
+    },
+    {
+     "date": "2026-05-04",
+     "small_bal": 100875,
+     "big_bal": 23169,
+     "small_used": 2297,
+     "big_used": 534
+    },
+    {
+     "date": "2026-05-05",
+     "small_bal": 98672,
+     "big_bal": 22666,
+     "small_used": 2203,
+     "big_used": 503
+    },
+    {
+     "date": "2026-05-06",
+     "small_bal": 96553,
+     "big_bal": 22184,
+     "small_used": 2119,
+     "big_used": 482
+    },
+    {
+     "date": "2026-05-07",
+     "small_bal": 94402,
+     "big_bal": 21664,
+     "small_used": 2151,
+     "big_used": 520
+    },
+    {
+     "date": "2026-05-08",
+     "small_bal": 92308,
+     "big_bal": 21191,
+     "small_used": 2094,
+     "big_used": 473
+    },
+    {
+     "date": "2026-05-09",
+     "small_bal": 90243,
+     "big_bal": 20739,
+     "small_used": 2065,
+     "big_used": 452
+    },
+    {
+     "date": "2026-05-10",
+     "small_bal": 88272,
+     "big_bal": 20283,
+     "small_used": 1971,
+     "big_used": 456
+    },
+    {
+     "date": "2026-05-11",
+     "small_bal": 85980,
+     "big_bal": 19750,
+     "small_used": 2292,
+     "big_used": 533
+    },
+    {
+     "date": "2026-05-12",
+     "small_bal": 83785,
+     "big_bal": 19249,
+     "small_used": 2195,
+     "big_used": 501
+    },
+    {
+     "date": "2026-05-13",
+     "small_bal": 81615,
+     "big_bal": 18750,
+     "small_used": 2170,
+     "big_used": 499
+    },
+    {
+     "date": "2026-05-14",
+     "small_bal": 79549,
+     "big_bal": 18264,
+     "small_used": 2066,
+     "big_used": 486
+    },
+    {
+     "date": "2026-05-15",
+     "small_bal": 77555,
+     "big_bal": 17809,
+     "small_used": 1994,
+     "big_used": 455
+    },
+    {
+     "date": "2026-05-16",
+     "small_bal": 75576,
+     "big_bal": 17355,
+     "small_used": 1979,
+     "big_used": 454
+    },
+    {
+     "date": "2026-05-17",
+     "small_bal": 73646,
+     "big_bal": 16903,
+     "small_used": 1930,
+     "big_used": 452
+    },
+    {
+     "date": "2026-05-18",
+     "small_bal": 71380,
+     "big_bal": 16386,
+     "small_used": 2266,
+     "big_used": 517
+    },
+    {
+     "date": "2026-05-19",
+     "small_bal": 69210,
+     "big_bal": 15880,
+     "small_used": 2170,
+     "big_used": 506
+    },
+    {
+     "date": "2026-05-20",
+     "small_bal": 67027,
+     "big_bal": 15365,
+     "small_used": 2183,
+     "big_used": 515
+    },
+    {
+     "date": "2026-05-21",
+     "small_bal": 64916,
+     "big_bal": 14870,
+     "small_used": 2111,
+     "big_used": 495
+    },
+    {
+     "date": "2026-05-22",
+     "small_bal": 62814,
+     "big_bal": 14392,
+     "small_used": 2102,
+     "big_used": 478
+    },
+    {
+     "date": "2026-05-23",
+     "small_bal": 60753,
+     "big_bal": 13912,
+     "small_used": 2061,
+     "big_used": 480
+    },
+    {
+     "date": "2026-05-24",
+     "small_bal": 58775,
+     "big_bal": 13442,
+     "small_used": 1978,
+     "big_used": 470
+    },
+    {
+     "date": "2026-05-25",
+     "small_bal": 56788,
+     "big_bal": 12965,
+     "small_used": 1987,
+     "big_used": 477
+    },
+    {
+     "date": "2026-05-26",
+     "small_bal": 54472,
+     "big_bal": 12439,
+     "small_used": 2316,
+     "big_used": 526
+    },
+    {
+     "date": "2026-05-27",
+     "small_bal": 52242,
+     "big_bal": 11927,
+     "small_used": 2230,
+     "big_used": 512
+    },
+    {
+     "date": "2026-05-28",
+     "small_bal": 50074,
+     "big_bal": 11412,
+     "small_used": 2168,
+     "big_used": 515
+    },
+    {
+     "date": "2026-05-29",
+     "small_bal": 47965,
+     "big_bal": 10937,
+     "small_used": 2109,
+     "big_used": 475
+    },
+    {
+     "date": "2026-05-29",
+     "small_bal": 117965,
+     "big_bal": 30937,
+     "small_used": -70000,
+     "big_used": -20000
+    },
+    {
+     "date": "2026-05-30",
+     "small_bal": 115866,
+     "big_bal": 30465,
+     "small_used": 2099,
+     "big_used": 472
+    },
+    {
+     "date": "2026-05-31",
+     "small_bal": 113888,
+     "big_bal": 30023,
+     "small_used": 1978,
+     "big_used": 442
+    }
+   ],
+   "updated_at": "2026-10-25 04:48:53"
+  },
+  "6月": {
+   "month": "6月",
+   "rows": [
+    {
+     "date": "2026-06-01",
+     "small_bal": 111574,
+     "big_bal": 29506,
+     "small_used": 2314,
+     "big_used": 517
+    },
+    {
+     "date": "2026-06-02",
+     "small_bal": 109308,
+     "big_bal": 29005,
+     "small_used": 2266,
+     "big_used": 501
+    },
+    {
+     "date": "2026-06-03",
+     "small_bal": 107128,
+     "big_bal": 28512,
+     "small_used": 2180,
+     "big_used": 493
+    },
+    {
+     "date": "2026-06-04",
+     "small_bal": 104932,
+     "big_bal": 28008,
+     "small_used": 2196,
+     "big_used": 504
+    },
+    {
+     "date": "2026-06-05",
+     "small_bal": 102818,
+     "big_bal": 27539,
+     "small_used": 2114,
+     "big_used": 469
+    },
+    {
+     "date": "2026-06-06",
+     "small_bal": 100721,
+     "big_bal": 27074,
+     "small_used": 2097,
+     "big_used": 465
+    },
+    {
+     "date": "2026-06-07",
+     "small_bal": 98725,
+     "big_bal": 26634,
+     "small_used": 1996,
+     "big_used": 440
+    },
+    {
+     "date": "2026-06-08",
+     "small_bal": 96470,
+     "big_bal": 26121,
+     "small_used": 2255,
+     "big_used": 513
+    },
+    {
+     "date": "2026-06-09",
+     "small_bal": 94307,
+     "big_bal": 25624,
+     "small_used": 2163,
+     "big_used": 497
+    },
+    {
+     "date": "2026-06-10",
+     "small_bal": 92137,
+     "big_bal": 25145,
+     "small_used": 2170,
+     "big_used": 479
+    },
+    {
+     "date": "2026-06-11",
+     "small_bal": 89947,
+     "big_bal": 24655,
+     "small_used": 2190,
+     "big_used": 490
+    },
+    {
+     "date": "2026-06-12",
+     "small_bal": 87820,
+     "big_bal": 24170,
+     "small_used": 2127,
+     "big_used": 485
+    },
+    {
+     "date": "2026-06-13",
+     "small_bal": 85683,
+     "big_bal": 23690,
+     "small_used": 2137,
+     "big_used": 480
+    },
+    {
+     "date": "2026-06-14",
+     "small_bal": 83632,
+     "big_bal": 23227,
+     "small_used": 2051,
+     "big_used": 463
+    },
+    {
+     "date": "2026-06-15",
+     "small_bal": 81256,
+     "big_bal": 22723,
+     "small_used": 2376,
+     "big_used": 504
+    },
+    {
+     "date": "2026-06-16",
+     "small_bal": 79058,
+     "big_bal": 22184,
+     "small_used": 2198,
+     "big_used": 539
+    },
+    {
+     "date": "2026-06-17",
+     "small_bal": 76876,
+     "big_bal": 21689,
+     "small_used": 2182,
+     "big_used": 495
+    },
+    {
+     "date": "2026-06-19",
+     "small_bal": 74906,
+     "big_bal": 21254,
+     "small_used": 1970,
+     "big_used": 435
+    },
+    {
+     "date": "2026-06-20",
+     "small_bal": 72973,
+     "big_bal": 20819,
+     "small_used": 1933,
+     "big_used": 435
+    },
+    {
+     "date": "2026-06-21",
+     "small_bal": 71017,
+     "big_bal": 20379,
+     "small_used": 1956,
+     "big_used": 440
+    },
+    {
+     "date": "2026-06-22",
+     "small_bal": 68734,
+     "big_bal": 19858,
+     "small_used": 2283,
+     "big_used": 521
+    },
+    {
+     "date": "2026-06-23",
+     "small_bal": 66524,
+     "big_bal": 19341,
+     "small_used": 2210,
+     "big_used": 517
+    },
+    {
+     "date": "2026-06-24",
+     "small_bal": 64354,
+     "big_bal": 18835,
+     "small_used": 2170,
+     "big_used": 506
+    },
+    {
+     "date": "2026-06-25",
+     "small_bal": 62197,
+     "big_bal": 18356,
+     "small_used": 2157,
+     "big_used": 479
+    },
+    {
+     "date": "2026-06-26",
+     "small_bal": 60090,
+     "big_bal": 17889,
+     "small_used": 2107,
+     "big_used": 467
+    },
+    {
+     "date": "2026-06-27",
+     "small_bal": 58035,
+     "big_bal": 17432,
+     "small_used": 2055,
+     "big_used": 457
+    },
+    {
+     "date": "2026-06-28",
+     "small_bal": 56011,
+     "big_bal": 16976,
+     "small_used": 2024,
+     "big_used": 456
+    },
+    {
+     "date": "2026-06-29",
+     "small_bal": 53609,
+     "big_bal": 16442,
+     "small_used": 2402,
+     "big_used": 534
+    },
+    {
+     "date": "2026-06-30",
+     "small_bal": 51373,
+     "big_bal": 15951,
+     "small_used": 2236,
+     "big_used": 491
+    }
+   ],
+   "updated_at": "2026-10-25 04:48:54"
+  },
+  "7月": {
+   "month": "7月",
+   "rows": [
+    {
+     "date": "2026-07-01",
+     "small_bal": 129363,
+     "big_bal": 24512,
+     "small_used": 2010,
+     "big_used": 439
+    },
+    {
+     "date": "2026-07-02",
+     "small_bal": 127164,
+     "big_bal": 24026,
+     "small_used": 2199,
+     "big_used": 486
+    },
+    {
+     "date": "2026-07-03",
+     "small_bal": 125042,
+     "big_bal": 23550,
+     "small_used": 2122,
+     "big_used": 476
+    },
+    {
+     "date": "2026-07-04",
+     "small_bal": 122981,
+     "big_bal": 23044,
+     "small_used": 2061,
+     "big_used": 506
+    },
+    {
+     "date": "2026-07-05",
+     "small_bal": 120948,
+     "big_bal": 22598,
+     "small_used": 2033,
+     "big_used": 446
+    },
+    {
+     "date": "2026-07-06",
+     "small_bal": 118572,
+     "big_bal": 22051,
+     "small_used": 2376,
+     "big_used": 547
+    },
+    {
+     "date": "2026-07-07",
+     "small_bal": 116351,
+     "big_bal": 21557,
+     "small_used": 2221,
+     "big_used": 494
+    },
+    {
+     "date": "2026-07-08",
+     "small_bal": 114128,
+     "big_bal": 21063,
+     "small_used": 2223,
+     "big_used": 494
+    },
+    {
+     "date": "2026-07-09",
+     "small_bal": 111880,
+     "big_bal": 20570,
+     "small_used": 2248,
+     "big_used": 493
+    },
+    {
+     "date": "2026-07-10",
+     "small_bal": 109627,
+     "big_bal": 20078,
+     "small_used": 2253,
+     "big_used": 492
+    },
+    {
+     "date": "2026-07-11",
+     "small_bal": 107455,
+     "big_bal": 19598,
+     "small_used": 2172,
+     "big_used": 480
+    },
+    {
+     "date": "2026-07-12",
+     "small_bal": 105355,
+     "big_bal": 19132,
+     "small_used": 2100,
+     "big_used": 466
+    },
+    {
+     "date": "2026-07-13",
+     "small_bal": 102963,
+     "big_bal": 18591,
+     "small_used": 2392,
+     "big_used": 541
+    },
+    {
+     "date": "2026-07-14",
+     "small_bal": 100721,
+     "big_bal": 18089,
+     "small_used": 2242,
+     "big_used": 502
+    },
+    {
+     "date": "2026-07-15",
+     "small_bal": 98435,
+     "big_bal": 17594,
+     "small_used": 2286,
+     "big_used": 495
+    },
+    {
+     "date": "2026-07-16",
+     "small_bal": 96232,
+     "big_bal": 17101,
+     "small_used": 2203,
+     "big_used": 493
+    },
+    {
+     "date": "2026-07-17",
+     "small_bal": 94079,
+     "big_bal": 16616,
+     "small_used": 2153,
+     "big_used": 485
+    },
+    {
+     "date": "2026-07-18",
+     "small_bal": 92017,
+     "big_bal": 16150,
+     "small_used": 2062,
+     "big_used": 466
+    },
+    {
+     "date": "2026-07-19",
+     "small_bal": 89934,
+     "big_bal": 15673,
+     "small_used": 2083,
+     "big_used": 477
+    },
+    {
+     "date": "2026-07-20",
+     "small_bal": 87568,
+     "big_bal": 15156,
+     "small_used": 2366,
+     "big_used": 517
+    },
+    {
+     "date": "2026-07-21",
+     "small_bal": 85334,
+     "big_bal": 14650,
+     "small_used": 2234,
+     "big_used": 506
+    },
+    {
+     "date": "2026-07-22",
+     "small_bal": 83160,
+     "big_bal": 14142,
+     "small_used": 2174,
+     "big_used": 508
+    },
+    {
+     "date": "2026-07-23",
+     "small_bal": 81086,
+     "big_bal": 13662,
+     "small_used": 2074,
+     "big_used": 480
+    },
+    {
+     "date": "2026-07-24",
+     "small_bal": 78897,
+     "big_bal": 13188,
+     "small_used": 2189,
+     "big_used": 474
+    },
+    {
+     "date": "2026-07-25",
+     "small_bal": 76523,
+     "big_bal": 12666,
+     "small_used": 2374,
+     "big_used": 522
+    },
+    {
+     "date": "2026-07-26",
+     "small_bal": 75117,
+     "big_bal": 12349,
+     "small_used": 1406,
+     "big_used": 317
+    },
+    {
+     "date": "2026-07-27",
+     "small_bal": 72948,
+     "big_bal": 11857,
+     "small_used": 2169,
+     "big_used": 492
+    },
+    {
+     "date": "2026-07-28",
+     "small_bal": 70694,
+     "big_bal": 11345,
+     "small_used": 2254,
+     "big_used": 512
+    },
+    {
+     "date": "2026-07-29",
+     "small_bal": 68449,
+     "big_bal": 10837,
+     "small_used": 2245,
+     "big_used": 508
+    },
+    {
+     "date": "2026-07-30",
+     "small_bal": 66223,
+     "big_bal": 10330,
+     "small_used": 2226,
+     "big_used": 507
+    },
+    {
+     "date": "2026-07-31",
+     "small_bal": 64058,
+     "big_bal": 9824,
+     "small_used": 2165,
+     "big_used": 506
+    }
+   ],
+   "updated_at": "2026-10-25 04:48:54"
+  },
+  "8月": {
+   "month": "8月",
+   "rows": [
+    {
+     "date": "2026-08-01",
+     "small_bal": 63943,
+     "big_bal": 9788,
+     "small_used": 2222,
+     "big_used": 503
+    },
+    {
+     "date": "2026-08-02",
+     "small_bal": 61924,
+     "big_bal": 9310,
+     "small_used": 2019,
+     "big_used": 478
+    },
+    {
+     "date": "2026-08-03",
+     "small_bal": 59670,
+     "big_bal": 8800,
+     "small_used": 2254,
+     "big_used": 510
+    },
+    {
+     "date": "2026-08-04",
+     "small_bal": 57437,
+     "big_bal": 8276,
+     "small_used": 2233,
+     "big_used": 524
+    },
+    {
+     "date": "2026-08-05",
+     "small_bal": 55193,
+     "big_bal": 7762,
+     "small_used": 2244,
+     "big_used": 514
+    },
+    {
+     "date": "2026-08-06",
+     "small_bal": 52952,
+     "big_bal": 7250,
+     "small_used": 2241,
+     "big_used": 512
+    },
+    {
+     "date": "2026-08-07",
+     "small_bal": 50763,
+     "big_bal": 6733,
+     "small_used": 2189,
+     "big_used": 517
+    },
+    {
+     "date": "2026-08-08",
+     "small_bal": 48485,
+     "big_bal": 6194,
+     "small_used": 2278,
+     "big_used": 539
+    },
+    {
+     "date": "2026-08-09",
+     "small_bal": 46324,
+     "big_bal": 5694,
+     "small_used": 2161,
+     "big_used": 500
+    },
+    {
+     "date": "2026-08-10",
+     "small_bal": 43902,
+     "big_bal": 5147,
+     "small_used": 2422,
+     "big_used": 547
+    },
+    {
+     "date": "2026-08-11",
+     "small_bal": 41563,
+     "big_bal": 4609,
+     "small_used": 2339,
+     "big_used": 538
+    },
+    {
+     "date": "2026-08-12",
+     "small_bal": 119276,
+     "big_bal": 24078,
+     "small_used": 2287,
+     "big_used": 531
+    },
+    {
+     "date": "2026-08-13",
+     "small_bal": 117021,
+     "big_bal": 23575,
+     "small_used": 2255,
+     "big_used": 503
+    },
+    {
+     "date": "2026-08-14",
+     "small_bal": 114827,
+     "big_bal": 23070,
+     "small_used": 2194,
+     "big_used": 505
+    },
+    {
+     "date": "2026-08-15",
+     "small_bal": 112615,
+     "big_bal": 22561,
+     "small_used": 2212,
+     "big_used": 509
+    },
+    {
+     "date": "2026-08-16",
+     "small_bal": 110468,
+     "big_bal": 22074,
+     "small_used": 2147,
+     "big_used": 487
+    },
+    {
+     "date": "2026-08-17",
+     "small_bal": 108084,
+     "big_bal": 21543,
+     "small_used": 2384,
+     "big_used": 531
+    },
+    {
+     "date": "2026-08-18",
+     "small_bal": 105761,
+     "big_bal": 21007,
+     "small_used": 2323,
+     "big_used": 536
+    },
+    {
+     "date": "2026-08-19",
+     "small_bal": 103498,
+     "big_bal": 20493,
+     "small_used": 2263,
+     "big_used": 514
+    },
+    {
+     "date": "2026-08-20",
+     "small_bal": 101220,
+     "big_bal": 19963,
+     "small_used": 2278,
+     "big_used": 530
+    },
+    {
+     "date": "2026-08-21",
+     "small_bal": 98994,
+     "big_bal": 19453,
+     "small_used": 2226,
+     "big_used": 510
+    },
+    {
+     "date": "2026-08-22",
+     "small_bal": 96788,
+     "big_bal": 18947,
+     "small_used": 2206,
+     "big_used": 506
+    },
+    {
+     "date": "2026-08-23",
+     "small_bal": 94620,
+     "big_bal": 18453,
+     "small_used": 2168,
+     "big_used": 494
+    },
+    {
+     "date": "2026-08-24",
+     "small_bal": 92185,
+     "big_bal": 17905,
+     "small_used": 2435,
+     "big_used": 548
+    },
+    {
+     "date": "2026-08-25",
+     "small_bal": 89876,
+     "big_bal": 17365,
+     "small_used": 2309,
+     "big_used": 540
+    },
+    {
+     "date": "2026-08-26",
+     "small_bal": 87556,
+     "big_bal": 16840,
+     "small_used": 2320,
+     "big_used": 525
+    },
+    {
+     "date": "2026-08-27",
+     "small_bal": 85255,
+     "big_bal": 16310,
+     "small_used": 2301,
+     "big_used": 530
+    },
+    {
+     "date": "2026-08-28",
+     "small_bal": 82888,
+     "big_bal": 15791,
+     "small_used": 2367,
+     "big_used": 519
+    },
+    {
+     "date": "2026-08-29",
+     "small_bal": 80574,
+     "big_bal": 15277,
+     "small_used": 2314,
+     "big_used": 514
+    },
+    {
+     "date": "2026-08-30",
+     "small_bal": 78394,
+     "big_bal": 14780,
+     "small_used": 2180,
+     "big_used": 497
+    },
+    {
+     "date": "2026-08-31",
+     "small_bal": 75946,
+     "big_bal": 14226,
+     "small_used": 2448,
+     "big_used": 554
+    }
+   ],
+   "updated_at": "2026-10-25 04:48:54"
+  },
+  "9月": {
+   "month": "9月",
+   "rows": [
+    {
+     "date": "2026-09-01",
+     "small_bal": 73474,
+     "big_bal": 13683,
+     "small_used": 2472,
+     "big_used": 543
+    },
+    {
+     "date": "2026-09-02",
+     "small_bal": 71070,
+     "big_bal": 13138,
+     "small_used": 2404,
+     "big_used": 545
+    },
+    {
+     "date": "2026-09-03",
+     "small_bal": 68691,
+     "big_bal": 12588,
+     "small_used": 2379,
+     "big_used": 550
+    },
+    {
+     "date": "2026-09-04",
+     "small_bal": 66237,
+     "big_bal": 12054,
+     "small_used": 2454,
+     "big_used": 534
+    },
+    {
+     "date": "2026-09-05",
+     "small_bal": 63869,
+     "big_bal": 11548,
+     "small_used": 2368,
+     "big_used": 506
+    },
+    {
+     "date": "2026-09-06",
+     "small_bal": 61553,
+     "big_bal": 11034,
+     "small_used": 2316,
+     "big_used": 514
+    },
+    {
+     "date": "2026-09-07",
+     "small_bal": 58980,
+     "big_bal": 10454,
+     "small_used": 2573,
+     "big_used": 580
+    },
+    {
+     "date": "2026-09-08",
+     "small_bal": 56399,
+     "big_bal": 9907,
+     "small_used": 2581,
+     "big_used": 547
+    },
+    {
+     "date": "2026-09-09",
+     "small_bal": 53833,
+     "big_bal": 9353,
+     "small_used": 2566,
+     "big_used": 554
+    },
+    {
+     "date": "2026-09-10",
+     "small_bal": 51379,
+     "big_bal": 8824,
+     "small_used": 2454,
+     "big_used": 529
+    },
+    {
+     "date": "2026-09-11",
+     "small_bal": 48948,
+     "big_bal": 8316,
+     "small_used": 2431,
+     "big_used": 508
+    },
+    {
+     "date": "2026-09-12",
+     "small_bal": 46557,
+     "big_bal": 7826,
+     "small_used": 2391,
+     "big_used": 490
+    },
+    {
+     "date": "2026-09-13",
+     "small_bal": 44229,
+     "big_bal": 7317,
+     "small_used": 2328,
+     "big_used": 509
+    },
+    {
+     "date": "2026-09-14",
+     "small_bal": 121572,
+     "big_bal": 46746,
+     "small_used": 2657,
+     "big_used": 571
+    },
+    {
+     "date": "2026-09-15",
+     "small_bal": 119040,
+     "big_bal": 46216,
+     "small_used": 2532,
+     "big_used": 530
+    },
+    {
+     "date": "2026-09-16",
+     "small_bal": 116559,
+     "big_bal": 45692,
+     "small_used": 2481,
+     "big_used": 524
+    },
+    {
+     "date": "2026-09-17",
+     "small_bal": 114089,
+     "big_bal": 45151,
+     "small_used": 2470,
+     "big_used": 541
+    },
+    {
+     "date": "2026-09-18",
+     "small_bal": 111687,
+     "big_bal": 44649,
+     "small_used": 2402,
+     "big_used": 502
+    },
+    {
+     "date": "2026-09-19",
+     "small_bal": 109326,
+     "big_bal": 44137,
+     "small_used": 2361,
+     "big_used": 512
+    },
+    {
+     "date": "2026-09-20",
+     "small_bal": 107022,
+     "big_bal": 43632,
+     "small_used": 2304,
+     "big_used": 505
+    },
+    {
+     "date": "2026-09-21",
+     "small_bal": 104467,
+     "big_bal": 43081,
+     "small_used": 2555,
+     "big_used": 551
+    },
+    {
+     "date": "2026-09-22",
+     "small_bal": 101991,
+     "big_bal": 42538,
+     "small_used": 2476,
+     "big_used": 543
+    },
+    {
+     "date": "2026-09-23",
+     "small_bal": 99614,
+     "big_bal": 42012,
+     "small_used": 2377,
+     "big_used": 526
+    },
+    {
+     "date": "2026-09-24",
+     "small_bal": 97319,
+     "big_bal": 41522,
+     "small_used": 2295,
+     "big_used": 490
+    },
+    {
+     "date": "2026-09-25",
+     "small_bal": 95279,
+     "big_bal": 41111,
+     "small_used": 2040,
+     "big_used": 411
+    },
+    {
+     "date": "2026-09-26",
+     "small_bal": 93653,
+     "big_bal": 40776,
+     "small_used": 1626,
+     "big_used": 335
+    },
+    {
+     "date": "2026-09-27",
+     "small_bal": 91738,
+     "big_bal": 40354,
+     "small_used": 1915,
+     "big_used": 422
+    },
+    {
+     "date": "2026-09-28",
+     "small_bal": 89365,
+     "big_bal": 39851,
+     "small_used": 2373,
+     "big_used": 503
+    },
+    {
+     "date": "2026-09-29",
+     "small_bal": 87032,
+     "big_bal": 39350,
+     "small_used": 2333,
+     "big_used": 501
+    },
+    {
+     "date": "2026-09-30",
+     "small_bal": 84778,
+     "big_bal": 38861,
+     "small_used": 2254,
+     "big_used": 489
+    }
+   ],
+   "updated_at": "2026-10-25 04:48:54"
+  },
+  "10月": {
+   "month": "10月",
+   "rows": [
+    {
+     "date": "2026-10-01",
+     "small_bal": 82706,
+     "big_bal": 38396,
+     "small_used": 2072,
+     "big_used": 465
+    },
+    {
+     "date": "2026-10-02",
+     "small_bal": 80533,
+     "big_bal": 37912,
+     "small_used": 2173,
+     "big_used": 484
+    },
+    {
+     "date": "2026-10-03",
+     "small_bal": 78431,
+     "big_bal": 37461,
+     "small_used": 2102,
+     "big_used": 451
+    },
+    {
+     "date": "2026-10-04",
+     "small_bal": 76278,
+     "big_bal": 36991,
+     "small_used": 2153,
+     "big_used": 470
+    },
+    {
+     "date": "2026-10-05",
+     "small_bal": 73751,
+     "big_bal": 36464,
+     "small_used": 2527,
+     "big_used": 527
+    },
+    {
+     "date": "2026-10-06",
+     "small_bal": 71289,
+     "big_bal": 35950,
+     "small_used": 2462,
+     "big_used": 514
+    },
+    {
+     "date": "2026-10-07",
+     "small_bal": 68845,
+     "big_bal": 35431,
+     "small_used": 2444,
+     "big_used": 519
+    },
+    {
+     "date": "2026-10-08",
+     "small_bal": 66417,
+     "big_bal": 34903,
+     "small_used": 2428,
+     "big_used": 528
+    },
+    {
+     "date": "2026-10-09",
+     "small_bal": 64015,
+     "big_bal": 34391,
+     "small_used": 2402,
+     "big_used": 512
+    },
+    {
+     "date": "2026-10-10",
+     "small_bal": 61656,
+     "big_bal": 33884,
+     "small_used": 2359,
+     "big_used": 507
+    },
+    {
+     "date": "2026-10-11",
+     "small_bal": 59339,
+     "big_bal": 33379,
+     "small_used": 2317,
+     "big_used": 505
+    },
+    {
+     "date": "2026-10-12",
+     "small_bal": 56711,
+     "big_bal": 32821,
+     "small_used": 2628,
+     "big_used": 558
+    },
+    {
+     "date": "2026-10-13",
+     "small_bal": 54180,
+     "big_bal": 32288,
+     "small_used": 2531,
+     "big_used": 533
+    },
+    {
+     "date": "2026-10-14",
+     "small_bal": 51680,
+     "big_bal": 31764,
+     "small_used": 2500,
+     "big_used": 524
+    },
+    {
+     "date": "2026-10-15",
+     "small_bal": 49261,
+     "big_bal": 31235,
+     "small_used": 2419,
+     "big_used": 529
+    },
+    {
+     "date": "2026-10-16",
+     "small_bal": 46948,
+     "big_bal": 30732,
+     "small_used": 2313,
+     "big_used": 503
+    },
+    {
+     "date": "2026-10-17",
+     "small_bal": 44759,
+     "big_bal": 30254,
+     "small_used": 2189,
+     "big_used": 478
+    },
+    {
+     "date": "2026-10-18",
+     "small_bal": 42680,
+     "big_bal": 29801,
+     "small_used": 2079,
+     "big_used": 453
+    },
+    {
+     "date": "2026-10-19",
+     "small_bal": 40583,
+     "big_bal": 29331,
+     "small_used": 2097,
+     "big_used": 470
+    },
+    {
+     "date": "2026-10-20",
+     "small_bal": 38079,
+     "big_bal": 28784,
+     "small_used": 2504,
+     "big_used": 547
+    },
+    {
+     "date": "2026-10-21",
+     "small_bal": 35701,
+     "big_bal": 28269,
+     "small_used": 2378,
+     "big_used": 515
+    },
+    {
+     "date": "2026-10-22",
+     "small_bal": 123304,
+     "big_bal": 27753,
+     "small_used": 2397,
+     "big_used": 516
+    },
+    {
+     "date": "2026-10-23",
+     "small_bal": 121053,
+     "big_bal": 27252,
+     "small_used": 2251,
+     "big_used": 501
+    },
+    {
+     "date": "2026-10-24",
+     "small_bal": 118760,
+     "big_bal": 26767,
+     "small_used": 2293,
+     "big_used": 485
+    },
+    {
+     "date": "2026-10-25",
+     "small_bal": 116580,
+     "big_bal": 26284,
+     "small_used": 2180,
+     "big_used": 483
+    },
+    {
+     "date": "2026-10-26",
+     "small_bal": 114063,
+     "big_bal": 25741,
+     "small_used": 2517,
+     "big_used": 543
+    }
+   ],
+   "updated_at": "2026-10-25 04:48:55"
+  }
+ }
+}

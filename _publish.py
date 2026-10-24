@@ -24,6 +24,7 @@ import urllib.request
 from datetime import datetime
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
 HTML = os.path.join(HERE, 'index.html')
 SW = os.path.join(HERE, 'sw.js')
 
@@ -128,6 +129,12 @@ def main():
           % (new, '✅' if cached else '❌ 要改做 \'xq-workbench-\' + APP_VER'))
 
     if not no_commit:
+        # 重生 box_history.json（雲端／手機靜態圖表用，唔使靠本機 API）
+        try:
+            import gen_box_history
+            gen_box_history.main()
+        except Exception as e:
+            print('  ⚠️ 重生 box_history.json 失敗：%s' % e)
         os.system('git add -A && git -c user.name=Benson -c user.email=benso@local '
                   'commit -q -m "%s auto-bump by _publish.py"' % new)
         print('✓ 已 git commit（本地）')

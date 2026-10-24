@@ -925,7 +925,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
       <select id="bcMonth"></select>
       <button class="bc-close" id="bcClose" type="button" aria-label="關閉">✕</button>
     </div>
-    <div class="bc-legend">每日總庫存（細盒＋大盒 結餘）｜ 柱色 黃／白 逐日輪流</div>
+    <div class="bc-legend">每日用量（細盒＋大盒）｜ 柱色 黃／白 逐日輪流</div>
     <div class="bc-chart" id="bcChart"></div>
     <div class="bc-detail" id="bcDetail">撳任一柱睇該日明細</div>
   </div>
@@ -942,36 +942,52 @@ function closeBoxChart() { document.getElementById('boxChartModal').classList.re
 async function loadBoxChart(month) {
   var chart = document.getElementById('bcChart');
   chart.innerHTML = '<div style="color:#9fb0c8;padding:24px">讀取中…</div>';
-  try {
-    var url = 'http://127.0.0.1:8083/api/box_history' + (month ? ('?month=' + encodeURIComponent(month)) : '');
-    var res = await fetch(url);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    var data = await res.json();
-    if (!data.success) throw new Error(data.error || '讀取失敗');
-    boxChartData = data;
-    var sel = document.getElementById('bcMonth');
-    if (!sel.options.length && data.months) {
-      data.months.forEach(function (mm) {
-        var o = document.createElement('option'); o.value = mm; o.textContent = mm; sel.appendChild(o);
-      });
-      sel.value = data.month;
-    }
-    renderBoxChart(data);
-  } catch (e) {
-    chart.innerHTML = '<div class="bc-err">本機 API 未能回應（' + (e.message || '') + '）。<br><br>' +
-      '呢個圖表需要本機 API（localhost:8083）。請用本機版開啟：<br>' +
-      'http://localhost:8082/tools-hub/　或　先執行 start_servers.bat 起動本機伺服器。</div>';
+  var data = null;
+  var isLocal = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+  // 1) 本機 API（live，桌面本機 server 喺度先用到）
+  if (isLocal) {
+    try {
+      var apiUrl = 'http://127.0.0.1:8083/api/box_history' + (month ? ('?month=' + encodeURIComponent(month)) : '');
+      var res = await fetch(apiUrl, { cache: 'no-store' });
+      if (res.ok) { var j = await res.json(); if (j && j.rows) data = j; }
+    } catch (e) {}
   }
+  // 2) 靜態 box_history.json（雲端／手機 同源，必定可讀；deploy 時一齊上）
+  if (!data || !data.rows) {
+    try {
+      var res2 = await fetch('box_history.json', { cache: 'no-store' });
+      if (res2.ok) {
+        var all = await res2.json();
+        var key = month || (all.months && all.months[all.months.length - 1]);
+        if (all.by_month && all.by_month[key]) { data = all.by_month[key]; data.months = all.months; }
+      }
+    } catch (e) {}
+  }
+  if (!data || !data.rows) {
+    chart.innerHTML = '<div class="bc-err">暫時讀唔到資料。<br><br>' +
+      '👉 手機／雲端版：請確認已 publish 含 box_history.json 嘅最新版本（撳左下「⟳ 檢查更新」）。<br>' +
+      '👉 本機版：開 http://localhost:8082/tools-hub/ 或先執行 start_servers.bat。</div>';
+    return;
+  }
+  boxChartData = data;
+  var sel = document.getElementById('bcMonth');
+  if (!sel.options.length && data.months) {
+    data.months.forEach(function (mm) {
+      var o = document.createElement('option'); o.value = mm; o.textContent = mm; sel.appendChild(o);
+    });
+    sel.value = data.month;
+  }
+  renderBoxChart(data);
 }
 function renderBoxChart(data) {
   var rows = data.rows || [];
   var chart = document.getElementById('bcChart');
   if (!rows.length) { chart.innerHTML = '<div style="color:#9fb0c8;padding:24px">呢個月暫無每日資料</div>'; return; }
   var max = 1;
-  rows.forEach(function (r) { var t = r.small_bal + r.big_bal; if (t > max) max = t; });
+  rows.forEach(function (r) { var t = (r.small_used||0) + (r.big_used||0); if (t > max) max = t; });
   chart.innerHTML = '';
   rows.forEach(function (r, i) {
-    var total = r.small_bal + r.big_bal;
+    var total = (r.small_used||0) + (r.big_used||0);
     var h = Math.round(total / max * 100);
     var col = document.createElement('div');
     col.className = 'bc-col' + (i % 2 ? ' alt' : '');
@@ -989,10 +1005,10 @@ function bcSelect(i) {
   if (!cols[i]) return;
   cols[i].classList.add('sel');
   var r = boxChartData.rows[i];
-  var total = r.small_bal + r.big_bal;
+  var used = (r.small_used||0) + (r.big_used||0);
   document.getElementById('bcDetail').textContent =
-    r.date + ' ｜ 細盒 ' + r.small_bal.toLocaleString() + ' ＋ 大盒 ' + r.big_bal.toLocaleString() +
-    ' ＝ 總 ' + total.toLocaleString() + ' ｜ 當日用量 細 ' + r.small_used.toLocaleString() + ' ／ 大 ' + r.big_used.toLocaleString();
+    r.date + ' ｜ 細盒用量 ' + (r.small_used||0).toLocaleString() + ' ＋ 大盒用量 ' + (r.big_used||0).toLocaleString() +
+    ' ＝ 總用量 ' + used.toLocaleString() + ' ｜ 當日結餘 細 ' + (r.small_bal||0).toLocaleString() + ' ／ 大 ' + (r.big_bal||0).toLocaleString();
 }
 document.getElementById('bcClose').addEventListener('click', closeBoxChart);
 document.getElementById('boxChartModal').addEventListener('click', function (e) { if (e.target === this) closeBoxChart(); });
@@ -2240,8 +2256,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v60';
-  var APP_PUBLISHED = '2026/10/25 04:32';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v61';
+  var APP_PUBLISHED = '2026/10/25 04:48';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
