@@ -124,6 +124,35 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .flow-card .flow-done { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); font-size: 16px; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .flow-card .flow-done .done-when { color: var(--primary); font-weight: 800; }
 
+/* ===== 小Buddy 工作紀錄卡（第 7 款，2026-10-24 加 · 擴展 SOP） =====
+   用途：列出「小Buddy 工作整理」dashboard 獨有、但 Benson x WorkBuddy 原本冇嘅工作項目。
+   規格：沿用深色配色（var(--card)）；hover 必包 @media (hover:hover) and (pointer:fine)（手機唔黏住）；
+         獨立 .worklog-grid 容器 + 專屬 class，唔介入 drag / showFlow。 */
+.worklog-grid { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; max-width: 640px; }
+.worklog-card {
+  flex: 0 0 calc(50% - 7px);
+  background: var(--card); border-radius: 18px; padding: 14px 15px; border: 1px solid var(--line);
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; gap: 4px;
+  transition: box-shadow .22s ease, transform .22s ease, border-color .2s;
+  user-select: none; -webkit-user-select: none;
+}
+.worklog-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: var(--primary); }
+.worklog-card .wl-ico { font-size: 26px; }
+.worklog-card .wl-name { font-size: 17px; font-weight: 800; color: #ffffff; letter-spacing: .3px; }
+.worklog-card .wl-desc { font-size: 13px; font-weight: 700; color: var(--muted); line-height: 1.4; }
+.worklog-card .wl-status { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 800; padding: 3px 10px; border-radius: 12px; background: rgba(74,222,128,.16); color: #86efac; align-self: flex-start; }
+.worklog-card .wl-status.doing { background: rgba(77,141,255,.16); color: #9fc6f5; }
+.worklog-card .wl-status.plan { background: rgba(226,179,60,.16); color: #f7cf6d; }
+.worklog-card .wl-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.worklog-card .wl-tag { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 6px; background: #2f3f60; color: #aeb9c8; }
+@media (hover:hover) and (pointer:fine) {
+  .worklog-card:hover { transform: scale(1.04); box-shadow: 0 12px 26px rgba(0,0,0,.6); border-color: #47566b; z-index: 2; }
+}
+@media (max-width: 560px) {
+  .worklog-card { flex: 0 0 100%; }
+}
+
 /* ===== ⑪ CDM 全流程跟進表（闊卡，2026-10-04 加 · 2026-10-05 改細版） =====
    改細重點：默認收起（淨係顯示進度條 + 一行摘要），撳「展開 N 步」先出各行；
    每行淨係 2 行文字（檔名 / 短路徑），路徑不再 break-all 折行。 */
@@ -720,6 +749,61 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
         <div class="flow-desc">充值¥29→收素材→render 720p/16:9/15秒→MP4</div>
         <div class="flow-status pending">● 待充值</div>
         <div class="flow-tags"><span class="flow-tag">口令：廣告片</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="dot" style="background:linear-gradient(90deg,#4d8dff,#00d4a0)"></span>📋 小Buddy 工作紀錄<span class="drag-hint">· 由「小Buddy 工作整理」搬過嚟嘅獨有工作（dashboard 嗰邊有，原本工作台冇）</span></div>
+    <div class="worklog-grid">
+      <div class="worklog-card">
+        <div class="wl-ico">📱</div>
+        <div class="wl-name">手機工作台「資料未更新」修復</div>
+        <div class="wl-desc">修正過時路徑(OneDrive/舊workspace→C:/CDM 與 Claw)；重生 status.json；啟 server</div>
+        <div class="wl-status">● 完成</div>
+        <div class="wl-tags"><span class="wl-tag">2026-10-23</span><span class="wl-tag">tools-hub</span></div>
+      </div>
+      <div class="worklog-card">
+        <div class="wl-ico">🚀</div>
+        <div class="wl-name">開機自啟工作台 server</div>
+        <div class="wl-desc">登入 Windows 自動起 8082/8083（system Python 3.12，端口檢查防重複）</div>
+        <div class="wl-status">● 完成</div>
+        <div class="wl-tags"><span class="wl-tag">2026-10-23</span><span class="wl-tag">Startup</span></div>
+      </div>
+      <div class="worklog-card">
+        <div class="wl-ico">🔐</div>
+        <div class="wl-name">本機自動登入設定</div>
+        <div class="wl-desc">設 benso 空白密碼免密碼開機（AutoAdminLogon）</div>
+        <div class="wl-status doing">● 跟進中</div>
+        <div class="wl-tags"><span class="wl-tag">待用戶以管理員執行</span></div>
+      </div>
+      <div class="worklog-card">
+        <div class="wl-ico">🎬</div>
+        <div class="wl-name">祐興 IP 動畫（doodle-anim）</div>
+        <div class="wl-desc">祐興粉麵品牌 IP 動畫，Windows MP4 渲染需正式 ffmpeg</div>
+        <div class="wl-status doing">● 跟進中</div>
+        <div class="wl-tags"><span class="wl-tag">祐興</span><span class="wl-tag">IP</span></div>
+      </div>
+      <div class="worklog-card">
+        <div class="wl-ico">🍜</div>
+        <div class="wl-name">Food Index 報價單</div>
+        <div class="wl-desc">與 Super Tri 嚴格隔離；改價/查價/生成 XPS</div>
+        <div class="wl-status plan">● 計劃中</div>
+        <div class="wl-tags"><span class="wl-tag">報價</span><span class="wl-tag">隔離鐵規</span></div>
+      </div>
+      <div class="worklog-card">
+        <div class="wl-ico">📦</div>
+        <div class="wl-name">Super Tri 報價單</div>
+        <div class="wl-desc">6 家供應商報價單（HKY/KYW/KYP/KKG/KDS/Kai Shing）</div>
+        <div class="wl-status plan">● 計劃中</div>
+        <div class="wl-tags"><span class="wl-tag">報價</span><span class="wl-tag">6 供應商</span></div>
+      </div>
+      <div class="worklog-card">
+        <div class="wl-ico">📈</div>
+        <div class="wl-name">股票技術分析</div>
+        <div class="wl-desc">恒指 32 支成份股技術分析（MA/RSI/MACD/KDJ）</div>
+        <div class="wl-status plan">● 計劃中</div>
+        <div class="wl-tags"><span class="wl-tag">股票</span><span class="wl-tag">技術分析</span></div>
       </div>
     </div>
   </div>
@@ -1963,8 +2047,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v51';
-  var APP_PUBLISHED = '2026/10/05 00:44';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v52';
+  var APP_PUBLISHED = '2026/10/24 11:42';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');

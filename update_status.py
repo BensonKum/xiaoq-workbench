@@ -11,8 +11,11 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 # 路徑配置
-ONE_DRIVE_CDM = r'C:\Users\benso\OneDrive\Desktop\CDM'
-WORKSPACE_CDM = r'C:\Users\benso\WorkBuddy\2026-09-21-11-40-31\cdm'
+# 2026-10-23 改：live 真身已由 OneDrive\Desktop\CDM 搬去 C:\CDM（脫離 OneDrive 同步）
+#   → ONE_DRIVE_CDM 改指向 C:\CDM，所有 CDM 讀取（狀態/流程/歸檔/訂單/三處同步 src）轉讀 live
+#   → WORKSPACE_CDM（倉存 data）改指向 Claw 副本（含 9 萬補貨），唔再讀過時嘅 2026-09-21 工作區副本
+ONE_DRIVE_CDM = r'C:\CDM'
+WORKSPACE_CDM = r'C:\Users\benso\WorkBuddy\Claw\cdm'
 OUTPUT_FILE = r'C:\Users\benso\WorkBuddy\Claw\tools-hub\status.json'
 
 def get_inventory_data():
@@ -75,7 +78,9 @@ def get_cdm_status():
     oct_folder = os.path.join(ONE_DRIVE_CDM, 'CDM 發票對數', 'CDM 發票', '10 Oct 2026')
     if os.path.exists(oct_folder):
         files = os.listdir(oct_folder)
-        inv_count = len([f for f in files if f.startswith('inv_') and f.endswith('.xlsx')])
+        inv_count = len([f for f in files
+                         if f.startswith('inv_') and f.endswith('.xlsx')
+                         and '.bak' not in f])
         status['invoice_count'] = inv_count
         status['invoice_ready'] = inv_count > 0
     else:
@@ -114,8 +119,11 @@ def get_flow1_sync():
            'ok': True, 'checked_at': now.strftime('%H:%M')}
     if not os.path.isdir(src):
         return out
+    # 2026-10-23 修：exclude .bak 備份檔（本地備份，sync_shadow 本就唔抄，
+    #   計入比較會產生假「缺」→ 三處同步長期誤報 ❌）
     files = sorted(f for f in os.listdir(src)
-                   if f.startswith('inv_') and f.endswith('.xlsx'))
+                   if f.startswith('inv_') and f.endswith('.xlsx')
+                   and '.bak' not in f)
     out['files'] = len(files)
     for fn in files:
         m = _md5(os.path.join(src, fn))
@@ -177,7 +185,9 @@ def get_cdm_workflow():
 
     inv_rel = os.path.join('CDM 發票對數', 'CDM 發票', name)
     inv_full, inv_files = _folder_files(ONE_DRIVE_CDM, inv_rel)
-    invs = [f for f in inv_files if f.startswith('inv_') and f.endswith('.xlsx')]
+    invs = [f for f in inv_files
+            if f.startswith('inv_') and f.endswith('.xlsx')
+            and '.bak' not in f]
     invs_latest = invs[-1] if invs else ''
 
     steps = []

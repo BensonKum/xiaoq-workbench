@@ -12,8 +12,11 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 import openpyxl
 
 # 文件路徑
+# 2026-10-23 改：CDM live 真身已搬去 C:\CDM（脫離 OneDrive）。
+#   INVENTORY_FILE 保持 Claw 副本（倉存 data 只喺嗰度，含 9 萬補貨）
+#   CDM_DIR 改去 live C:\CDM，令 live API（/api/cdm-status）同 status.json 快照一致
 INVENTORY_FILE = r'C:\Users\benso\WorkBuddy\Claw\cdm\膠盒倉存(WB).xlsx'
-CDM_DIR = r'C:\Users\benso\WorkBuddy\Claw\cdm'
+CDM_DIR = r'C:\CDM'
 
 # 🚨 2026-10-03 修：倉存頁結餘一定要用「當月 sheet + 最新有日期嗰行 + col6/col7」
 #    - 舊 code 用 wb.active（openpyxl 開出嚟第一頁 = 「4月」）→ 回 4 月嘅數字
