@@ -605,15 +605,23 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 #bcMonth { margin-left: auto; background: #0f1520; color: #eaf0fa; border: 1px solid #2c3a55; border-radius: 8px; padding: 6px 10px; font-size: 14px; }
 .bc-close { background: #2c3a55; color: #eaf0fa; border: none; border-radius: 8px; width: 32px; height: 32px; font-size: 16px; cursor: pointer; }
 .bc-close:hover { background: #3a4d6e; }
-.bc-legend { color: #9fb0c8; font-size: 12px; margin: 8px 0 6px; }
-.bc-chart { display: flex; align-items: flex-end; gap: 5px; overflow-x: auto; padding: 10px 2px 6px; border-bottom: 1px solid #2c3a55; min-height: 260px; }
-.bc-col { flex: 0 0 auto; width: 30px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; cursor: pointer; }
-.bc-val { font-size: 9px; color: #cdd8ea; margin-bottom: 3px; white-space: nowrap; display: none; }
-.bc-col.sel .bc-val { display: block; }
+.bc-legend { color: #9fb0c8; font-size: 12px; margin: 6px 0 2px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.bc-legend .lg { display: inline-flex; align-items: center; gap: 6px; }
+.bc-legend .sw { width: 13px; height: 13px; border-radius: 3px; display: inline-block; }
+.bc-legend .sw.small { background: #FFD93D; }
+.bc-legend .sw.big { background: #FFFFFF; border: 1px solid #c9d4e6; box-sizing: border-box; }
+.bc-hint { color: #6f82a0; font-size: 11px; margin: 0 0 4px; }
+.bc-chart { display: flex; align-items: flex-end; gap: 6px; overflow-x: auto; padding: 6px 4px 6px; border-bottom: 1px solid #2c3a55; min-height: 360px; -webkit-overflow-scrolling: touch; }
+.bc-chart::-webkit-scrollbar { height: 8px; }
+.bc-chart::-webkit-scrollbar-thumb { background: #2c3a55; border-radius: 4px; }
+.bc-day { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+.bc-bars { display: flex; align-items: flex-end; gap: 3px; height: 300px; }
+.bc-col { width: 22px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; cursor: pointer; }
+.bc-val { font-size: 9px; color: #dbe4f2; margin-bottom: 2px; white-space: nowrap; }
 .bc-bar { width: 100%; border-radius: 4px 4px 0 0; min-height: 2px; transition: filter .15s; }
-.bc-col:not(.alt) .bc-bar { background: #FFD93D; }
-.bc-col.alt .bc-bar { background: #FFFFFF; border: 1px solid #c9d4e6; box-sizing: border-box; }
-.bc-col.sel .bc-bar { outline: 2px solid #4d95e0; outline-offset: 1px; filter: brightness(1.08); }
+.bc-col.small .bc-bar { background: #FFD93D; }
+.bc-col.big .bc-bar { background: #FFFFFF; border: 1px solid #c9d4e6; box-sizing: border-box; }
+.bc-day.sel .bc-bar { outline: 2px solid #4d95e0; outline-offset: 1px; filter: brightness(1.1); }
 .bc-date { font-size: 9px; color: #8aa0bd; margin-top: 4px; white-space: nowrap; }
 .bc-detail { color: #cdd8ea; font-size: 13px; margin-top: 10px; min-height: 20px; line-height: 1.5; }
 .bc-open-btn { margin-top: 4px; background: #45c9c0; color: #06231f; border: none; border-radius: 10px; padding: 9px 14px; font-size: 14px; font-weight: 800; cursor: pointer; }
@@ -925,7 +933,11 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
       <select id="bcMonth"></select>
       <button class="bc-close" id="bcClose" type="button" aria-label="關閉">✕</button>
     </div>
-    <div class="bc-legend">每日用量（細盒＋大盒）｜ 柱色 黃／白 逐日輪流</div>
+    <div class="bc-legend">
+      <span class="lg"><span class="sw small"></span>黃＝小盒用量</span>
+      <span class="lg"><span class="sw big"></span>白＝大盒用量</span>
+    </div>
+    <div class="bc-hint">← 左右滑動睇完整月份 →</div>
     <div class="bc-chart" id="bcChart"></div>
     <div class="bc-detail" id="bcDetail">撳任一柱睇該日明細</div>
   </div>
@@ -984,30 +996,41 @@ function renderBoxChart(data) {
   var chart = document.getElementById('bcChart');
   if (!rows.length) { chart.innerHTML = '<div style="color:#9fb0c8;padding:24px">呢個月暫無每日資料</div>'; return; }
   var max = 1;
-  rows.forEach(function (r) { var t = (r.small_used||0) + (r.big_used||0); if (t > max) max = t; });
+  rows.forEach(function (r) {
+    var s = r.small_used||0, b = r.big_used||0;
+    if (s > max) max = s;
+    if (b > max) max = b;
+  });
   chart.innerHTML = '';
   rows.forEach(function (r, i) {
-    var total = (r.small_used||0) + (r.big_used||0);
-    var h = Math.round(total / max * 100);
-    var col = document.createElement('div');
-    col.className = 'bc-col' + (i % 2 ? ' alt' : '');
-    col.innerHTML = '<div class="bc-val">' + total.toLocaleString() + '</div>' +
-      '<div class="bc-bar" style="height:' + h + '%"></div>' +
+    var s = r.small_used||0, b = r.big_used||0;
+    var hs = Math.round(s / max * 100);
+    var hb = Math.round(b / max * 100);
+    var day = document.createElement('div');
+    day.className = 'bc-day';
+    day.innerHTML =
+      '<div class="bc-bars">' +
+        '<div class="bc-col small"><div class="bc-val">' + s.toLocaleString() + '</div><div class="bc-bar" style="height:' + hs + '%"></div></div>' +
+        '<div class="bc-col big"><div class="bc-val">' + b.toLocaleString() + '</div><div class="bc-bar" style="height:' + hb + '%"></div></div>' +
+      '</div>' +
       '<div class="bc-date">' + r.date.slice(5) + '</div>';
-    col.addEventListener('click', function () { bcSelect(i); });
-    chart.appendChild(col);
+    day.querySelectorAll('.bc-col').forEach(function (c) {
+      c.addEventListener('click', function () { bcSelect(i); });
+    });
+    chart.appendChild(day);
   });
   bcSelect(rows.length - 1);
+  chart.scrollLeft = chart.scrollWidth; // 自動捲到最新一日（最右）
 }
 function bcSelect(i) {
-  var cols = document.querySelectorAll('#bcChart .bc-col');
-  cols.forEach(function (c) { c.classList.remove('sel'); });
-  if (!cols[i]) return;
-  cols[i].classList.add('sel');
+  var days = document.querySelectorAll('#bcChart .bc-day');
+  days.forEach(function (c) { c.classList.remove('sel'); });
+  if (!days[i]) return;
+  days[i].classList.add('sel');
   var r = boxChartData.rows[i];
   var used = (r.small_used||0) + (r.big_used||0);
   document.getElementById('bcDetail').textContent =
-    r.date + ' ｜ 細盒用量 ' + (r.small_used||0).toLocaleString() + ' ＋ 大盒用量 ' + (r.big_used||0).toLocaleString() +
+    r.date + ' ｜ 細盒用量 ' + (r.small_used||0).toLocaleString() + '（黃） ＋ 大盒用量 ' + (r.big_used||0).toLocaleString() + '（白）' +
     ' ＝ 總用量 ' + used.toLocaleString() + ' ｜ 當日結餘 細 ' + (r.small_bal||0).toLocaleString() + ' ／ 大 ' + (r.big_bal||0).toLocaleString();
 }
 document.getElementById('bcClose').addEventListener('click', closeBoxChart);
@@ -2256,8 +2279,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v61';
-  var APP_PUBLISHED = '2026/10/25 04:48';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v62';
+  var APP_PUBLISHED = '2026/10/25 05:56';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
