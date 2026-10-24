@@ -328,6 +328,8 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 
 /* ===== 口令 / 指令 卡片區（細方磁貼：淨顯名稱，撳開先show內容） ===== */
 .cmd-grid { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; max-width: 640px; }
+.cmd-legend{ max-width:640px; margin:0 0 12px; padding:9px 12px; border-radius:10px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); color:#cdd6e6; font-size:12px; line-height:1.6 }
+.cmd-legend b{ color:#fff }
 .cmd-card {
   flex: 0 0 calc(20% - 11.2px);            /* 640px 內 5 格 = 每格約 117px，同頂上磁貼一般大 */
   aspect-ratio: 1 / 1;                     /* 正方形磁貼 */
@@ -640,7 +642,8 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 
 <div class="container">
   <div class="section">
-    <div class="section-title"><span class="dot" style="background:var(--warning)"></span>口令 / 指令<span class="drag-hint">· 撳一下卡面睇範圍，撳「口令」即複製，貼畀小Buddy 就照做</span></div>
+    <div class="section-title"><span class="dot" style="background:var(--warning)"></span>🤖 小Buddy 口令<span class="drag-hint">· 撳一下卡面睇範圍，撳「口令」即複製，貼畀小Buddy 就照做</span></div>
+    <div class="cmd-legend">ℹ️ 以下口令全部係對 <b>小Buddy（AI 助手）</b> 講嘅指令、由小Buddy 執行；而上邊嘅「流程／祐興網站／Skill 分層」等卡，係 <b>Benson x WorkBuddy 工作台</b> 本身嘅業務監控功能（面板內置，唔係口令）。兩者唔同，唔好撈亂。</div>
     <div class="cmd-grid" id="cmd-grid"></div>
   </div>
   <div class="section">
@@ -666,7 +669,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
         <div class="sk-face">
           <div class="sk-ico">🛠️</div>
           <div class="sk-name">① 自建 Skill</div>
-          <div class="sk-hint">撳開睇 8 個業務口令</div>
+          <div class="sk-hint">撳開睇 9 個業務口令</div>
         </div>
       </div>
       <div class="skill-card layer layer-2" id="layer-2" role="button" tabindex="0" aria-expanded="false">
@@ -1670,6 +1673,30 @@ async function checkWorkflow() {
       keys: ['Super Tri', 'HKY／KYW／KYP／KKG／KDS', '報價單', '箱價／散價'],
       range: '只碰 Super Tri（WB+QClaw\\08_Super Tri price list）→ 6 間供應商 xlsx 同步改價（Row1 標題／Row51-52 欄頭／Row53 起）。**絕對唔撈 Food Index**。',
       say: '改 Super Tri 價目表'
+    },
+    {
+      name: '股票分析', skill: 'stock-analyst', c: '#36c98a', bg: 'rgba(54,201,138,.08)',
+      keys: ['股票分析', '每週股票報告', '恒指', '技術指標', 'email 推送'],
+      range: '恒指 32 支成份股技術分析（yfinance 90 日線，MA/RSI/MACD/KDJ）+ 股票投資記錄.xlsx 盈虧自動計算（綠=盈、紅=虧）。支援每週報告 + email 推送。只碰 03_股票 目錄。',
+      say: '股票分析'
+    },
+    {
+      name: '手繪動畫', skill: 'doodle-anim', c: '#f5c542', bg: 'rgba(245,197,66,.08)',
+      keys: ['手繪動畫', '科普片', '祐興 IP 動畫', '分鏡', 'code 動畫'],
+      range: '100% 代碼（Canvas 2D）手繪角色動畫，零圖像素材。支援水彩紙風格角色動畫、Zenn 深色講解片（TTS 配音＋字幕）、動漫面生成器。Windows MP4 渲染需正式版 ffmpeg（Playwright 自帶版缺 libx264）。',
+      say: '手繪動畫'
+    },
+    {
+      name: '項目儀表板', skill: 'benson-project-dashboard', c: '#5aa0ff', bg: 'rgba(90,160,255,.08)',
+      keys: ['幫我創立項目儀表板', '做個 PWA 儀表板', '建立工作追蹤系統', 'Benson 工作台'],
+      range: '為 Benson 創建項目儀表板 + 模板庫 PWA。三區架構（工作區／個人生活區／其它），數據存 localStorage，可加入主畫面離線使用。即係而家「小Buddy 工作整理」嘅來源 skill。',
+      say: '幫我創立項目儀表板'
+    },
+    {
+      name: '宣傳片製作', skill: 'film 製作 skill', c: '#ff7eb6', bg: 'rgba(255,126,182,.08)',
+      keys: ['製作宣傳片', 'OpenFilm 影片', '9:16 直版', 'Reels', '產品片'],
+      range: '用 OpenFilm 製作 9:16 直版宣傳短片（Facebook/Reels/故事）通用流程。裝 openfilm、專案結構、鏡頭時間軸、render/look 驗證、CSS transform 排版避坑、生成 film HandOff.md。客戶內容（品牌／素材／文案）以 config 填入，祐興粉麵僅為範例。',
+      say: '製作宣傳片'
     }
   ];
 
@@ -2116,8 +2143,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v53';
-  var APP_PUBLISHED = '2026/10/24 11:53';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v54';
+  var APP_PUBLISHED = '2026/10/24 12:44';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
@@ -2257,7 +2284,7 @@ async function checkWorkflow() {
     {
       id: 'layer-1', svg: 'l1', tag: 'l1', tagTxt: 'LEVEL 1 · 自定義',
       ico: '🛠️', name: '① 自建 Skill',
-      effect: '小QQ工作室自己寫嘅 skill，放喺 ~/.workbuddy/skills/ 一共有 8 個，全部 SKILL.md 有 frontmatter。呢啲先係我哋日常工作真正用嘅業務口令（外侧插件唔算）。',
+      effect: '小QQ工作室自己寫嘅 skill，放喺 ~/.workbuddy/skills/ 一共有 9 個，全部 SKILL.md 有 frontmatter。呢啲先係我哋日常工作真正用嘅業務口令（外侧插件唔算）。',
       rows: [
         ['cdm-workflow', '錢大媽 CDM 每日流程 + 膠盒結餘'],
         ['cdm-plastic-box-fix', '膠盒倉存 Excel 修復'],
@@ -2266,7 +2293,8 @@ async function checkWorkflow() {
         ['super-tri-reporter', 'Super Tri 報價單（HKY/KYW 等）'],
         ['stock-analyst', '股票分析 + 每週報告 + email'],
         ['doodle-anim', '手繪 Code 動畫／科普片'],
-        ['benson-project-dashboard', '項目儀表板 PWA']
+        ['benson-project-dashboard', '項目儀表板 PWA'],
+        ['film 製作 skill', 'OpenFilm 9:16 宣傳片']
       ]
     },
     {
