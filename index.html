@@ -2143,8 +2143,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v54';
-  var APP_PUBLISHED = '2026/10/24 12:44';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v55';
+  var APP_PUBLISHED = '2026/10/24 13:06';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
@@ -2172,34 +2172,44 @@ async function checkWorkflow() {
   }
 
   if (updBtn) {
+    var _updDone = false;
+    function _updFinish() {
+      if (_updDone) return; _updDone = true;
+      if (updTxt) updTxt.textContent = '檢查更新';
+      updBtn.classList.remove('run');
+      try { location.reload(true); } catch (_) { location.href = location.href; }
+    }
     updBtn.addEventListener('click', function () {
+      /* ① 即時反應：變「檢查中…」 */
+      if (updTxt) updTxt.textContent = '檢查中…';
+      updBtn.classList.add('run');
+      /* ② 若已有新版 SW 喺等，叫佢跳過等待 */
       if (navigator.serviceWorker && navigator.serviceWorker.controller) {
         navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
       }
-      var done = false;
-      var t0 = setTimeout(function () {
-        if (done) return;
-        done = true;
-        /* 檢查完都冇新 SW：即係已經最新，唔使 reload */
-        try { tip('✅ 已經係最新版本 ' + APP_VERSION + '，唔使更新。'); } catch (_) {}
-      }, 2500);
+      /* ③ 正確用法：getRegistration() 唔使傳 script URL */
       if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
-        navigator.serviceWorker.getRegistration('sw.js').then(function (reg) {
-          if (!reg) { done = true; clearTimeout(t0); location.reload(true); return; }
+        navigator.serviceWorker.getRegistration().then(function (reg) {
+          if (!reg) { _updFinish(); return; }
           reg.update();
           reg.addEventListener('updatefound', function () {
             var nw = reg.installing;
             if (!nw) return;
             nw.addEventListener('statechange', function () {
-              if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-                done = true; clearTimeout(t0);
-                if (updTxt) updTxt.textContent = '有新版本 · 撳鍵更新';
-                askReload();
+              if (nw.state === 'installed') {
+                _updDone = true;
+                if (updTxt) updTxt.textContent = '更新中…';
+                if (navigator.serviceWorker.controller) {
+                  navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+                }
+                setTimeout(function () { try { location.reload(true); } catch (_) { location.href = location.href; } }, 400);
               }
             });
           });
-        }).catch(function () {});
+        }).catch(function () { /* 下面保險 reload 會兜底 */ });
       }
+      /* ④ 保險：1.8s 內無論有冇偵測到新版，都 reload 攞最新（主頁 SW 係 network-first） */
+      setTimeout(_updFinish, 1800);
     });
   }
 
