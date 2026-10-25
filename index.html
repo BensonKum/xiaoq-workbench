@@ -635,6 +635,21 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .bc-legend .sw.inv { background: #58d6a0; }
 .bc-col.inv .bc-bar { background: #58d6a0; }
 
+/* ===== CDM 流程 平面心智圖（2026-10-25 加） ===== */
+.cm-row { display: flex; align-items: stretch; gap: 0; overflow-x: auto; padding: 20px 6px; -webkit-overflow-scrolling: touch; min-height: 200px; }
+.cm-row::-webkit-scrollbar { height: 8px; }
+.cm-row::-webkit-scrollbar-thumb { background: #2c3a55; border-radius: 4px; }
+.cm-hub { flex: 0 0 auto; align-self: center; background: linear-gradient(135deg,#0b1220,#16233a); border: 2px solid #4d95e0; color: #fff; border-radius: 14px; padding: 16px 18px; font-size: 15px; font-weight: 800; text-align: center; min-width: 104px; line-height: 1.3; }
+.cm-arrow { flex: 0 0 auto; align-self: center; color: #5a6b86; font-size: 24px; font-weight: 800; padding: 0 5px; }
+.cm-node { flex: 0 0 auto; width: 156px; background: #0f1520; border: 1.5px solid var(--c); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 7px; cursor: pointer; transition: filter .15s; }
+.cm-node:hover { filter: brightness(1.12); }
+.cm-node.sel { outline: 2px solid #4d95e0; outline-offset: 2px; }
+.cm-top { display: flex; align-items: center; gap: 8px; }
+.cm-no { width: 24px; height: 24px; border-radius: 50%; background: var(--c); color: #06231f; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+.cm-name { font-size: 14px; font-weight: 800; color: #fff; line-height: 1.2; }
+.cm-desc { font-size: 12px; color: #cdd8ea; font-weight: 700; line-height: 1.35; }
+.cm-meta { font-size: 11px; color: #9fb0c8; line-height: 1.45; word-break: break-all; }
+
 </style>
 </head>
 <body>
@@ -970,6 +985,19 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
     <div class="bc-detail" id="ivDetail">撳任一柱睇該日明細</div>
   </div>
 </div>
+
+<!-- ===== CDM 流程 平面心智圖 modal（2026-10-25 加，左至右、每流程一色） ===== -->
+<div class="box-chart-overlay" id="cdmMindModal">
+  <div class="bc-panel">
+    <div class="bc-head">
+      <h3>🧠 CDM 流程 · 平面心智圖</h3>
+      <button class="bc-close" id="cmClose" type="button" aria-label="關閉">✕</button>
+    </div>
+    <div class="bc-hint">← 左右滑動睇完整流程（每個流程一種顏色） →</div>
+    <div class="cm-row" id="cmRow"></div>
+    <div class="bc-detail" id="cmDetail">撳任一流程節點睇說明</div>
+  </div>
+</div>
 <script>
 /* ===== 膠盒倉存 整月 Bar 圖 ===== */
 var boxChartData = null;
@@ -1177,6 +1205,49 @@ function ivSelect(i) {
 document.getElementById('ivClose').addEventListener('click', closeInvChart);
 document.getElementById('invChartModal').addEventListener('click', function (e) { if (e.target === this) closeInvChart(); });
 document.getElementById('ivMonth').addEventListener('change', function () { loadInvChart(this.value); });
+
+/* ===== CDM 流程 平面心智圖（2026-10-25 加） ===== */
+// 每個流程一種顏色，左至右排列；資料嚟自 ⑪ CDM 文件歸檔 張卡嘅 9 步流程
+var CDM_FLOWS = [
+  { no: 1, name: '訂單入庫',     color: '#FF6B6B', desc: 'Yahoo 下載祐興訂單附件',        meta: '→ OneDrive\\Desktop\\CDM\\訂單\\' },
+  { no: 2, name: '落單去重',     color: '#FF922B', desc: '_cdm_common.py 防重複',          meta: 'Archive\\delivery_{date}.xlsx + processed_orders.json' },
+  { no: 3, name: '主流程 19:40', color: '#FFD43B', desc: 'gen_delivery.py 出貨',           meta: '錢大媽發票及執貨表_{date}\\' },
+  { no: 4, name: 'Flow1 21:00', color: '#69DB7C', desc: 'gen_invoice_single.py 單日發票',  meta: 'inv_{DD}-{MM}-{YYYY}.xlsx' },
+  { no: 5, name: 'Flow1 三處同步', color: '#38D9A9', desc: 'cp + md5 核對',                 meta: 'Claw / 工作區 / CDM 三處一致' },
+  { no: 6, name: 'Flow2 區間發票', color: '#4DABF7', desc: 'gen_flow23_segment.py',         meta: '人口令 → Inv_{DD}-{DD} MMM YYYY.xlsx' },
+  { no: 7, name: 'Flow3 金額對數', color: '#9775FA', desc: '同腳本第二段',                  meta: 'CDM 金額對數({DD}-{DD}).xlsx' },
+  { no: 8, name: '打印 + email', color: '#F783AC', desc: 'TOSHIBA 打印機輸出',              meta: 'bensonkum86@gmail.com（人手）' },
+  { no: 9, name: '歸檔 / 巡檢',  color: '#ADB5BD', desc: '附屬檔案 + 每日自動巡檢',         meta: '21:40 cron 自動 report' }
+];
+function openCdmMind() {
+  renderCdmMind();
+  document.getElementById('cdmMindModal').classList.add('active');
+}
+function closeCdmMind() { document.getElementById('cdmMindModal').classList.remove('active'); }
+function renderCdmMind() {
+  var row = document.getElementById('cmRow');
+  var html = '<div class="cm-hub">祐興 CDM<br>自動化</div><div class="cm-arrow">→</div>';
+  CDM_FLOWS.forEach(function (f, i) {
+    html += '<div class="cm-node" style="--c:' + f.color + '" data-i="' + i + '">'
+      + '<div class="cm-top"><span class="cm-no">' + f.no + '</span><span class="cm-name">' + f.name + '</span></div>'
+      + '<div class="cm-desc">' + f.desc + '</div>'
+      + '<div class="cm-meta">' + f.meta + '</div>'
+      + '</div><div class="cm-arrow">→</div>';
+  });
+  row.innerHTML = html;
+  row.querySelectorAll('.cm-node').forEach(function (n) {
+    n.addEventListener('click', function () {
+      var f = CDM_FLOWS[+n.getAttribute('data-i')];
+      row.querySelectorAll('.cm-node').forEach(function (x) { x.classList.remove('sel'); });
+      n.classList.add('sel');
+      document.getElementById('cmDetail').textContent =
+        f.no + '. ' + f.name + ' ｜ ' + f.desc + ' ｜ ' + f.meta;
+    });
+  });
+  document.getElementById('cmDetail').textContent = '撳任一流程節點睇說明（共 ' + CDM_FLOWS.length + ' 個流程）';
+}
+document.getElementById('cmClose').addEventListener('click', closeCdmMind);
+document.getElementById('cdmMindModal').addEventListener('click', function (e) { if (e.target === this) closeCdmMind(); });
 </script>
 
 <script>
@@ -1290,6 +1361,11 @@ function showFlow(flowId) {
     content += '<div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">'
       + '<button type="button" class="bc-open-btn" onclick="openBoxChart()">📊 膠盒倉存 整月圖</button>'
       + '<button type="button" class="bc-open-btn" style="background:#58d6a0;color:#06231f" onclick="openInvChart()">🧾 發票總額 走勢</button>'
+      + '</div>';
+  }
+  if (flowId === 'cdm-flow') {
+    content += '<div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">'
+      + '<button type="button" class="bc-open-btn" style="background:#7b8ff5;color:#06122b" onclick="openCdmMind()">🧠 CDM 流程心智圖</button>'
       + '</div>';
   }
   document.getElementById('modal-content').innerHTML = content;
@@ -2424,8 +2500,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v67';
-  var APP_PUBLISHED = '2026/10/25 09:06';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v68';
+  var APP_PUBLISHED = '2026/10/25 10:23';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
