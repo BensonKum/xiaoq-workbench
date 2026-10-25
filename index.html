@@ -608,7 +608,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .bc-legend { color: #9fb0c8; font-size: 12px; margin: 6px 0 2px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
 .bc-legend .lg { display: inline-flex; align-items: center; gap: 6px; }
 .bc-legend .sw { width: 13px; height: 13px; border-radius: 3px; display: inline-block; }
-.bc-legend .sw.small { background: #FFD93D; }
+.bc-legend .sw.small { background: #FF8A3D; }
 .bc-legend .sw.big { background: #FFFFFF; border: 1px solid #c9d4e6; box-sizing: border-box; }
 .bc-hint { color: #6f82a0; font-size: 11px; margin: 0 0 4px; }
 .bc-chart { display: flex; align-items: flex-end; gap: 6px; overflow-x: auto; padding: 6px 4px 6px; border-bottom: 1px solid #2c3a55; min-height: 360px; -webkit-overflow-scrolling: touch; }
@@ -624,7 +624,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .bc-col { width: 22px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; cursor: pointer; }
 .bc-val { font-size: 9px; color: #dbe4f2; margin-bottom: 2px; white-space: nowrap; }
 .bc-bar { width: 100%; border-radius: 4px 4px 0 0; min-height: 2px; transition: filter .15s; }
-.bc-col.small .bc-bar { background: #FFD93D; }
+.bc-col.small .bc-bar { background: #FF8A3D; }
 .bc-col.big .bc-bar { background: #FFFFFF; border: 1px solid #c9d4e6; box-sizing: border-box; }
 .bc-day.sel .bc-bar { outline: 2px solid #4d95e0; outline-offset: 1px; filter: brightness(1.1); }
 .bc-date { font-size: 9px; color: #8aa0bd; margin-top: 4px; line-height: 12px; white-space: nowrap; }
@@ -945,7 +945,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
       <button class="bc-close" id="bcClose" type="button" aria-label="關閉">✕</button>
     </div>
     <div class="bc-legend">
-      <span class="lg"><span class="sw small"></span>黃＝小盒用量</span>
+      <span class="lg"><span class="sw small"></span>橙＝小盒用量</span>
       <span class="lg"><span class="sw big"></span>白＝大盒用量</span>
     </div>
     <div class="bc-hint">← 左右滑動睇完整月份 →</div>
@@ -1073,7 +1073,7 @@ function bcSelect(i) {
   var r = boxChartData.rows[i];
   var used = (r.small_used||0) + (r.big_used||0);
   document.getElementById('bcDetail').textContent =
-    r.date + ' ｜ 細盒用量 ' + (r.small_used||0).toLocaleString() + '（黃） ＋ 大盒用量 ' + (r.big_used||0).toLocaleString() + '（白）' +
+    r.date + ' ｜ 細盒用量 ' + (r.small_used||0).toLocaleString() + '（橙） ＋ 大盒用量 ' + (r.big_used||0).toLocaleString() + '（白）' +
     ' ＝ 總用量 ' + used.toLocaleString() + ' ｜ 當日結餘 細 ' + (r.small_bal||0).toLocaleString() + ' ／ 大 ' + (r.big_bal||0).toLocaleString();
 }
 document.getElementById('bcClose').addEventListener('click', closeBoxChart);
@@ -1287,7 +1287,10 @@ function showFlow(flowId) {
     `<div class="step"><span class="step-num">${i + 1}.</span>${step}</div>`
   ).join('');
   if (flowId === 'inventory') {
-    content += '<div style="margin-top:16px"><button type="button" class="bc-open-btn" onclick="openBoxChart()">📊 整月 Bar 圖</button></div>';
+    content += '<div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">'
+      + '<button type="button" class="bc-open-btn" onclick="openBoxChart()">📊 膠盒倉存 整月圖</button>'
+      + '<button type="button" class="bc-open-btn" style="background:#58d6a0;color:#06231f" onclick="openInvChart()">🧾 發票總額 走勢</button>'
+      + '</div>';
   }
   document.getElementById('modal-content').innerHTML = content;
   document.getElementById('flow-modal').classList.add('active');
@@ -2421,8 +2424,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v66';
-  var APP_PUBLISHED = '2026/10/25 08:40';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v67';
+  var APP_PUBLISHED = '2026/10/25 09:06';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
