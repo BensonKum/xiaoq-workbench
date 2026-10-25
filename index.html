@@ -636,7 +636,11 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .bc-col.inv .bc-bar { background: #58d6a0; }
 
 /* ===== CDM 流程 平面心智圖（2026-10-25 加） ===== */
-.cm-row { display: flex; align-items: stretch; gap: 0; overflow-x: auto; padding: 20px 6px; -webkit-overflow-scrolling: touch; min-height: 200px; }
+.cm-row { display: flex; flex-direction: column; gap: 16px; overflow-x: auto; padding: 20px 6px; -webkit-overflow-scrolling: touch; min-height: 230px; }
+.cm-track { display: flex; align-items: stretch; gap: 0; min-width: max-content; }
+.cm-track-branch { border-top: 1px dashed #34425e; padding-top: 14px; margin-top: 2px; }
+.cm-branch-from { flex: 0 0 auto; align-self: center; border: 2px dashed #9775fa; color: #cdb8ff; border-radius: 14px; padding: 12px 14px; font-size: 13px; font-weight: 800; text-align: center; min-width: 96px; line-height: 1.3; background: #0f1520; }
+.cm-node.branch { border-style: dashed; }
 .cm-row::-webkit-scrollbar { height: 8px; }
 .cm-row::-webkit-scrollbar-thumb { background: #2c3a55; border-radius: 4px; }
 .cm-hub { flex: 0 0 auto; align-self: center; background: linear-gradient(135deg,#0b1220,#16233a); border: 2px solid #4d95e0; color: #fff; border-radius: 14px; padding: 16px 18px; font-size: 15px; font-weight: 800; text-align: center; min-width: 104px; line-height: 1.3; }
@@ -993,8 +997,11 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
       <h3>🧠 CDM 流程 · 平面心智圖</h3>
       <button class="bc-close" id="cmClose" type="button" aria-label="關閉">✕</button>
     </div>
-    <div class="bc-hint">← 左右滑動睇完整流程（每個流程一種顏色） →</div>
-    <div class="cm-row" id="cmRow"></div>
+    <div class="bc-hint">← 左右滑動 ｜ 上排＝主線流程、下排＝Flow1 分支（現 PAUSED） →</div>
+    <div class="cm-row" id="cmRow">
+      <div class="cm-track" id="cmMain"></div>
+      <div class="cm-track cm-track-branch" id="cmBranch"></div>
+    </div>
     <div class="bc-detail" id="cmDetail">撳任一流程節點睇說明</div>
   </div>
 </div>
@@ -1214,8 +1221,8 @@ var CDM_FLOWS = [
   { no: 3, name: '主流程 19:40', color: '#FFD43B', desc: 'gen_delivery.py 出貨',           meta: '錢大媽發票及執貨表_{date}\\' },
   { no: 4, name: 'Flow1 21:00', color: '#69DB7C', desc: 'gen_invoice_single.py 單日發票',  meta: 'inv_{DD}-{MM}-{YYYY}.xlsx' },
   { no: 5, name: 'Flow1 三處同步', color: '#38D9A9', desc: 'cp + md5 核對',                 meta: 'Claw / 工作區 / CDM 三處一致' },
-  { no: 6, name: 'Flow2 區間發票', color: '#4DABF7', desc: 'gen_flow23_segment.py',         meta: '人口令 → Inv_{DD}-{DD} MMM YYYY.xlsx' },
-  { no: 7, name: 'Flow3 金額對數', color: '#9775FA', desc: '同腳本第二段',                  meta: 'CDM 金額對數({DD}-{DD}).xlsx' },
+  { no: 6, name: 'Flow2 區間發票', color: '#4DABF7', desc: 'gen_flow23_segment.py',         meta: '人口令 → Inv_{DD}-{DD} MMM YYYY.xlsx', branch: true },
+  { no: 7, name: 'Flow3 金額對數', color: '#9775FA', desc: '同腳本第二段',                  meta: 'CDM 金額對數({DD}-{DD}).xlsx', branch: true },
   { no: 8, name: '打印 + email', color: '#F783AC', desc: 'TOSHIBA 打印機輸出',              meta: 'bensonkum86@gmail.com（人手）' },
   { no: 9, name: '歸檔 / 巡檢',  color: '#ADB5BD', desc: '附屬檔案 + 每日自動巡檢',         meta: '21:40 cron 自動 report' }
 ];
@@ -1225,26 +1232,35 @@ function openCdmMind() {
 }
 function closeCdmMind() { document.getElementById('cdmMindModal').classList.remove('active'); }
 function renderCdmMind() {
-  var row = document.getElementById('cmRow');
-  var html = '<div class="cm-hub">祐興 CDM<br>自動化</div><div class="cm-arrow">→</div>';
-  CDM_FLOWS.forEach(function (f, i) {
-    html += '<div class="cm-node" style="--c:' + f.color + '" data-i="' + i + '">'
+  function nodeHtml(f, i) {
+    return '<div class="cm-node' + (f.branch ? ' branch' : '') + '" style="--c:' + f.color + '" data-i="' + i + '">'
       + '<div class="cm-top"><span class="cm-no">' + f.no + '</span><span class="cm-name">' + f.name + '</span></div>'
       + '<div class="cm-desc">' + f.desc + '</div>'
       + '<div class="cm-meta">' + f.meta + '</div>'
-      + '</div><div class="cm-arrow">→</div>';
+      + '</div>';
+  }
+  var main = [], branch = [];
+  CDM_FLOWS.forEach(function (f, i) { f._i = i; (f.branch ? branch : main).push(f); });
+  var mainHtml = '<div class="cm-hub">祐興 CDM<br>自動化</div><div class="cm-arrow">→</div>';
+  main.forEach(function (f) { mainHtml += nodeHtml(f, f._i) + '<div class="cm-arrow">→</div>'; });
+  document.getElementById('cmMain').innerHTML = mainHtml;
+  var branchHtml = '<div class="cm-branch-from">④ Flow1<br>↳ 分支</div><div class="cm-arrow">→</div>';
+  branch.forEach(function (f, k) {
+    branchHtml += nodeHtml(f, f._i);
+    if (k < branch.length - 1) branchHtml += '<div class="cm-arrow">→</div>';
   });
-  row.innerHTML = html;
-  row.querySelectorAll('.cm-node').forEach(function (n) {
+  document.getElementById('cmBranch').innerHTML = branchHtml;
+  var allNodes = document.querySelectorAll('#cmMain .cm-node, #cmBranch .cm-node');
+  allNodes.forEach(function (n) {
     n.addEventListener('click', function () {
       var f = CDM_FLOWS[+n.getAttribute('data-i')];
-      row.querySelectorAll('.cm-node').forEach(function (x) { x.classList.remove('sel'); });
+      allNodes.forEach(function (x) { x.classList.remove('sel'); });
       n.classList.add('sel');
       document.getElementById('cmDetail').textContent =
-        f.no + '. ' + f.name + ' ｜ ' + f.desc + ' ｜ ' + f.meta;
+        f.no + '. ' + f.name + (f.branch ? '（Flow1 分支）' : '') + ' ｜ ' + f.desc + ' ｜ ' + f.meta;
     });
   });
-  document.getElementById('cmDetail').textContent = '撳任一流程節點睇說明（共 ' + CDM_FLOWS.length + ' 個流程）';
+  document.getElementById('cmDetail').textContent = '撳任一流程節點睇說明（主線 ' + main.length + ' 個 ＋ 分支 ' + branch.length + ' 個）';
 }
 document.getElementById('cmClose').addEventListener('click', closeCdmMind);
 document.getElementById('cdmMindModal').addEventListener('click', function (e) { if (e.target === this) closeCdmMind(); });
@@ -2500,8 +2516,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v68';
-  var APP_PUBLISHED = '2026/10/25 10:23';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v69';
+  var APP_PUBLISHED = '2026/10/25 10:28';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
