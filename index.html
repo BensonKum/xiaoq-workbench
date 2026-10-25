@@ -632,6 +632,8 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .bc-open-btn { margin-top: 4px; background: #45c9c0; color: #06231f; border: none; border-radius: 10px; padding: 9px 14px; font-size: 14px; font-weight: 800; cursor: pointer; }
 .bc-open-btn:hover { filter: brightness(1.07); }
 .bc-err { color: #fca5a5; padding: 24px; font-size: 14px; line-height: 1.7; }
+.bc-legend .sw.inv { background: #58d6a0; }
+.bc-col.inv .bc-bar { background: #58d6a0; }
 
 </style>
 </head>
@@ -654,6 +656,10 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
   <button class="fb-chip" type="button" id="inventory-btn" data-fb="inventory" style="--fb:#45c9c0">
     <span class="fb-ico">📦</span>
     <span class="fb-txt"><span class="fb-name">膠盒倉存</span><span class="fb-val" id="fb-val-inventory">● 讀取中...</span></span>
+  </button>
+  <button class="fb-chip" type="button" id="invtotal-btn" data-fb="invtotal" style="--fb:#58d6a0">
+    <span class="fb-ico">🧾</span>
+    <span class="fb-txt"><span class="fb-name">發票總額</span><span class="fb-val" id="fb-val-invtotal">● 撳睇整月走勢</span></span>
   </button>
   <button class="fb-chip ghost" type="button" id="reset-order-btn" data-fb="reset" style="--fb:#6b7688">
     <span class="fb-ico">↺</span>
@@ -947,6 +953,23 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
     <div class="bc-detail" id="bcDetail">撳任一柱睇該日明細</div>
   </div>
 </div>
+
+<!-- ===== CDM 發票總額 整月走勢 modal（2026-10-25 加，照膠盒倉存做法） ===== -->
+<div class="box-chart-overlay" id="invChartModal">
+  <div class="bc-panel">
+    <div class="bc-head">
+      <h3>🧾 CDM 發票總額 · 整月走勢</h3>
+      <select id="ivMonth"></select>
+      <button class="bc-close" id="ivClose" type="button" aria-label="關閉">✕</button>
+    </div>
+    <div class="bc-legend">
+      <span class="lg"><span class="sw inv"></span>每日發票總額（HK$）</span>
+    </div>
+    <div class="bc-hint">← 左右滑動睇完整月份 →</div>
+    <div class="bc-chart" id="ivChart"></div>
+    <div class="bc-detail" id="ivDetail">撳任一柱睇該日明細</div>
+  </div>
+</div>
 <script>
 /* ===== 膠盒倉存 整月 Bar 圖 ===== */
 var boxChartData = null;
@@ -1056,6 +1079,104 @@ function bcSelect(i) {
 document.getElementById('bcClose').addEventListener('click', closeBoxChart);
 document.getElementById('boxChartModal').addEventListener('click', function (e) { if (e.target === this) closeBoxChart(); });
 document.getElementById('bcMonth').addEventListener('change', function () { loadBoxChart(this.value); });
+
+/* ===== CDM 發票總額 整月走勢（2026-10-25，照膠盒倉存做法） ===== */
+var invChartData = null;
+function openInvChart() {
+  var m = document.getElementById('ivMonth');
+  loadInvChart(m && m.value ? m.value : null);
+  document.getElementById('invChartModal').classList.add('active');
+}
+function closeInvChart() { document.getElementById('invChartModal').classList.remove('active'); }
+async function loadInvChart(month) {
+  var chart = document.getElementById('ivChart');
+  chart.innerHTML = '<div style="color:#9fb0c8;padding:24px">讀取中…</div>';
+  var data = null;
+  var isLocal = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+  if (isLocal) {
+    try {
+      var apiUrl = 'http://127.0.0.1:8083/api/invoice_history' + (month ? ('?month=' + encodeURIComponent(month)) : '');
+      var res = await fetch(apiUrl, { cache: 'no-store' });
+      if (res.ok) { var j = await res.json(); if (j && j.rows) data = j; }
+    } catch (e) {}
+  }
+  if (!data || !data.rows) {
+    try {
+      var res2 = await fetch('invoice_history.json', { cache: 'no-store' });
+      if (res2.ok) {
+        var all = await res2.json();
+        var key = month || (all.months && all.months[all.months.length - 1]);
+        if (all.by_month && all.by_month[key]) { data = all.by_month[key]; data.months = all.months; }
+      }
+    } catch (e) {}
+  }
+  if (!data || !data.rows) {
+    chart.innerHTML = '<div class="bc-err">暫時讀唔到資料。<br><br>' +
+      '👉 手機／雲端版：請撳左下「⟳ 檢查更新」確認已 publish 含 invoice_history.json 嘅最新版本。<br>' +
+      '👉 本機版：開 http://localhost:8082/tools-hub/ 或先執行 start_servers.bat。</div>';
+    return;
+  }
+  invChartData = data;
+  var sel = document.getElementById('ivMonth');
+  if (!sel.options.length && data.months) {
+    data.months.forEach(function (mm) {
+      var o = document.createElement('option'); o.value = mm; o.textContent = mm; sel.appendChild(o);
+    });
+    sel.value = data.month;
+  }
+  renderInvChart(data);
+}
+function renderInvChart(data) {
+  var rows = data.rows || [];
+  var chart = document.getElementById('ivChart');
+  if (!rows.length) { chart.innerHTML = '<div style="color:#9fb0c8;padding:24px">呢個月暫無發票資料</div>'; return; }
+  var max = 1;
+  rows.forEach(function (r) { var t = r.total || 0; if (t > max) max = t; });
+  chart.innerHTML = '';
+  var yaxis = document.createElement('div');
+  yaxis.className = 'bc-yaxis';
+  var yinner = document.createElement('div');
+  yinner.className = 'bc-yinner';
+  [1, 0.75, 0.5, 0.25, 0].forEach(function (f) {
+    var t = document.createElement('span');
+    t.className = 'ytick' + (f === 1 ? ' top' : '');
+    t.style.bottom = (f * 100) + '%';
+    t.textContent = '$' + Math.round(max * f).toLocaleString();
+    yinner.appendChild(t);
+  });
+  yaxis.appendChild(yinner);
+  chart.appendChild(yaxis);
+  rows.forEach(function (r, i) {
+    var t = r.total || 0;
+    var BAR_H = 300;
+    var h = Math.round(t / max * BAR_H);
+    var day = document.createElement('div');
+    day.className = 'bc-day';
+    day.innerHTML =
+      '<div class="bc-bars">' +
+        '<div class="bc-col inv"><div class="bc-val">$' + Math.round(t).toLocaleString() + '</div><div class="bc-bar" style="height:' + h + 'px"></div></div>' +
+      '</div>' +
+      '<div class="bc-date">' + r.date.slice(5) + '</div>';
+    day.querySelectorAll('.bc-col').forEach(function (c) {
+      c.addEventListener('click', function () { ivSelect(i); });
+    });
+    chart.appendChild(day);
+  });
+  ivSelect(rows.length - 1);
+  chart.scrollLeft = chart.scrollWidth;
+}
+function ivSelect(i) {
+  var days = document.querySelectorAll('#ivChart .bc-day');
+  days.forEach(function (c) { c.classList.remove('sel'); });
+  if (!days[i]) return;
+  days[i].classList.add('sel');
+  var r = invChartData.rows[i];
+  document.getElementById('ivDetail').textContent =
+    r.date + ' ｜ 發票總額 HK$' + (r.total || 0).toLocaleString() + ' ｜ 共 ' + (r.items || 0) + ' 支貨';
+}
+document.getElementById('ivClose').addEventListener('click', closeInvChart);
+document.getElementById('invChartModal').addEventListener('click', function (e) { if (e.target === this) closeInvChart(); });
+document.getElementById('ivMonth').addEventListener('change', function () { loadInvChart(this.value); });
 </script>
 
 <script>
@@ -2256,6 +2377,7 @@ async function checkWorkflow() {
     if (key === 'refresh' && typeof window.refreshAll === 'function') window.refreshAll();
     else if (key === 'cdm' && typeof window.checkCDM === 'function') window.checkCDM();
     else if (key === 'inventory' && typeof window.checkInventory === 'function') { window.checkInventory(); if (typeof window.openBoxChart === 'function') window.openBoxChart(); }
+    else if (key === 'invtotal' && typeof window.openInvChart === 'function') window.openInvChart();
     else if (key === 'reset' && typeof window.resetOrder === 'function') window.resetOrder();
   }
   chips.forEach(function (chip) {
@@ -2299,8 +2421,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v65';
-  var APP_PUBLISHED = '2026/10/25 08:06';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v66';
+  var APP_PUBLISHED = '2026/10/25 08:40';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');

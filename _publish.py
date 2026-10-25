@@ -135,6 +135,12 @@ def main():
             gen_box_history.main()
         except Exception as e:
             print('  ⚠️ 重生 box_history.json 失敗：%s' % e)
+        # 重生 invoice_history.json（CDM 發票總額 整月走勢，靜態圖表用）
+        try:
+            import gen_invoice_history
+            gen_invoice_history.main()
+        except Exception as e:
+            print('  ⚠️ 重生 invoice_history.json 失敗：%s' % e)
         os.system('git add -A && git -c user.name=Benson -c user.email=benso@local '
                   'commit -q -m "%s auto-bump by _publish.py"' % new)
         print('✓ 已 git commit（本地）')
