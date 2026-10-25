@@ -597,7 +597,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 @media (hover: hover) and (pointer: fine) { .pwa-update:hover { border-color: #ffc078; } }
 
 /* ===== 膠盒倉存 整月 Bar 圖（2026-10-25 加） ===== */
-.box-chart-overlay { position: fixed; inset: 0; background: rgba(8,12,20,.86); display: none; align-items: center; justify-content: center; z-index: 70; padding: 16px; }
+.box-chart-overlay { position: fixed; inset: 0; background: rgba(8,12,20,.86); display: none; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
 .box-chart-overlay.active { display: flex; }
 .bc-panel { width: min(960px, 96vw); max-height: 92vh; background: #1b2740; border-radius: 16px; padding: 18px 20px; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,.5); overflow: hidden; }
 .bc-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
@@ -2521,8 +2521,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v70';
-  var APP_PUBLISHED = '2026/10/25 10:33';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v71';
+  var APP_PUBLISHED = '2026/10/25 10:41';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
