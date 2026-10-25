@@ -172,7 +172,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .worklog-card.open .wl-body { display: block; }
 .worklog-card.open {
   border-color: #47566b;
-  box-shadow: 0 12px 26px rgba(0,0,0,.6);
+  box-shadow: 0 6px 12px rgba(0,0,0,.5);
 }
 @media (prefers-reduced-motion: reduce) {
   .worklog-card:active, .worklog-card .wl-chev { transition: none; }
@@ -284,7 +284,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .flow-card.open .flow-face { display: none; }
 .flow-card.open {
   flex-basis: calc(80% - 16px); aspect-ratio: auto; z-index: 3;
-  box-shadow: 0 14px 34px rgba(0,0,0,.6); border-color: #55677e;
+  box-shadow: 0 8px 16px rgba(0,0,0,.5); border-color: #55677e;
 }
 .flow-x {
   display: none; position: absolute; top: 8px; right: 10px; z-index: 4;
@@ -337,7 +337,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .cmd-name { font-size: 16px; font-weight: 800; line-height: 1.25; letter-spacing: .3px; text-shadow: 0 1px 2px rgba(0,0,0,.35); padding: 0 4px; }
 .cmd-hint { font-size: 12px; font-weight: 700; color: rgba(255,255,255,.8); }
 /* 撳開：張卡放大到兩格、取消正方、show 內容 */
-.cmd-card.open { flex-basis: calc(60% - 18px); aspect-ratio: auto; z-index: 3; box-shadow: 0 14px 34px rgba(0,0,0,.6); }
+.cmd-card.open { flex-basis: calc(60% - 18px); aspect-ratio: auto; z-index: 3; box-shadow: 0 8px 16px rgba(0,0,0,.5); }
 .cmd-card.open .cmd-face { display: none; }
 .cmd-body { display: none; padding: 18px; flex-direction: column; align-items: flex-start; }
 .cmd-card.open .cmd-body { display: flex; }
@@ -460,7 +460,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 }
 .sk-name { font-size: 15px; font-weight: 800; line-height: 1.25; letter-spacing: .3px; padding: 0 4px; }
 .sk-hint { font-size: 11px; font-weight: 700; color: var(--muted); }
-.skill-card.open { flex-basis: 100%; aspect-ratio: auto; z-index: 3; box-shadow: 0 16px 40px rgba(0,0,0,.7); border-color: #5b6d86; }
+.skill-card.open { flex-basis: 100%; aspect-ratio: auto; z-index: 3; box-shadow: 0 8px 18px rgba(0,0,0,.55); border-color: #5b6d86; }
 .skill-card.open .sk-face { display: none; }
 .sk-body { display: none; padding: 22px; flex-direction: column; overflow-y: auto; max-height: 620px; }
 .skill-card.open .sk-body { display: flex; }
@@ -653,6 +653,15 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .cm-name { font-size: 14px; font-weight: 800; color: #fff; line-height: 1.2; }
 .cm-desc { font-size: 12px; color: #cdd8ea; font-weight: 700; line-height: 1.35; }
 .cm-meta { font-size: 11px; color: #9fb0c8; line-height: 1.45; word-break: break-all; }
+
+/* ===== 手機效能優化（2026-10-26）：觸控裝置（hover:none / pointer:coarse）
+   唔 tween 昂貴嘅 box-shadow 同 filter，改為即變；保留 flex-basis / transform
+   等 GPU 友善動畫，令卡片展開、撳掣更跟手。桌面 hover 效果完全唔受影響。 ===== */
+@media (hover: none) and (pointer: coarse) {
+  .flow-card, .cmd-card, .skill-card, .web-card, .worklog-card, .fb-chip {
+    transition: flex-basis .28s cubic-bezier(.2,0,.2,1), transform .22s ease, border-color .2s ease !important;
+  }
+}
 
 </style>
 </head>
@@ -1023,14 +1032,14 @@ async function loadBoxChart(month) {
   if (isLocal) {
     try {
       var apiUrl = 'http://127.0.0.1:8083/api/box_history' + (month ? ('?month=' + encodeURIComponent(month)) : '');
-      var res = await fetch(apiUrl, { cache: 'no-store' });
+      var res = await fetch(apiUrl);
       if (res.ok) { var j = await res.json(); if (j && j.rows) data = j; }
     } catch (e) {}
   }
   // 2) 靜態 box_history.json（雲端／手機 同源，必定可讀；deploy 時一齊上）
   if (!data || !data.rows) {
     try {
-      var res2 = await fetch('box_history.json', { cache: 'no-store' });
+      var res2 = await fetch('box_history.json');
       if (res2.ok) {
         var all = await res2.json();
         var key = month || (all.months && all.months[all.months.length - 1]);
@@ -1131,13 +1140,13 @@ async function loadInvChart(month) {
   if (isLocal) {
     try {
       var apiUrl = 'http://127.0.0.1:8083/api/invoice_history' + (month ? ('?month=' + encodeURIComponent(month)) : '');
-      var res = await fetch(apiUrl, { cache: 'no-store' });
+      var res = await fetch(apiUrl);
       if (res.ok) { var j = await res.json(); if (j && j.rows) data = j; }
     } catch (e) {}
   }
   if (!data || !data.rows) {
     try {
-      var res2 = await fetch('invoice_history.json', { cache: 'no-store' });
+      var res2 = await fetch('invoice_history.json');
       if (res2.ok) {
         var all = await res2.json();
         var key = month || (all.months && all.months[all.months.length - 1]);
@@ -1322,7 +1331,7 @@ async function checkInventory() {
   //    → 撳一下「更新數據」個箱頂芯片就衝去 9/17 嘅過期數字。
   //    改為實讀 status.json（同一源 as loadStatus）；讀唔到就保留現值，千祈唔好自動寫死舊數。
   try {
-    const _rs = await fetch('status.json', { cache: 'no-store' });
+    const _rs = await fetch('status.json');
     const _sj = await _rs.json();
     if (_sj && _sj.inventory && _sj.inventory.small != null) {
       inventoryData = { small: _sj.inventory.small, big: _sj.inventory.big, date: _sj.inventory.date };
@@ -1619,7 +1628,7 @@ function renderFlow1Sync(f) {
 // 本地 status.json 讀 flow1_sync（桌面用；失敗就保留現值）
 async function checkFlow1() {
   try {
-    const r = await fetch('status.json', { cache: 'no-store' });
+    const r = await fetch('status.json');
     const s = await r.json();
     if (s && s.flow1_sync) return renderFlow1Sync(s.flow1_sync);
     addLog('status.json 冇 flow1_sync 欄 → 保留現有顯示', 'warn');
@@ -1805,7 +1814,7 @@ function wfCopy(evt, row) {
 // 本地 status.json 讀 cdm_workflow（桌面用；失敗就保留現值）
 async function checkWorkflow() {
   try {
-    const r = await fetch('status.json', { cache: 'no-store' });
+    const r = await fetch('status.json');
     const s = await r.json();
     if (s && s.cdm_workflow) return renderWorkflow(s.cdm_workflow, s.cdm_archive);
     addLog('status.json 冇 cdm_workflow 欄 → 保留現有顯示', 'warn');
@@ -2521,8 +2530,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v72';
-  var APP_PUBLISHED = '2026/10/25 23:47';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v73';
+  var APP_PUBLISHED = '2026/10/26 00:20';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
