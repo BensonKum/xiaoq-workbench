@@ -621,7 +621,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .bc-yinner { position: relative; height: 300px; margin-bottom: 16px; }
 .bc-yaxis .ytick { position: absolute; right: 5px; transform: translateY(50%); font-size: 9px; color: #9fb0c8; white-space: nowrap; }
 .bc-yaxis .ytick.top { transform: translateY(100%); }
-.bc-col { width: 22px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; cursor: pointer; }
+.bc-col { width: 22px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; cursor: pointer; }
 .bc-val { font-size: 9px; color: #dbe4f2; margin-bottom: 2px; white-space: nowrap; }
 .bc-bar { width: 100%; border-radius: 4px 4px 0 0; min-height: 2px; transition: filter .15s; }
 .bc-col.small .bc-bar { background: #FFD93D; }
@@ -1023,14 +1023,15 @@ function renderBoxChart(data) {
   chart.appendChild(yaxis);
   rows.forEach(function (r, i) {
     var s = r.small_used||0, b = r.big_used||0;
-    var hs = Math.round(s / max * 100);
-    var hb = Math.round(b / max * 100);
+    var BAR_H = 300; // 與 .bc-bars 高度一致（px），直接用像素高度避免 flex 百分比陷阱
+    var hs = Math.round(s / max * BAR_H);
+    var hb = Math.round(b / max * BAR_H);
     var day = document.createElement('div');
     day.className = 'bc-day';
     day.innerHTML =
       '<div class="bc-bars">' +
-        '<div class="bc-col small"><div class="bc-val">' + s.toLocaleString() + '</div><div class="bc-bar" style="height:' + hs + '%"></div></div>' +
-        '<div class="bc-col big"><div class="bc-val">' + b.toLocaleString() + '</div><div class="bc-bar" style="height:' + hb + '%"></div></div>' +
+        '<div class="bc-col small"><div class="bc-val">' + s.toLocaleString() + '</div><div class="bc-bar" style="height:' + hs + 'px"></div></div>' +
+        '<div class="bc-col big"><div class="bc-val">' + b.toLocaleString() + '</div><div class="bc-bar" style="height:' + hb + 'px"></div></div>' +
       '</div>' +
       '<div class="bc-date">' + r.date.slice(5) + '</div>';
     day.querySelectorAll('.bc-col').forEach(function (c) {
@@ -2298,8 +2299,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v64';
-  var APP_PUBLISHED = '2026/10/25 06:15';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v65';
+  var APP_PUBLISHED = '2026/10/25 08:06';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
