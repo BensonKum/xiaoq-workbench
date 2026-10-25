@@ -1384,6 +1384,11 @@ function showFlow(flowId) {
       + '<button type="button" class="bc-open-btn" style="background:#7b8ff5;color:#06122b" onclick="openCdmMind()">🧠 CDM 流程心智圖</button>'
       + '</div>';
   }
+  if (flowId === 'cdm') {
+    content += '<div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">'
+      + '<button type="button" class="bc-open-btn" style="background:#7b8ff5;color:#06122b" onclick="openCdmMind()">🧠 CDM 流程心智圖</button>'
+      + '</div>';
+  }
   document.getElementById('modal-content').innerHTML = content;
   document.getElementById('flow-modal').classList.add('active');
 }
@@ -2516,8 +2521,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v69';
-  var APP_PUBLISHED = '2026/10/25 10:28';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v70';
+  var APP_PUBLISHED = '2026/10/25 10:33';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
