@@ -677,6 +677,14 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
     <span class="fb-ico">🔄</span>
     <span class="fb-txt"><span class="fb-name">刷新數據</span><span class="fb-val" id="fb-val-refresh">一鍵更新全部指標</span></span>
   </button>
+  <button class="fb-chip" type="button" id="goto-cmd-btn" style="--fb:#f0a04b">
+    <span class="fb-ico">🤖</span>
+    <span class="fb-txt"><span class="fb-name">口令</span><span class="fb-val">撳去口令區</span></span>
+  </button>
+  <button class="fb-chip" type="button" id="top-update-btn" style="--fb:#58d6a0">
+    <span class="fb-ico">⟳</span>
+    <span class="fb-txt"><span class="fb-name">更新</span><span class="fb-val" id="fb-val-update">檢查新版</span></span>
+  </button>
   <button class="fb-chip" type="button" id="cdm-btn" data-fb="cdm" style="--fb:#7b8ff5">
     <span class="fb-ico">📋</span>
     <span class="fb-txt"><span class="fb-name">檢查 CDM</span><span class="fb-val" id="fb-val-cdm">● 待檢查</span></span>
@@ -700,7 +708,7 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 </div>
 
 <div class="container">
-  <div class="section">
+  <div class="section" id="cmd-section">
     <div class="section-title"><span class="dot" style="background:var(--warning)"></span>🤖 小Buddy 口令<span class="drag-hint">· 撳一下卡面睇範圍，撳「口令」即複製，貼畀小Buddy 就照做</span></div>
     <div class="cmd-legend">ℹ️ 以下口令全部係對 <b>小Buddy（AI 助手）</b> 講嘅指令、由小Buddy 執行；而上邊嘅「流程／祐興網站／Skill 分層」等卡，係 <b>Benson x WorkBuddy 工作台</b> 本身嘅業務監控功能（面板內置，唔係口令）。兩者唔同，唔好撈亂。</div>
     <div class="cmd-grid" id="cmd-grid"></div>
@@ -2530,8 +2538,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v73';
-  var APP_PUBLISHED = '2026/10/26 00:20';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v74';
+  var APP_PUBLISHED = '2026/10/26 00:31';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
@@ -2600,6 +2608,19 @@ async function checkWorkflow() {
       /* ④ 保險：1.8s 內無論有冇偵測到新版，都 reload 攞最新（主頁 SW 係 network-first） */
       setTimeout(_updFinish, 1800);
     });
+  }
+
+  /* 頂部 filter-bar 新增：口令快捷 + 更新快捷（手機更易搵到） */
+  var gotoCmdBtn = document.getElementById('goto-cmd-btn');
+  if (gotoCmdBtn) {
+    gotoCmdBtn.addEventListener('click', function () {
+      var s = document.getElementById('cmd-section');
+      if (s) s.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+  var topUpdateBtn = document.getElementById('top-update-btn');
+  if (topUpdateBtn && updBtn) {
+    topUpdateBtn.addEventListener('click', function () { updBtn.click(); });
   }
 
   /* 註冊 Service Worker（離線可開 + 令 Chrome 識別為可安裝 PWA） */
