@@ -87,10 +87,9 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
   .fb-chip { flex: 1 1 46%; }
 }
 @media (max-width: 420px) {
-  /* 手機：filter bar 單行橫向滾動 → 高度恆定一排（同電腦一致），唔會摺成 4 行佔 30% 畫面 */
-  .filter-bar { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; scrollbar-width: none; padding: 8px; }
-  .filter-bar::-webkit-scrollbar { display: none; }
-  .fb-chip { flex: 0 0 auto; min-width: max-content; }
+  /* 手機：filter bar 摺 2 行顯示全部 chip（含口令/更新），唔做橫向滑動，避免搵唔到 */
+  .filter-bar { flex-wrap: wrap; overflow-x: visible; padding: 10px; }
+  .fb-chip { flex: 1 1 46%; min-width: 0; }
 }
 .action-status { font-size: 15px; font-weight: 700; color: var(--muted); margin: -6px 0 24px; }
 .status-indicator { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: var(--muted); }
@@ -595,6 +594,17 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .pwa-update.run { opacity: .6; }
 .pwa-update .vno { font-size: 11px; opacity: .7; font-weight: 700; }
 @media (hover: hover) and (pointer: fine) { .pwa-update:hover { border-color: #ffc078; } }
+/* ===== 頂部更新提示 banner（有新版本先彈，長期開 tab 都會偵測到） ===== */
+.update-banner {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 70;
+  display: none; align-items: center; justify-content: center; gap: 8px;
+  background: linear-gradient(135deg, #b54708, #7a2e06);
+  color: #ffe9cf; font-size: 14px; font-weight: 800; letter-spacing: .3px;
+  padding: 12px 14px; cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0,0,0,.5);
+  -webkit-tap-highlight-color: transparent;
+}
+.update-banner.show { display: flex; }
 
 /* ===== 膠盒倉存 整月 Bar 圖（2026-10-25 加） ===== */
 .box-chart-overlay { position: fixed; inset: 0; background: rgba(8,12,20,.86); display: none; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
@@ -671,12 +681,9 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
   <p>Benson 嘅業務管理系統 ｜ 最後更新：<span id="last-update">載入中...</span></p>
 </header>
 
+<div class="update-banner" id="updBanner">🔔 有新版本已發佈 · 撳此立即更新</div>
 <div class="filter-bar" id="filter-bar">
   <div class="fb-label">🔽 全局篩選</div>
-  <button class="fb-chip active" type="button" id="refresh-btn" data-fb="refresh" style="--fb:#4d95e0">
-    <span class="fb-ico">🔄</span>
-    <span class="fb-txt"><span class="fb-name">刷新數據</span><span class="fb-val" id="fb-val-refresh">一鍵更新全部指標</span></span>
-  </button>
   <button class="fb-chip" type="button" id="goto-cmd-btn" style="--fb:#f0a04b">
     <span class="fb-ico">🤖</span>
     <span class="fb-txt"><span class="fb-name">口令</span><span class="fb-val">撳去口令區</span></span>
@@ -684,6 +691,10 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
   <button class="fb-chip" type="button" id="top-update-btn" style="--fb:#58d6a0">
     <span class="fb-ico">⟳</span>
     <span class="fb-txt"><span class="fb-name">更新</span><span class="fb-val" id="fb-val-update">檢查新版</span></span>
+  </button>
+  <button class="fb-chip active" type="button" id="refresh-btn" data-fb="refresh" style="--fb:#4d95e0">
+    <span class="fb-ico">🔄</span>
+    <span class="fb-txt"><span class="fb-name">刷新數據</span><span class="fb-val" id="fb-val-refresh">一鍵更新全部指標</span></span>
   </button>
   <button class="fb-chip" type="button" id="cdm-btn" data-fb="cdm" style="--fb:#7b8ff5">
     <span class="fb-ico">📋</span>
@@ -2538,8 +2549,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v75';
-  var APP_PUBLISHED = '2026/10/26 02:01';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v76';
+  var APP_PUBLISHED = '2026/10/26 22:03';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
@@ -2629,12 +2640,37 @@ async function checkWorkflow() {
     navigator.serviceWorker.addEventListener('controllerchange', function () {
       try { window.location.reload(); } catch (_) {}
     });
+    var updBanner = document.getElementById('updBanner');
+    if (updBanner) {
+      updBanner.addEventListener('click', function () {
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+        }
+        setTimeout(function () { try { location.reload(true); } catch (_) { location.href = location.href; } }, 300);
+      });
+    }
     window.addEventListener('load', function () {
       var swUrl = 'sw.js?v=' + (window.APP_VERSION || '');
       navigator.serviceWorker.register(swUrl).catch(function () {});
-      navigator.serviceWorker.getRegistration().then(function (reg) {
-        if (reg) { try { reg.update(); } catch (_) {} }
-      });
+      function _check() {
+        navigator.serviceWorker.getRegistration().then(function (reg) {
+          if (!reg) return;
+          try { reg.update(); } catch (_) {}
+          reg.addEventListener('updatefound', function () {
+            var nw = reg.installing;
+            if (!nw) return;
+            nw.addEventListener('statechange', function () {
+              /* 真正裝好新版先彈 banner（平時 reg.update() 唔會到 installed，唔會誤彈） */
+              if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+                if (updBanner) updBanner.classList.add('show');
+              }
+            });
+          });
+        }).catch(function () {});
+      }
+      _check();
+      /* 長期開住 tab 都週期性檢查新版（每 60s），唔使靠人手 reload */
+      setInterval(_check, 60000);
     });
   }
 
