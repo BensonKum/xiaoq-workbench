@@ -31,6 +31,8 @@ STATE_FILE = os.path.join(HERE, '.box_sync_state.json')
 LOG_FILE = os.path.join(HERE, '_box_sync.log')
 # §7 倉存快照（CDM 流程 HandOff.md）自動同步目標
 HANDOFF_MD = r'C:\Users\benso\WorkBuddy\2026-09-21-11-40-31\CDM 流程 HandOff.md'
+# §12.5 倉存數據表（CDM 發票對數 HANDOFF.md）自動同步目標
+INVOICE_HANDOFF_MD = r'C:\Users\benso\WorkBuddy\Claw\cdm\CDM 發票對數\HANDOFF.md'
 PY312 = r'C:\Users\benso\AppData\Local\Programs\Python\Python312\python.exe'
 # sandbox 無權讀 ~/.ssh/known_hosts -> Permission denied -> Host key verification failed
 # 繞開：唔驗 known_hosts，直接 accept-new
@@ -215,6 +217,73 @@ def patch_handoff(inv, path=HANDOFF_MD):
         log('⚠️ patch HandOff.md 失敗（唔影響 push）：%s' % e)
 
 
+def patch_invoice_handoff(inv, path=INVOICE_HANDOFF_MD):
+    """best-effort：將 §12.5『膠盒倉存數據（僅參考）』月份表嘅當月期末結餘同步到 inv。
+
+    失敗只 log 警告，絕不影響 status.json 嘅 commit / push。
+    """
+    if not inv or not isinstance(inv, dict):
+        return
+    if not os.path.exists(path):
+        log('⚠️ 搵唔到 發票對數 HANDOFF.md，跳過 patch：%s' % path)
+        return
+    try:
+        date = inv.get('date', '')
+        small = inv.get('small')
+        big = inv.get('big')
+        if small is None or big is None:
+            return
+        mm = int(date[5:7])
+        dd = int(date[8:10])
+        note = '%d/%d' % (mm, dd)
+        new_row = '| %d月（%s 後） | %s / %s |\n' % (mm, note, _fmt(small), _fmt(big))
+        with open(path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+        # 搵 §12.5 段落範圍（由 '### 12.5' 到下一個 '### ' 或 EOF）
+        start = -1
+        for i, ln in enumerate(lines):
+            if ln.strip().startswith('### 12.5'):
+                start = i
+                break
+        if start < 0:
+            log('⚠️ 發票對數 HANDOFF.md 搘唔到 §12.5，跳過 patch（人手檢查）')
+            return
+        end = len(lines)
+        for j in range(start + 1, len(lines)):
+            if lines[j].startswith('### '):
+                end = j
+                break
+        # 段落內搵當月行（每個月只得一行）
+        pat = re.compile(r'^\|\s*%d月' % mm)
+        target = -1
+        for k in range(start, end):
+            if pat.match(lines[k]):
+                target = k
+                break
+        changed = False
+        if target >= 0:
+            lines[target] = new_row
+            changed = True
+        else:
+            # 新月份：搵段落內最後一行 | N月 行，喺佢後面 append 新行
+            last = -1
+            for k in range(start, end):
+                if re.match(r'^\|\s*\d+月', lines[k]):
+                    last = k
+            if last >= 0:
+                lines.insert(last + 1, new_row)
+                changed = True
+        if changed:
+            _backup_md(path)
+            with open(path, 'w', encoding='utf-8') as f:
+                f.writelines(lines)
+            log('✅ 已自動同步 發票對數 HANDOFF.md §12.5 倉存表（%s）' % date)
+        else:
+            log('⚠️ 發票對數 HANDOFF.md §12.5 搘唔到月份表，跳過 patch（人手檢查）')
+    except Exception as e:
+        log('⚠️ patch 發票對數 HANDOFF.md 失敗（唔影響 push）：%s' % e)
+
+
 def _save_state(md5val):
     try:
         with open(STATE_FILE, 'w', encoding='utf-8') as f:
@@ -262,6 +331,7 @@ def main():
                 return 1
             log('✅ 已 commit 新倉存數值')
             patch_handoff(cur_inv)
+            patch_invoice_handoff(cur_inv)
         else:
             log('倉存數值冇變（只係時間戳／其他欄變），跳過 commit。')
         _save_state(cur)
