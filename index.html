@@ -607,9 +607,9 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .update-banner.show { display: flex; }
 
 /* ===== 膠盒倉存 整月 Bar 圖（2026-10-25 加） ===== */
-.box-chart-overlay { position: fixed; inset: 0; background: rgba(8,12,20,.86); display: none; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
+.box-chart-overlay { position: fixed; inset: 0; background: rgba(8,12,20,.86); display: none; align-items: center; justify-content: center; z-index: 200; padding: 16px; overflow-y: auto; overscroll-behavior: contain; }
 .box-chart-overlay.active { display: flex; }
-.bc-panel { width: min(960px, 96vw); max-height: 92vh; background: #1b2740; border-radius: 16px; padding: 18px 20px; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,.5); overflow: hidden; }
+.bc-panel { width: min(960px, 96vw); max-height: 92vh; background: #1b2740; border-radius: 16px; padding: 18px 20px; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,.5); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }
 .bc-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .bc-head h3 { margin: 0; font-size: 18px; color: #eaf0fa; font-weight: 800; }
 #bcMonth { margin-left: auto; background: #0f1520; color: #eaf0fa; border: 1px solid #2c3a55; border-radius: 8px; padding: 6px 10px; font-size: 14px; }
@@ -621,10 +621,10 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .bc-legend .sw.small { background: #FF8A3D; }
 .bc-legend .sw.big { background: #FFFFFF; border: 1px solid #c9d4e6; box-sizing: border-box; }
 .bc-hint { color: #6f82a0; font-size: 11px; margin: 0 0 4px; }
-.bc-chart { display: flex; align-items: flex-end; gap: 6px; overflow-x: auto; padding: 6px 4px 6px; border-bottom: 1px solid #2c3a55; min-height: 360px; -webkit-overflow-scrolling: touch; }
+.bc-chart { display: flex; align-items: flex-end; gap: 6px; overflow-x: auto; padding: 6px 4px 6px; border-bottom: 1px solid #2c3a55; min-height: 360px; -webkit-overflow-scrolling: touch; touch-action: pan-x; overscroll-behavior-x: contain; scroll-snap-type: x proximity; }
 .bc-chart::-webkit-scrollbar { height: 8px; }
 .bc-chart::-webkit-scrollbar-thumb { background: #2c3a55; border-radius: 4px; }
-.bc-day { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+.bc-day { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; scroll-snap-align: end; }
 .bc-bars { display: flex; align-items: flex-end; gap: 3px; height: 300px;
   background-image: repeating-linear-gradient(to top, rgba(120,140,170,0.16) 0, rgba(120,140,170,0.16) 1px, transparent 1px, transparent 25%); }
 .bc-yaxis { flex: 0 0 46px; position: sticky; left: 0; z-index: 3; background: #1b2740; border-right: 1px solid #2c3a55; display: flex; flex-direction: column; }
@@ -644,9 +644,11 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .bc-err { color: #fca5a5; padding: 24px; font-size: 14px; line-height: 1.7; }
 .bc-legend .sw.inv { background: #58d6a0; }
 .bc-col.inv .bc-bar { background: #58d6a0; }
+/* 手機手勢優化（2026-10-29）：封住 overscroll 連鎖（pull-to-refresh / 底部反彈），令手勢更順 */
+html, body { overscroll-behavior-y: contain; }
 
 /* ===== CDM 流程 平面心智圖（2026-10-25 加） ===== */
-.cm-row { display: flex; flex-direction: column; gap: 16px; overflow-x: auto; padding: 20px 6px; -webkit-overflow-scrolling: touch; min-height: 230px; }
+.cm-row { display: flex; flex-direction: column; gap: 16px; overflow-x: auto; padding: 20px 6px; -webkit-overflow-scrolling: touch; min-height: 230px; touch-action: pan-x; overscroll-behavior-x: contain; }
 .cm-track { display: flex; align-items: stretch; gap: 0; min-width: max-content; }
 .cm-track-branch { border-top: 1px dashed #34425e; padding-top: 14px; margin-top: 2px; }
 .cm-branch-from { flex: 0 0 auto; align-self: center; border: 2px dashed #9775fa; color: #cdb8ff; border-radius: 14px; padding: 12px 14px; font-size: 13px; font-weight: 800; text-align: center; min-width: 96px; line-height: 1.3; background: #0f1520; }
@@ -2549,8 +2551,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v78';
-  var APP_PUBLISHED = '2026/10/28 02:01';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v79';
+  var APP_PUBLISHED = '2026/10/29 00:34';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
