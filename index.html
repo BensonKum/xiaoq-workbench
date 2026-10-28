@@ -645,9 +645,12 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .bc-legend .sw.inv { background: #58d6a0; }
 .bc-col.inv .bc-bar { background: #58d6a0; }
 /* 發票總額 bar：金額字轉 90° 垂直、置於 bar 內（2026-10-29） */
-.bc-col.inv { position: relative; }
-.bc-col.inv .bc-bar { position: relative; overflow: visible; }
+.bc-col.inv { position: relative; transition: transform .18s ease; }
+.bc-col.inv .bc-bar { position: relative; overflow: visible; transition: background .18s ease; }
 .bc-col.inv .bc-val { position: absolute; left: 50%; bottom: 4px; transform: translateX(-50%); writing-mode: vertical-rl; text-orientation: mixed; font-size: 9px; font-weight: 700; color: #06231f; margin: 0; white-space: nowrap; pointer-events: none; }
+/* 選中當日：整條 bar 變橙色 + 放大（2026-10-29） */
+.bc-day.sel .bc-col.inv { transform: scale(1.18); transform-origin: bottom center; z-index: 2; }
+.bc-day.sel .bc-col.inv .bc-bar { background: #FF8A3D; }
 /* 手機手勢優化（2026-10-29）：封住 overscroll 連鎖（pull-to-refresh / 底部反彈），令手勢更順 */
 html, body { overscroll-behavior-y: contain; }
 
@@ -2564,8 +2567,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v80';
-  var APP_PUBLISHED = '2026/10/29 01:15';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v81';
+  var APP_PUBLISHED = '2026/10/29 01:28';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
