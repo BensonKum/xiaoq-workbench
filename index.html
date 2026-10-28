@@ -653,6 +653,10 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .bc-day.sel .bc-col.inv .bc-bar { background: #FF8A3D; }
 /* 手機手勢優化（2026-10-29）：封住 overscroll 連鎖（pull-to-refresh / 底部反彈），令手勢更順 */
 html, body { overscroll-behavior-y: contain; }
+/* 整月圖 跳到最舊/最新 按鈕（2026-10-29）：解決手機 auto-scroll 去唔到最右導致最後一日睇唔到 */
+.bc-jump { display: flex; gap: 8px; justify-content: flex-end; margin: 2px 0 0; }
+.bc-jump-btn { background: #2c3a55; color: #cdd8ea; border: none; border-radius: 8px; padding: 5px 11px; font-size: 12px; cursor: pointer; }
+.bc-jump-btn:hover { background: #3a4d6e; }
 
 /* ===== CDM 流程 平面心智圖（2026-10-25 加） ===== */
 .cm-row { display: flex; flex-direction: column; gap: 16px; overflow-x: auto; padding: 20px 6px; -webkit-overflow-scrolling: touch; min-height: 230px; touch-action: pan-x; overscroll-behavior-x: contain; }
@@ -1005,6 +1009,7 @@ html, body { overscroll-behavior-y: contain; }
       <span class="lg"><span class="sw big"></span>白＝大盒用量</span>
     </div>
     <div class="bc-hint">← 左右滑動睇完整月份 →</div>
+    <div class="bc-jump"><button type="button" class="bc-jump-btn" id="bcJumpOld">⟵ 最舊</button><button type="button" class="bc-jump-btn" id="bcJumpNew">最新 ⟶</button></div>
     <div class="bc-chart" id="bcChart"></div>
     <div class="bc-detail" id="bcDetail">撳任一柱睇該日明細</div>
   </div>
@@ -1022,6 +1027,7 @@ html, body { overscroll-behavior-y: contain; }
       <span class="lg"><span class="sw inv"></span>每日發票總額（HK$）</span>
     </div>
     <div class="bc-hint">← 左右滑動睇完整月份 →</div>
+    <div class="bc-jump"><button type="button" class="bc-jump-btn" id="ivJumpOld">⟵ 最舊</button><button type="button" class="bc-jump-btn" id="ivJumpNew">最新 ⟶</button></div>
     <div class="bc-chart" id="ivChart"></div>
     <div class="bc-detail" id="ivDetail">撳任一柱睇該日明細</div>
   </div>
@@ -1144,7 +1150,7 @@ function renderBoxChart(data) {
     chart.appendChild(day);
   });
   bcSelect(rows.length - 1);
-  chart.scrollLeft = chart.scrollWidth; // 自動捲到最新一日（最右）
+  requestAnimationFrame(function () { chart.scrollTo({ left: chart.scrollWidth, behavior: 'auto' }); }); // 自動捲到最新一日（最右）
 }
 function bcSelect(i) {
   var days = document.querySelectorAll('#bcChart .bc-day');
@@ -1157,6 +1163,18 @@ function bcSelect(i) {
     r.date + ' ｜ 細盒用量 ' + (r.small_used||0).toLocaleString() + '（橙） ＋ 大盒用量 ' + (r.big_used||0).toLocaleString() + '（白）' +
     ' ＝ 總用量 ' + used.toLocaleString() + ' ｜ 當日結餘 細 ' + (r.small_bal||0).toLocaleString() + ' ／ 大 ' + (r.big_bal||0).toLocaleString();
 }
+// 整月圖 跳到最舊/最新（2026-10-29）：手機 auto-scroll 有時去唔到最右，俾按鈕手動跳
+function scrollChartTo(id, pos) {
+  var c = document.getElementById(id);
+  if (!c) return;
+  requestAnimationFrame(function () {
+    c.scrollTo(pos === 'end' ? { left: c.scrollWidth, behavior: 'smooth' } : { left: 0, behavior: 'smooth' });
+  });
+}
+document.getElementById('bcJumpNew').addEventListener('click', function () { scrollChartTo('bcChart', 'end'); });
+document.getElementById('bcJumpOld').addEventListener('click', function () { scrollChartTo('bcChart', 'start'); });
+document.getElementById('ivJumpNew').addEventListener('click', function () { scrollChartTo('ivChart', 'end'); });
+document.getElementById('ivJumpOld').addEventListener('click', function () { scrollChartTo('ivChart', 'start'); });
 document.getElementById('bcClose').addEventListener('click', closeBoxChart);
 document.getElementById('boxChartModal').addEventListener('click', function (e) { if (e.target === this) closeBoxChart(); });
 document.getElementById('bcMonth').addEventListener('change', function () { loadBoxChart(this.value); });
@@ -1244,7 +1262,7 @@ function renderInvChart(data) {
     chart.appendChild(day);
   });
   ivSelect(rows.length - 1);
-  chart.scrollLeft = chart.scrollWidth;
+  requestAnimationFrame(function () { chart.scrollTo({ left: chart.scrollWidth, behavior: 'auto' }); });
 }
 function ivSelect(i) {
   var days = document.querySelectorAll('#ivChart .bc-day');
@@ -2567,8 +2585,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v81';
-  var APP_PUBLISHED = '2026/10/29 01:28';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v82';
+  var APP_PUBLISHED = '2026/10/29 01:37';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
