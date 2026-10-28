@@ -1150,7 +1150,7 @@ function renderBoxChart(data) {
     chart.appendChild(day);
   });
   bcSelect(rows.length - 1);
-  requestAnimationFrame(function () { chart.scrollTo({ left: chart.scrollWidth, behavior: 'auto' }); }); // 自動捲到最新一日（最右）
+  forceScrollEnd(chart); // 自動捲到最新一日（最右），多重保險解 iOS 去唔到最右
 }
 function bcSelect(i) {
   var days = document.querySelectorAll('#bcChart .bc-day');
@@ -1163,13 +1163,23 @@ function bcSelect(i) {
     r.date + ' ｜ 細盒用量 ' + (r.small_used||0).toLocaleString() + '（橙） ＋ 大盒用量 ' + (r.big_used||0).toLocaleString() + '（白）' +
     ' ＝ 總用量 ' + used.toLocaleString() + ' ｜ 當日結餘 細 ' + (r.small_bal||0).toLocaleString() + ' ／ 大 ' + (r.big_bal||0).toLocaleString();
 }
+// 強制捲到最右（最新一日）：直接設 scrollLeft + 多次重試，唔用 smooth
+// （iOS 對 scrollTo + sticky 子元素嘅 flex 容器常失效，直接設 scrollLeft 最可靠）
+function forceScrollEnd(chart) {
+  if (!chart) return;
+  function _do() { try { chart.scrollLeft = chart.scrollWidth; } catch (_) {} }
+  _do();
+  requestAnimationFrame(_do);
+  setTimeout(_do, 60);
+  setTimeout(_do, 220);
+  setTimeout(_do, 520);
+}
 // 整月圖 跳到最舊/最新（2026-10-29）：手機 auto-scroll 有時去唔到最右，俾按鈕手動跳
 function scrollChartTo(id, pos) {
   var c = document.getElementById(id);
   if (!c) return;
-  requestAnimationFrame(function () {
-    c.scrollTo(pos === 'end' ? { left: c.scrollWidth, behavior: 'smooth' } : { left: 0, behavior: 'smooth' });
-  });
+  if (pos === 'end') { forceScrollEnd(c); }
+  else { try { c.scrollLeft = 0; } catch (_) {} requestAnimationFrame(function () { try { c.scrollLeft = 0; } catch (_) {} }); }
 }
 document.getElementById('bcJumpNew').addEventListener('click', function () { scrollChartTo('bcChart', 'end'); });
 document.getElementById('bcJumpOld').addEventListener('click', function () { scrollChartTo('bcChart', 'start'); });
@@ -1262,7 +1272,7 @@ function renderInvChart(data) {
     chart.appendChild(day);
   });
   ivSelect(rows.length - 1);
-  requestAnimationFrame(function () { chart.scrollTo({ left: chart.scrollWidth, behavior: 'auto' }); });
+  forceScrollEnd(chart); // 自動捲到最新一日（最右），多重保險解 iOS 去唔到最右
 }
 function ivSelect(i) {
   var days = document.querySelectorAll('#ivChart .bc-day');
@@ -2585,8 +2595,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v82';
-  var APP_PUBLISHED = '2026/10/29 01:37';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v83';
+  var APP_PUBLISHED = '2026/10/29 01:51';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
@@ -2688,6 +2698,15 @@ async function checkWorkflow() {
     window.addEventListener('load', function () {
       var swUrl = 'sw.js?v=' + (window.APP_VERSION || '');
       navigator.serviceWorker.register(swUrl).catch(function () {});
+      /* 版本自檢：若控制頁面嘅 SW 係舊版（scriptURL 唔含 APP_VERSION），強制硬刷，
+         根治 iOS PWA「舊 SW 唔 claim、頁面卡住舊版本（如 v79）」 */
+      if (navigator.serviceWorker.controller) {
+        try {
+          if (navigator.serviceWorker.controller.scriptURL.indexOf(window.APP_VERSION || '') < 0) {
+            location.reload(true);
+          }
+        } catch (_) {}
+      }
       function _check() {
         navigator.serviceWorker.getRegistration().then(function (reg) {
           if (!reg) return;
