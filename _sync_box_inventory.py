@@ -18,6 +18,7 @@
 import os
 import sys
 import json
+import re
 import hashlib
 import subprocess
 from datetime import datetime
@@ -28,6 +29,8 @@ UPDATE_STATUS = os.path.join(HERE, 'update_status.py')
 STATUS_JSON = os.path.join(HERE, 'status.json')
 STATE_FILE = os.path.join(HERE, '.box_sync_state.json')
 LOG_FILE = os.path.join(HERE, '_box_sync.log')
+# §7 倉存快照（CDM 流程 HandOff.md）自動同步目標
+HANDOFF_MD = r'C:\Users\benso\WorkBuddy\2026-09-21-11-40-31\CDM 流程 HandOff.md'
 PY312 = r'C:\Users\benso\AppData\Local\Programs\Python\Python312\python.exe'
 # sandbox 無權讀 ~/.ssh/known_hosts -> Permission denied -> Host key verification failed
 # 繞開：唔驗 known_hosts，直接 accept-new
@@ -120,6 +123,98 @@ def ensure_pushed():
     return 1
 
 
+def _fmt(n):
+    try:
+        return '{:,}'.format(int(n))
+    except Exception:
+        return str(n)
+
+
+def _read_month_total(inv):
+    """讀正本 xlsx 當月『總用量』行嘅 B/C（1-10 / 11-12 用量合計）。"""
+    try:
+        date = inv.get('date', '')
+        mm = int(date[5:7])
+    except Exception:
+        mm = 10
+    code = (
+        "import openpyxl\n"
+        "p=%r\n" % SOURCE_XLSX +
+        "mm=%d\n" % mm +
+        "wb=openpyxl.load_workbook(p,data_only=True)\n"
+        "name='%d月'%mm\n"
+        "ws=wb[name] if name in wb.sheetnames else wb[wb.sheetnames[-1]]\n"
+        "b=g=None\n"
+        "for r in range(3,ws.max_row+1):\n"
+        "    if ws.cell(r,1).value=='總用量':\n"
+        "        b=ws.cell(r,2).value; g=ws.cell(r,3).value; break\n"
+        "print('%s,%s'%(b,g))\n"
+    )
+    r = run([PY312, '-c', code])
+    if r.returncode != 0:
+        return None, None
+    try:
+        b, g = r.stdout.strip().split(',')
+        return int(b), int(g)
+    except Exception:
+        return None, None
+
+
+def _backup_md(path):
+    try:
+        import shutil
+        ts = datetime.now().strftime('%Y%m%d_%H%M')
+        shutil.copy2(path, path + '.bak_%s' % ts)
+    except Exception:
+        pass
+
+
+def patch_handoff(inv, path=HANDOFF_MD):
+    """best-effort：將 §7『最新結餘』及『各月期末結餘』當月段同步到 inv。
+
+    失敗只 log 警告，絕不影響 status.json 嘅 commit / push。
+    """
+    if not inv or not isinstance(inv, dict):
+        return
+    if not os.path.exists(path):
+        log('⚠️ 搵唔到 HandOff.md，跳過 patch：%s' % path)
+        return
+    try:
+        date = inv.get('date', '')
+        small = inv.get('small')
+        big = inv.get('big')
+        if small is None or big is None:
+            return
+        mm = int(date[5:7])
+        mlabel = '%d月' % mm
+        tb, tg = _read_month_total(inv)
+        with open(path, 'r', encoding='utf-8') as f:
+            txt = f.read()
+        # 1) 最新結餘 line
+        new_latest = ('- **最新結餘（%s）**：小膠盒 **%s** / 大膠盒 **%s**；%s總用量 %s/%s'
+                      % (date, _fmt(small), _fmt(big), mlabel,
+                         _fmt(tb) if tb is not None else '?',
+                         _fmt(tg) if tg is not None else '?'))
+        txt2, n1 = re.subn(r'(?m)^- \*\*最新結餘（[^）]*）\*\*：.*$', new_latest, txt, count=1)
+        # 2) 各月期末結餘 當月段（有就 replace，冇就 append 新月份）
+        seg = r'%s [\d,]+/[\d,]+' % mlabel
+        if re.search(seg, txt2):
+            txt2, n2 = re.subn(seg, '%s %s/%s' % (mlabel, _fmt(small), _fmt(big)), txt2, count=1)
+        else:
+            def _app(m):
+                return m.group(0).rstrip() + '｜%s %s/%s' % (mlabel, _fmt(small), _fmt(big))
+            txt2, n2 = re.subn(r'(?m)^- 各月期末結餘：.*$', _app, txt2, count=1)
+        if n1 or n2:
+            _backup_md(path)
+            with open(path, 'w', encoding='utf-8') as f:
+                f.write(txt2)
+            log('✅ 已自動同步 HandOff.md §7 倉存快照（%s）' % date)
+        else:
+            log('⚠️ HandOff.md §7 格式對唔上，跳過 patch（人手檢查）')
+    except Exception as e:
+        log('⚠️ patch HandOff.md 失敗（唔影響 push）：%s' % e)
+
+
 def _save_state(md5val):
     try:
         with open(STATE_FILE, 'w', encoding='utf-8') as f:
@@ -166,6 +261,7 @@ def main():
                 log('❌ git commit 失敗：%s' % c.stderr.strip()[:500])
                 return 1
             log('✅ 已 commit 新倉存數值')
+            patch_handoff(cur_inv)
         else:
             log('倉存數值冇變（只係時間戳／其他欄變），跳過 commit。')
         _save_state(cur)

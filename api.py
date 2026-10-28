@@ -29,8 +29,24 @@ INV_RE = re.compile(r'^inv_(\d{2})-(\d{2})-(\d{4})\.xlsx$')
 DATE_RE = re.compile(r'^\d{4}[-/]\d{1,2}[-/]\d{1,2}')
 
 
+def _is_real_balance(v):
+    """結餘欄要有真係嘅數（唔可以係 None / 空白 / '-'）。"""
+    if v is None:
+        return False
+    if isinstance(v, str):
+        s = v.strip()
+        if s == '' or s == '-':
+            return False
+    return True
+
+
 def read_box_latest(path=INVENTORY_FILE):
-    """回 {'small':int,'big':int,'date':str} —— 當月 sheet 最新有日期嗰行嘅結餘"""
+    """回 {'small':int,'big':int,'date':str} —— 當月 sheet 最新「完整有結餘」嗰行嘅結餘
+
+    🛡️ 2026-10-28 加防守：由下而上掃，跳過「有日期但 F/G 結餘欄殘缺」
+       嘅 orphan 行（例：預留/試填行得個日期 + 補貨，結餘空白），
+       改取最後一個「F 同 G 都有真數」嘅日期行，避免畀垃圾行呃咗最新結餘。
+    """
     wb = openpyxl.load_workbook(path, data_only=True)
     try:
         today = datetime.now()
@@ -42,14 +58,19 @@ def read_box_latest(path=INVENTORY_FILE):
         if sheet is None:                                # 2) 冇就 fallback 翻最新嘅月份頁
             sheet = wb[wb.sheetnames[-1]]
 
-        last = None                                      # 3) 搵最後一個「有日期」嘅行
+        last = None                                      # 3) 由下而上搵最後一個「完整結餘」行
         for r in range(sheet.max_row, 0, -1):
             v = sheet.cell(r, 1).value
             if v is None:
                 continue
-            if DATE_RE.match(str(v).strip()):
-                last = r
-                break
+            if not DATE_RE.match(str(v).strip()):
+                continue
+            fv = sheet.cell(r, 6).value                  # F = 小膠盒結餘
+            gv = sheet.cell(r, 7).value                  # G = 大膠盒結餘
+            if not (_is_real_balance(fv) and _is_real_balance(gv)):
+                continue                                 # 殘缺行 → 跳過
+            last = r
+            break
         if last is None:
             return {'small': 0, 'big': 0, 'date': '未知'}
 
