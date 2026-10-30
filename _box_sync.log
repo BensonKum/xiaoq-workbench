@@ -172,3 +172,6 @@ and the repository exists.
 [2026-10-29 19:52:34] ✅ 已自動同步 發票對數 HANDOFF.md §12.5 倉存表（2026-10-31）
 [2026-10-29 19:52:38] 偵測到 2 個未 push 嘅 status.json commit，嘗試補 push...
 [2026-10-29 19:52:42] ✅ 已 push 去 main（GitHub Pages 自動重建，手機約 20s 後見到更新）
+[2026-10-30 22:00:37] 偵測到 xlsx 變動（6cc235e173c5d97282d9d83b9264ca2f -> 18b226bb72f851b0b6f2c5ae92cd23aa），跑 update_status.py ...
+[2026-10-30 22:00:44] ✅ update_status.py 完成
+[2026-10-30 22:00:44] 倉存數值冇變（只係時間戳／其他欄變），跳過 commit。
