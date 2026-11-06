@@ -19,7 +19,7 @@
 :root {
   /* ===== 深色（黑底）主題 ===== */
   /* 卡片底色：一律藍灰底（唔係黑、唔係白），同 --bg 有分明對比 */
-  --bg: #05070d; --card: #22304d; --card-2: #1b2740; --ink: #ffffff; --muted: #d3dbe6; --line: #3d4c68;
+  --bg: #000000; --card: #22304d; --card-2: #1b2740; --ink: #ffffff; --muted: #d3dbe6; --line: #3d4c68;
   --primary: #4d95e0; --success: #4ade80; --warning: #e2b33c; --danger: #f06a6a;
   --cdm: #7b8ff5; --product: #45c9c0; --admin: #f5a44a; --media: #a984f0;
 }
@@ -29,67 +29,73 @@ header { background: linear-gradient(135deg, #0b1220 0%, #16233a 100%); color: #
 header h1 { font-size: 32px; font-weight: 800; display: flex; align-items: center; gap: 12px; letter-spacing: .5px; }
 header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 .container { max-width: 1200px; margin: 0 auto; padding: 28px 16px; }
-/* ===== 頂部 Global Filter Bar（橫向篩選條：固定頂部／單一激活態／切換即全局聯動） ===== */
+  /* ===== 頂部 Global Filter Bar（橫向篩選條：固定頂部／單一激活態／切換即全局聯動） ===== */
 .filter-bar {
-  display: flex; align-items: stretch; gap: 10px;
-  max-width: 900px; margin-bottom: 16px; padding: 10px 12px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  max-width: 520px; margin: 0 auto 20px; padding: 14px;
   background: linear-gradient(135deg, #1a2540 0%, #101728 100%);
   border: 1px solid var(--line); border-radius: 16px;
   box-shadow: 0 8px 22px rgba(0,0,0,.55);
   position: sticky; top: 0; z-index: 40;
 }
 .fb-label {
-  display: flex; align-items: center; gap: 6px; white-space: nowrap;
-  font-size: 13px; font-weight: 800; color: var(--muted); letter-spacing: .5px;
-  padding-right: 10px; border-right: 1px dashed var(--line);
+  display: none; /* 隱藏標籤 */
 }
+/* ===== 頂部三張動作卡：正方形 + 各施一色 + hover 放大 ===== */
 .fb-chip {
-  flex: 1 1 0; min-width: 0; position: relative; overflow: hidden;
-  border: 1px solid var(--line); background: #1f2b45; border-radius: 12px;
-  padding: 8px 12px 8px 14px; cursor: pointer; color: #fff; font-family: inherit; text-align: left;
-  display: flex; align-items: center; gap: 9px;
-  transition: transform .2s cubic-bezier(.2,0,.2,1), background .2s ease, border-color .2s ease, box-shadow .2s ease;
+  position: relative; overflow: hidden;
+  border: 1px solid var(--line); border-radius: 16px;
+  cursor: pointer; color: #fff; font-family: inherit; text-align: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  aspect-ratio: 1 / 1;            /* 正方形 */
+  min-height: 120px;
+  transition: transform .22s cubic-bezier(.2,0,.2,1),
+              box-shadow .22s ease, border-color .22s ease, filter .22s ease;
   -webkit-tap-highlight-color: transparent;
 }
-.fb-chip::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--fb, var(--primary)); }
-.fb-chip .fb-ico { font-size: 19px; line-height: 1; flex: 0 0 auto; }
-.fb-txt { display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
+.fb-chip::before { content: ''; position: absolute; inset: 0; border-radius: 16px; opacity: .12; pointer-events: none; }
+.fb-chip .fb-ico { font-size: 32px; line-height: 1; margin-bottom: 8px; }
+.fb-txt { display: flex; flex-direction: column; align-items: center; gap: 2px; width: 100%; padding: 0 10px; }
 .fb-name { font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.fb-val { font-size: 11.5px; font-weight: 700; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-/* 激活態（Global Filter 單選） */
-.fb-chip.active {
-  background: linear-gradient(135deg, rgba(77,149,224,.26), rgba(77,149,224,.07));
-  border-color: #4d95e0;
-  box-shadow: inset 0 0 0 1px rgba(77,149,224,.45), 0 6px 18px rgba(77,149,224,.2);
+.fb-val { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.72); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* 三張卡各施一色 */
+#refresh-btn { background: linear-gradient(145deg, #1e5faa, #2d7dd2); border-color: #3a8ee0; }
+#refresh-btn::before { background: radial-gradient(circle at 30% 30%, #5cb8ff, transparent 70%); }
+#cdm-btn      { background: linear-gradient(145deg, #5a3d9e, #7b5fd4); border-color: #8b7be0; }
+#cdm-btn::before { background: radial-gradient(circle at 30% 30%, #c4a8ff, transparent 70%); }
+#inventory-btn { background: linear-gradient(145deg, #1a7a6a, #2aa890); border-color: #2fc0a0; }
+#inventory-btn::before { background: radial-gradient(circle at 30% 30%, #6ee7d8, transparent 70%); }
+/* hover：放大 + 發光 */
+.fb-chip:hover {
+  transform: scale(1.08);
+  box-shadow: 0 12px 30px rgba(0,0,0,.5), 0 0 0 2px rgba(255,255,255,.18);
+  filter: brightness(1.12);
 }
-.fb-chip.active .fb-val { color: #a9cdf5; }
-.fb-chip.active .fb-name::after { content: ' ●'; color: var(--primary); font-size: 9px; vertical-align: middle; }
-.fb-chip.ghost { --fb: #6b7688; }
-.fb-chip.busy { filter: brightness(1.25); }
-@media (hover: hover) and (pointer: fine) {
-  .fb-chip:hover { transform: translateY(-2px); border-color: #4d95e0; }
-  .fb-chip.active:hover { transform: none; }
-}
+.fb-chip:active { transform: scale(.97); }
 .fb-chip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-.fb-chip:active { transform: scale(.98); }
-/* Global Filter 聯動：切換篩選時，下方所有指標卡同步「打亮」一下（共享參考線效果） */
-.flow-card.linked, .cmd-card.linked, .skill-card.linked {
-  box-shadow: 0 0 0 2px rgba(77,149,224,.45), 0 14px 34px rgba(0,0,0,.6);
-  border-color: #4d95e0;
+/* 激活態 */
+.fb-chip.active {
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.35), 0 0 20px rgba(255,255,255,.12);
+  filter: brightness(1.15);
 }
-.flow-card.linked .flow-icon, .cmd-card.linked .cmd-ico { transform: scale(1.12); }
-.flow-card, .cmd-card, .skill-card { transition: flex-basis .3s cubic-bezier(.2,0,.2,1), box-shadow .22s ease, transform .22s ease, border-color .25s ease; }
-/* 拖動排序需要 pointermove 可靠觸發：手機上唔俾瀏覽器搶手勢去 scroll */
-.flow-card { touch-action: none; }
-@media (max-width: 860px) {
-  .filter-bar { flex-wrap: wrap; }
-  .fb-label { display: none; }
-  .fb-chip { flex: 1 1 46%; }
+.fb-chip.ghost { --fb: #6b7688; opacity: .7; }
+/* 其餘 filter-bar 按鈕（口令、更新、發票總額、還原）維持原有橫向布局 */
+.fb-chip:not(#refresh-btn):not(#cdm-btn):not(#inventory-btn) {
+  flex: 1 1 0; min-width: 0;
+  padding: 8px 12px; display: flex; align-items: center; gap: 9px;
+  aspect-ratio: auto; min-height: auto;
 }
-@media (max-width: 420px) {
-  /* 手機：filter bar 摺 2 行顯示全部 chip（含口令/更新），唔做橫向滑動，避免搵唔到 */
-  .filter-bar { flex-wrap: wrap; overflow-x: visible; padding: 10px; }
-  .fb-chip { flex: 1 1 46%; min-width: 0; }
+.fb-chip:not(#refresh-btn):not(#cdm-btn):not(#inventory-btn) .fb-txt {
+  align-items: flex-start;
+}
+/* 手機適配：三卡改為 2+1 或全行顯示 */
+@media (max-width: 540px) {
+  .filter-bar { grid-template-columns: repeat(2, 1fr); max-width: 100%; }
+  .fb-chip:not(#refresh-btn):not(#cdm-btn):not(#inventory-btn) { flex: 1 1 46%; }
+}
+@media (max-width: 360px) {
+  .filter-bar { grid-template-columns: 1fr; }
+  .fb-chip:not(#refresh-btn):not(#cdm-btn):not(#inventory-btn) { flex: 1 1 100%; }
 }
 .action-status { font-size: 15px; font-weight: 700; color: var(--muted); margin: -6px 0 24px; }
 .status-indicator { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: var(--muted); }
@@ -2595,8 +2601,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v87';
-  var APP_PUBLISHED = '2026/10/31 02:01';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v89';
+  var APP_PUBLISHED = '2026/11/06 10:29';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
