@@ -92,10 +92,20 @@ header p { font-size: 16px; font-weight: 700; opacity: 0.92; margin-top: 6px; }
 @media (max-width: 540px) {
   .filter-bar { grid-template-columns: repeat(2, 1fr); max-width: 100%; }
   .fb-chip:not(#refresh-btn):not(#cdm-btn):not(#inventory-btn) { flex: 1 1 46%; }
+  /* 手機：三個主動作卡縮細，避免變形 */
+  #refresh-btn, #cdm-btn, #inventory-btn {
+    aspect-ratio: auto;
+    min-height: 64px;
+    padding: 8px 6px;
+  }
+  #refresh-btn .fb-ico, #cdm-btn .fb-ico, #inventory-btn .fb-ico { font-size: 24px; margin-bottom: 4px; }
+  #refresh-btn .fb-name, #cdm-btn .fb-name, #inventory-btn .fb-name { font-size: 12px; }
+  #refresh-btn .fb-val, #cdm-btn .fb-val, #inventory-btn .fb-val { font-size: 10px; }
 }
 @media (max-width: 360px) {
   .filter-bar { grid-template-columns: 1fr; }
   .fb-chip:not(#refresh-btn):not(#cdm-btn):not(#inventory-btn) { flex: 1 1 100%; }
+  #refresh-btn, #cdm-btn, #inventory-btn { flex: 1 1 100%; }
 }
 .action-status { font-size: 15px; font-weight: 700; color: var(--muted); margin: -6px 0 24px; }
 .status-indicator { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: var(--muted); }
@@ -2601,8 +2611,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v89';
-  var APP_PUBLISHED = '2026/11/06 10:29';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v90';
+  var APP_PUBLISHED = '2026/11/06 10:33';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
