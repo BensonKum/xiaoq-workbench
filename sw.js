@@ -38,7 +38,7 @@ self.addEventListener('fetch', (e) => {
 
   /* 數據 JSON：網絡優先（每次 reload 都攞最新，唔使等 SW 版本變更才清緩存，
      根治「手機緩存咗舊 box/invoice JSON、redeploy 後都睇唔到新資料」） */
-  if (url.pathname.endsWith('box_history.json') || url.pathname.endsWith('invoice_history.json')) {
+  if (url.pathname.endsWith('box_history.json') || url.pathname.endsWith('invoice_history.json') || url.pathname.endsWith('status.json')) {
     e.respondWith(
       fetch(req).then((res) => {
         if (res && res.status === 200 && res.type === 'basic') {
