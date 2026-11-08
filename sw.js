@@ -1,7 +1,7 @@
 /* 祐興工作台 Service Worker —— 離線快取 + 令 PWA 可安裝
  * 版本號必須同 index.html 嘅 APP_VERSION 一致（用 _bump_sw.py 自動同步）
  */
-const APP_VER = 'v94';
+const APP_VER = 'v95';
 const CACHE = 'xq-workbench-' + APP_VER;
 const ASSETS = [
   './', './index.html', './manifest.json',
@@ -70,7 +70,9 @@ self.addEventListener('fetch', (e) => {
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    caches.open(CACHE)
+    // 🚨 根治「舊 SW 鎖死舊數據」：新版一安裝即刻清走所有舊緩存，包括 box_history.json / status.json
+    caches.keys().then((ks) => Promise.all(ks.map((k) => caches.delete(k))))
+      .then(() => caches.open(CACHE))
       .then((c) => Promise.all(ASSETS.map((a) => c.add(a).catch(() => {}))))
       .then(() => self.skipWaiting())
   );
