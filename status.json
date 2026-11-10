@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-11-10 15:18",
+  "generated_at": "2026-11-10 23:54",
   "inventory": {
-    "small": 75181,
-    "big": 17312,
+    "small": 72574,
+    "big": 16762,
     "date": "2026-11-12"
   },
   "cdm": {
@@ -61,7 +61,7 @@
       "inv_09-11-2026.xlsx ／ 工作區副本"
     ],
     "ok": false,
-    "checked_at": "15:18"
+    "checked_at": "23:54"
   },
   "cdm_workflow": {
     "target_date": "2026-11-12",
@@ -78,11 +78,11 @@
         "path": "OneDrive\\CDM\\訂單\\",
         "full": "C:\\CDM\\訂單",
         "status": "ok",
-        "detail": "本月揾到 10 個 .XLS",
+        "detail": "本月揾到 12 個 .XLS",
         "files": [
-          "(祐興粉麵廠有限公司)訂單20261108.XLS",
-          "(祐興粉麵廠有限公司)訂單20261109.XLS",
-          "(祐興粉麵廠有限公司)訂單20261110.XLS"
+          "(祐興粉麵廠有限公司)訂單20261110.XLS",
+          "(祐興粉麵廠有限公司)訂單20261111.XLS",
+          "(祐興粉麵廠有限公司)訂單20261112.XLS"
         ]
       },
       {
@@ -109,9 +109,13 @@
         "artifact": "錢大媽發票及執貨表_{YYYYMMDD}\\delivery_{YYYYMMDD}_wb.xlsx + .pdf",
         "path": "OneDrive\\CDM\\錢大媽發票及執貨表_{YYYYMMDD}\\",
         "full": "C:\\CDM\\錢大媽發票及執貨表_20261112",
-        "status": "pending",
-        "detail": "目標日 2026-11-12：執貨表還未到（要等 target 日 -2 嗰晚 19:40 先出）",
-        "files": []
+        "status": "ok",
+        "detail": "目標日 2026-11-12：輸出 4 個檔",
+        "files": [
+          "delivery_20261112_wb.pdf",
+          "delivery_20261112_wb.xlsx",
+          "invoice_20261112_wb.pdf"
+        ]
       },
       {
         "id": "w04",
@@ -142,7 +146,7 @@
         "path": "WorkBuddy\\Claw\\cdm\\ + WorkBuddy\\{工作區}\\cdm\\",
         "full": "C:\\Users\\benso\\WorkBuddy\\Claw\\cdm ／ C:\\Users\\benso\\WorkBuddy\\2026-09-21-11-40-31\\cdm",
         "status": "pending",
-        "detail": "11 Nov 2026 / 10 檔 / 缺 6 / 唔一致 14（15:18 檢查）",
+        "detail": "11 Nov 2026 / 10 檔 / 缺 6 / 唔一致 14（23:54 檢查）",
         "files": []
       },
       {
@@ -195,9 +199,9 @@
       }
     ],
     "total": 8,
-    "done": 3,
-    "pending": 4,
-    "ok": 3
+    "done": 4,
+    "pending": 3,
+    "ok": 4
   },
   "cdm_archive": {
     "items": [
@@ -208,8 +212,8 @@
         "name": "(祐興粉麵廠有限公司)訂單20261112.XLS",
         "where": "OneDrive\\CDM\\訂單\\",
         "full": "C:\\CDM\\訂單",
-        "status": "pending",
-        "note": "目標日 2026-11-12 嘅 .XLS 仲未 download 落嚟（Yahoo 約 19:00）",
+        "status": "ok",
+        "note": "已入庫：(祐興粉麵廠有限公司)訂單20261112.XLS",
         "copies": [],
         "script": "（人類：Yahoo 下載）"
       },
@@ -244,8 +248,8 @@
         "name": "delivery_20261112_wb.xlsx",
         "where": "OneDrive\\CDM\\錢大媽發票及執貨表_20261112\\",
         "full": "C:\\CDM\\錢大媽發票及執貨表_20261112",
-        "status": "pending",
-        "note": "target = 今日 + 2（2026-11-12），要等 11/12 嗰晚 19:40 先出",
+        "status": "ok",
+        "note": "已出",
         "copies": [],
         "script": "gen_delivery.py"
       },
@@ -256,8 +260,8 @@
         "name": "delivery_20261112_wb.pdf",
         "where": "OneDrive\\CDM\\錢大媽發票及執貨表_20261112\\",
         "full": "C:\\CDM\\錢大媽發票及執貨表_20261112",
-        "status": "pending",
-        "note": "target = 今日 + 2（2026-11-12），要等 11/12 嗰晚 19:40 先出",
+        "status": "ok",
+        "note": "已出",
         "copies": [],
         "script": "gen_delivery.py"
       },
@@ -280,8 +284,8 @@
         "name": "invoice_20261112_wb.pdf",
         "where": "OneDrive\\CDM\\錢大媽發票及執貨表_20261112\\",
         "full": "C:\\CDM\\錢大媽發票及執貨表_20261112",
-        "status": "pending",
-        "note": "target = 今日 + 2（2026-11-12），要等 11/12 嗰晚 19:40 先出",
+        "status": "ok",
+        "note": "已出",
         "copies": [],
         "script": "gen_delivery.py"
       },
