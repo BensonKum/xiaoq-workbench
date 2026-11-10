@@ -124,6 +124,17 @@ def main():
     write(tmp, sw2)
     os.replace(tmp, SW)
 
+    # version.json（頁面 load 時 fetch 對線上版本用；sw.js 已設 network-first 唔快取。
+    # 根治「gateway 按 sw.js?v= 快取舊版 → SW 更新檢查永遠攞唔到新版、手機卡死舊版本」）
+    try:
+        import json as _json
+        vp = os.path.join(HERE, 'version.json')
+        with io.open(vp, 'w', encoding='utf-8') as f:
+            _json.dump({'version': new, 'published': stamp}, f, ensure_ascii=False)
+        print('✓ version.json 寫成 %s（published %s）' % (new, stamp))
+    except Exception as e:
+        print('  ⚠️ 寫 version.json 失敗：%s' % e)
+
     cached = ('xq-workbench-') in sw2 and ('+ APP_VER' in sw2)
     print('✓ index.html / sw.js 已寫成 %s（CACHE 動態跟 APP_VER：%s）'
           % (new, '✅' if cached else '❌ 要改做 \'xq-workbench-\' + APP_VER'))

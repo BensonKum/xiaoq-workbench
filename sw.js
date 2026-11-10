@@ -1,7 +1,7 @@
 /* 祐興工作台 Service Worker —— 離線快取 + 令 PWA 可安裝
  * 版本號必須同 index.html 嘅 APP_VERSION 一致（用 _bump_sw.py 自動同步）
  */
-const APP_VER = 'v98';
+const APP_VER = 'v99';
 const CACHE = 'xq-workbench-' + APP_VER;
 const ASSETS = [
   './', './index.html', './manifest.json',
@@ -38,7 +38,7 @@ self.addEventListener('fetch', (e) => {
 
   /* 數據 JSON：網絡優先（每次 reload 都攞最新，唔使等 SW 版本變更才清緩存，
      根治「手機緩存咗舊 box/invoice/status JSON、redeploy 後都睇唔到新資料」） */
-  if (url.pathname.endsWith('box_history.json') || url.pathname.endsWith('invoice_history.json') || url.pathname.endsWith('status.json')) {
+  if (url.pathname.endsWith('version.json') || url.pathname.endsWith('box_history.json') || url.pathname.endsWith('invoice_history.json') || url.pathname.endsWith('status.json')) {
     e.respondWith(
       fetch(req).then((res) => {
         if (res && res.status === 200 && res.type === 'basic') {
