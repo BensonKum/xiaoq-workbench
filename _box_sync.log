@@ -213,3 +213,82 @@ Please make sure you have the correct access rights
 and the repository exists.
 [2026-11-07 21:26:25] 偵測到 5 個未 push 嘅 status.json commit，嘗試補 push...
 [2026-11-07 21:26:32] ✅ 已 push 去 main（GitHub Pages 自動重建，手機約 20s 後見到更新）
+[2026-11-10 14:07:20] 偵測到 xlsx 變動（3b934cc1613eec69afdc7c3cf974c525 -> 96d89482ce38ee314dcade52b5b7e416），跑 update_status.py ...
+[2026-11-10 14:07:30] ✅ update_status.py 完成
+[2026-11-10 14:07:37] ✅ 已 commit 新倉存數值
+[2026-11-10 14:07:39] ✅ 已自動同步 HandOff.md §7 倉存快照（2026-11-10）
+[2026-11-10 14:07:39] ✅ 已自動同步 發票對數 HANDOFF.md §12.5 倉存表（2026-11-10）
+[2026-11-10 14:07:49] 偵測到 1 個未 push 嘅 status.json commit，嘗試補 push...
+[2026-11-10 14:07:51] ⚠️ push 失敗 (試 1/3)：Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+Load key "C:/Users/benso/.ssh/id_ed25519_xiaoq": Permission denied
+git@github.com: Permission denied (publickey).
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[2026-11-10 14:07:53] ⚠️ push 失敗 (試 2/3)：Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+Load key "C:/Users/benso/.ssh/id_ed25519_xiaoq": Permission denied
+git@github.com: Permission denied (publickey).
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[2026-11-10 14:07:55] ⚠️ push 失敗 (試 3/3)：Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+Load key "C:/Users/benso/.ssh/id_ed25519_xiaoq": Permission denied
+git@github.com: Permission denied (publickey).
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[2026-11-10 14:07:55] ❌ 補 push 失敗：Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+Load key "C:/Users/benso/.ssh/id_ed25519_xiaoq": Permission denied
+git@github.com: Permission denied (publickey).
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[2026-11-10 14:08:16] 偵測到 1 個未 push 嘅 status.json commit，嘗試補 push...
+[2026-11-10 14:08:20] ✅ 已 push 去 main（GitHub Pages 自動重建，手機約 20s 後見到更新）
+[2026-11-10 15:18:07] 偵測到 xlsx 變動（96d89482ce38ee314dcade52b5b7e416 -> 23b6c0b690b906ace9b01b34758f753c），跑 update_status.py ...
+[2026-11-10 15:18:09] ✅ update_status.py 完成
+[2026-11-10 15:18:10] ✅ 已 commit 新倉存數值
+[2026-11-10 15:18:12] ✅ 已自動同步 HandOff.md §7 倉存快照（2026-11-12）
+[2026-11-10 15:18:12] ✅ 已自動同步 發票對數 HANDOFF.md §12.5 倉存表（2026-11-12）
+[2026-11-10 15:18:14] 偵測到 1 個未 push 嘅 status.json commit，嘗試補 push...
+[2026-11-10 15:18:16] ⚠️ push 失敗 (試 1/3)：Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+Load key "C:/Users/benso/.ssh/id_ed25519_xiaoq": Permission denied
+git@github.com: Permission denied (publickey).
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[2026-11-10 15:18:18] ⚠️ push 失敗 (試 2/3)：Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+Load key "C:/Users/benso/.ssh/id_ed25519_xiaoq": Permission denied
+git@github.com: Permission denied (publickey).
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[2026-11-10 15:18:19] ⚠️ push 失敗 (試 3/3)：Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+Load key "C:/Users/benso/.ssh/id_ed25519_xiaoq": Permission denied
+git@github.com: Permission denied (publickey).
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[2026-11-10 15:18:19] ❌ 補 push 失敗：Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+Load key "C:/Users/benso/.ssh/id_ed25519_xiaoq": Permission denied
+git@github.com: Permission denied (publickey).
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[2026-11-10 15:18:29] 偵測到 1 個未 push 嘅 status.json commit，嘗試補 push...
+[2026-11-10 15:18:32] ✅ 已 push 去 main（GitHub Pages 自動重建，手機約 20s 後見到更新）
+[2026-11-10 23:54:54] 偵測到 xlsx 變動（23b6c0b690b906ace9b01b34758f753c -> 1025fb0ad7b7cac34cac575d5807ac61），跑 update_status.py ...
+[2026-11-10 23:54:56] ✅ update_status.py 完成
+[2026-11-10 23:54:57] ✅ 已 commit 新倉存數值
+[2026-11-10 23:54:59] ✅ 已自動同步 HandOff.md §7 倉存快照（2026-11-12）
+[2026-11-10 23:55:00] ✅ 已自動同步 發票對數 HANDOFF.md §12.5 倉存表（2026-11-12）
+[2026-11-10 23:55:04] 偵測到 1 個未 push 嘅 status.json commit，嘗試補 push...
+[2026-11-10 23:55:08] ✅ 已 push 去 main（GitHub Pages 自動重建，手機約 20s 後見到更新）
