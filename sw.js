@@ -1,7 +1,7 @@
 /* 祐興工作台 Service Worker —— 離線快取 + 令 PWA 可安裝
  * 版本號必須同 index.html 嘅 APP_VERSION 一致（用 _bump_sw.py 自動同步）
  */
-const APP_VER = 'v101';
+const APP_VER = 'v102';
 const CACHE = 'xq-workbench-' + APP_VER;
 const ASSETS = [
   './', './index.html', './manifest.json',
@@ -38,7 +38,7 @@ self.addEventListener('fetch', (e) => {
 
   /* 數據 JSON：網絡優先（每次 reload 都攞最新，唔使等 SW 版本變更才清緩存，
      根治「手機緩存咗舊 box/invoice/status JSON、redeploy 後都睇唔到新資料」） */
-  if (url.pathname.endsWith('version.json') || url.pathname.endsWith('box_history.json') || url.pathname.endsWith('invoice_history.json') || url.pathname.endsWith('status.json')) {
+  if (url.pathname.endsWith('box_history.json') || url.pathname.endsWith('invoice_history.json')) {
     e.respondWith(
       fetch(req).then((res) => {
         if (res && res.status === 200 && res.type === 'basic') {
@@ -70,9 +70,7 @@ self.addEventListener('fetch', (e) => {
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    // 🚨 根治「舊 SW 鎖死舊數據」：新版一安裝即刻清走所有舊緩存，包括 box_history.json / status.json
-    caches.keys().then((ks) => Promise.all(ks.map((k) => caches.delete(k))))
-      .then(() => caches.open(CACHE))
+    caches.open(CACHE)
       .then((c) => Promise.all(ASSETS.map((a) => c.add(a).catch(() => {}))))
       .then(() => self.skipWaiting())
   );
@@ -88,12 +86,5 @@ self.addEventListener('activate', (e) => {
     caches.keys()
       .then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
-      .then(() => {
-        /* 根治「舊 SW 鎖死緩存、頁面卡住唔更新」：新版 SW 一接手，
-           強制所有已開頁面重新導航去最新版（network-first 會攞到新頁）。
-           只喺版本變更時 activate 一次，唔會無限 loop。 */
-        return self.clients.matchAll({ includeUncontrolled: true, type: 'window' })
-          .then((cs) => cs.forEach((c) => { try { c.navigate(c.url); } catch (_) {} }));
-      })
   );
 });

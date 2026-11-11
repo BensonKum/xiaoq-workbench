@@ -2596,8 +2596,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v101';
-  var APP_PUBLISHED = '2026/11/11 22:45';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v102';
+  var APP_PUBLISHED = '2026/11/11 23:19';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
@@ -2697,28 +2697,18 @@ async function checkWorkflow() {
       });
     }
     window.addEventListener('load', function () {
-      /* 註冊純 sw.js（唔加 ?v= 版本 query）：避免前面 gateway/CDN 按 query 快取舊 sw.js，
-         令瀏覽器 SW 更新檢查永遠攞唔到新版（手機/雲端卡死 v95 主因） */
-      navigator.serviceWorker.register('sw.js').catch(function () {});
+      var swUrl = 'sw.js?v=' + (window.APP_VERSION || '');
+      navigator.serviceWorker.register(swUrl).catch(function () {});
 
-      /* 🛡️ 雙重更新保障：每次 load + 每 60s 去線上攞 version.json（network-first，絕不快取），
-         若線上版本 ≠ 本頁 APP_VERSION，強制 cache-busting 重刷（?cb= 係全新 URL，SW 快取命中唔到，
-         必定由網絡攞到最新 index.html）。唔使靠 SW update 偵測，繞開一切 CDN/HTTP 快取。 */
-      function checkLiveVersion() {
-        if (!window.APP_VERSION) return;
-        fetch('version.json', { cache: 'no-store' })
-          .then(function (r) { return r.ok ? r.json() : null; })
-          .then(function (d) {
-            if (!d || !d.version) return;
-            if (d.version !== window.APP_VERSION) {
-              var p = location.pathname + (location.pathname.indexOf('?') >= 0 ? '&' : '?') + 'cb=' + Date.now();
-              try { location.href = p; } catch (_) { location.reload(true); }
-            }
-          })
-          .catch(function () {});
+      /* 版本自檢：若控制頁面嘅 SW 係舊版（scriptURL 唔含 APP_VERSION），強制硬刷，
+         根治 iOS PWA「舊 SW 唔 claim、頁面卡住舊版本」 */
+      if (navigator.serviceWorker.controller) {
+        try {
+          if (navigator.serviceWorker.controller.scriptURL.indexOf(window.APP_VERSION || '') < 0) {
+            location.reload(true);
+          }
+        } catch (_) {}
       }
-      checkLiveVersion();
-      setInterval(checkLiveVersion, 60000);
 
       function _check() {
         navigator.serviceWorker.getRegistration().then(function (reg) {
