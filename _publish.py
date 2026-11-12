@@ -12,7 +12,7 @@
   python _publish.py                # 升版 + 落檔 + commit（正常用呢個）
   python _publish.py --dry          # 只打印會升到邊，唔改檔案
   python _publish.py --no-commit    # 升版落檔，但唔 commit
-  python _publish.py --check        # 純校驗（index.html ↔ sw.js 一致），exit 1 = 有差距
+  python _publish.py --check        # 純校驗（index.html ↔ sw.js 版本一致），exit 1 = 有差距
 
 做完之後：助手會 redeploy（連結不變），手機撳左下橙色「⟳ 檢查更新」就Update到新版。
 """
@@ -73,9 +73,11 @@ def main():
     if '--check' in args:                                  # 純校驗模式
         h = RE_HTML.search(read(HTML))
         s = RE_SW.search(read(SW))
-        ok = bool(h and s and h.group(2) == s.group(1))
+        # group(1) 係前綴（例 `const APP_VER = `），group(2) 先係版本值；
+        # 舊版誤用 s.group(1) 比較，令 --check 永遠報「❌ 唔一致」（假紅）。
+        ok = bool(h and s and h.group(2) == s.group(2))
         print('index.html=%s | sw.js=%s → %s' % (
-            h.group(2) if h else '?', s.group(1) if s else '?',
+            h.group(2) if h else '?', s.group(2) if s else '?',
             '✅ 一致' if ok else '❌ 唔一致'))
         return 0 if ok else 1
 
