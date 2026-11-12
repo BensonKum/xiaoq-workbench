@@ -32,7 +32,9 @@ RE_HTML = re.compile(r"(var APP_VERSION\s*=\s*)'([^']+)'")
 RE_SW = re.compile(r"(const APP_VER\s*=\s*)'([^']+)'")
 RE_PUB = re.compile(r"(var APP_PUBLISHED\s*=\s*)'([^']*)'")   # footer「最後 publish」時間
 
-ONLINE = 'https://xiaoq-workbench-76614.app.workbuddy.host/index.html'
+# 2026-11-13：平台要完整連結（帶 ?sharecode=）先至放行；無 sharecode 會 403
+# 「链接不完整」，令 online_ver() 永遠攞唔到線上版本、對齊功能失效。
+ONLINE = 'https://xiaoq-workbench-76614.app.workbuddy.host/index.html?sharecode=35ATJKYILV'
 
 
 def read(p):
