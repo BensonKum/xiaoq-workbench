@@ -1,4 +1,6 @@
 ﻿node_modules/
+__pycache__/
+*.pyc
 
 # 本地预览/测试残留（下划线开头的临时脚本与截图）
 _*.mjs

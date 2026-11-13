@@ -31,6 +31,9 @@ STATE_FILE = os.path.join(HERE, '.box_sync_state.json')
 LOG_FILE = os.path.join(HERE, '_box_sync.log')
 # §7 倉存快照（CDM 流程 HandOff.md）自動同步目標
 HANDOFF_MD = r'C:\Users\benso\WorkBuddy\2026-09-21-11-40-31\CDM 流程 HandOff.md'
+# 2026-11-13 修正：權威版喺 C:\CDM，舊設定只 patch workspace 副本，
+# 令權威版 §7 長期停留 2026-10-31 舊數（兩份 HandOff 唔同步）。兩份都要 patch。
+HANDOFF_MD_CDM = r'C:\CDM\CDM 流程 HandOff.md'
 # §12.5 倉存數據表（CDM 發票對數 HANDOFF.md）自動同步目標
 INVOICE_HANDOFF_MD = r'C:\Users\benso\WorkBuddy\Claw\cdm\CDM 發票對數\HANDOFF.md'
 PY312 = r'C:\Users\benso\AppData\Local\Programs\Python\Python312\python.exe'
@@ -210,7 +213,7 @@ def patch_handoff(inv, path=HANDOFF_MD):
             _backup_md(path)
             with open(path, 'w', encoding='utf-8') as f:
                 f.write(txt2)
-            log('✅ 已自動同步 HandOff.md §7 倉存快照（%s）' % date)
+            log('✅ 已自動同步 HandOff.md §7 倉存快照（%s）｜%s' % (date, os.path.dirname(path)))
         else:
             log('⚠️ HandOff.md §7 格式對唔上，跳過 patch（人手檢查）')
     except Exception as e:
@@ -331,6 +334,7 @@ def main():
                 return 1
             log('✅ 已 commit 新倉存數值')
             patch_handoff(cur_inv)
+            patch_handoff(cur_inv, path=HANDOFF_MD_CDM)
             patch_invoice_handoff(cur_inv)
         else:
             log('倉存數值冇變（只係時間戳／其他欄變），跳過 commit。')

@@ -306,3 +306,10 @@ and the repository exists.
 [2026-11-12 20:39:27] ✅ 已自動同步 發票對數 HANDOFF.md §12.5 倉存表（2026-11-14）
 [2026-11-12 20:39:31] 偵測到 1 個未 push 嘅 status.json commit，嘗試補 push...
 [2026-11-12 20:39:35] ✅ 已 push 去 main（GitHub Pages 自動重建，手機約 20s 後見到更新）
+[2026-11-13 20:43:13] 偵測到 xlsx 變動（9de84cb613b0c9d50979b6a5d0f3e87d -> deb1c3f6e0c6744f5d35480c6ce53762），跑 update_status.py ...
+[2026-11-13 20:43:21] ✅ update_status.py 完成
+[2026-11-13 20:43:24] ✅ 已 commit 新倉存數值
+[2026-11-13 20:43:26] ✅ 已自動同步 HandOff.md §7 倉存快照（2026-11-15）
+[2026-11-13 20:43:27] ✅ 已自動同步 發票對數 HANDOFF.md §12.5 倉存表（2026-11-15）
+[2026-11-13 20:43:31] 偵測到 2 個未 push 嘅 status.json commit，嘗試補 push...
+[2026-11-13 20:43:35] ✅ 已 push 去 main（GitHub Pages 自動重建，手機約 20s 後見到更新）
