@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-14 19:47",
+  "generated_at": "2026-11-14 22:47",
   "inventory": {
-    "small": 65172,
-    "big": 15143,
-    "date": "2026-11-15"
+    "small": 62417,
+    "big": 14546,
+    "date": "2026-11-16"
   },
   "cdm": {
     "ran_today": true,
@@ -35,7 +35,7 @@
   },
   "flow1_sync": {
     "folder": "11 Nov 2026",
-    "files": 15,
+    "files": 16,
     "missing": [
       "inv_07-11-2026.xlsx ／ Claw 副本",
       "inv_07-11-2026.xlsx ／ 工作區副本",
@@ -52,7 +52,9 @@
       "inv_14-11-2026.xlsx ／ Claw 副本",
       "inv_14-11-2026.xlsx ／ 工作區副本",
       "inv_15-11-2026.xlsx ／ Claw 副本",
-      "inv_15-11-2026.xlsx ／ 工作區副本"
+      "inv_15-11-2026.xlsx ／ 工作區副本",
+      "inv_16-11-2026.xlsx ／ Claw 副本",
+      "inv_16-11-2026.xlsx ／ 工作區副本"
     ],
     "mismatch": [
       "inv_01-11-2026.xlsx ／ Claw 副本",
@@ -71,7 +73,7 @@
       "inv_09-11-2026.xlsx ／ 工作區副本"
     ],
     "ok": false,
-    "checked_at": "19:47"
+    "checked_at": "22:47"
   },
   "cdm_workflow": {
     "target_date": "2026-11-16",
@@ -137,12 +139,12 @@
         "artifact": "inv_{DD}-{MM}-{YYYY}.xlsx",
         "path": "OneDrive\\CDM\\CDM 發票對數\\CDM 發票\\{月文件夹}\\",
         "full": "C:\\CDM\\CDM 發票對數\\CDM 發票\\11 Nov 2026",
-        "status": "pending",
-        "detail": "本月 15 張（最新 inv_15-11-2026.xlsx）｜目標 2026-11-16：未出",
+        "status": "ok",
+        "detail": "本月 16 張（最新 inv_16-11-2026.xlsx）｜目標 2026-11-16：已出",
         "files": [
-          "inv_13-11-2026.xlsx",
           "inv_14-11-2026.xlsx",
-          "inv_15-11-2026.xlsx"
+          "inv_15-11-2026.xlsx",
+          "inv_16-11-2026.xlsx"
         ]
       },
       {
@@ -156,7 +158,7 @@
         "path": "WorkBuddy\\Claw\\cdm\\ + WorkBuddy\\{工作區}\\cdm\\",
         "full": "C:\\Users\\benso\\WorkBuddy\\Claw\\cdm ／ C:\\Users\\benso\\WorkBuddy\\2026-09-21-11-40-31\\cdm",
         "status": "pending",
-        "detail": "11 Nov 2026 / 15 檔 / 缺 16 / 唔一致 14（19:47 檢查）",
+        "detail": "11 Nov 2026 / 16 檔 / 缺 18 / 唔一致 14（22:47 檢查）",
         "files": []
       },
       {
@@ -209,9 +211,9 @@
       }
     ],
     "total": 8,
-    "done": 4,
-    "pending": 3,
-    "ok": 4
+    "done": 5,
+    "pending": 2,
+    "ok": 5
   },
   "cdm_archive": {
     "items": [
@@ -306,8 +308,8 @@
         "name": "inv_16-11-2026.xlsx",
         "where": "OneDrive\\CDM\\CDM 發票對數\\CDM 發票\\11 Nov 2026\\",
         "full": "C:\\CDM\\CDM 發票對數\\CDM 發票\\11 Nov 2026",
-        "status": "pending",
-        "note": "本月 15 張",
+        "status": "ok",
+        "note": "本月 16 張",
         "copies": [
           {
             "where": "WorkBuddy\\Claw\\cdm\\…\\11 Nov 2026\\",
@@ -327,7 +329,7 @@
         "name": "inv_*（同一批）+ 逐檔 md5",
         "where": "WorkBuddy\\Claw\\cdm\\CDM 發票對數\\CDM 發票\\11 Nov 2026\\",
         "full": "C:\\Users\\benso\\WorkBuddy\\Claw\\cdm",
-        "status": "pending",
+        "status": "ok",
         "note": "Flow1 出票後自動 sync_shadow() 回補",
         "copies": [],
         "script": ""
@@ -339,7 +341,7 @@
         "name": "inv_*（同一批）+ 逐檔 md5",
         "where": "WorkBuddy\\2026-09-21-11-40-31\\cdm\\CDM 發票對數\\CDM 發票\\11 Nov 2026\\",
         "full": "C:\\Users\\benso\\WorkBuddy\\2026-09-21-11-40-31\\cdm",
-        "status": "pending",
+        "status": "ok",
         "note": "唯一 writer = benso 部機",
         "copies": [],
         "script": ""
