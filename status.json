@@ -1,27 +1,27 @@
 {
-  "generated_at": "2026-11-17 20:26",
+  "generated_at": "2026-11-18 20:33",
   "inventory": {
-    "small": 54537,
-    "big": 12829,
-    "date": "2026-11-19"
+    "small": 52043,
+    "big": 12275,
+    "date": "2026-11-20"
   },
   "cdm": {
     "ran_today": true,
-    "target_date": "20261117",
+    "target_date": "20261118",
     "pdf_ready": true,
     "invoice_ready": true,
     "files": [
-      {
-        "date": "20261116",
-        "has_pdf": true,
-        "has_xlsx": true,
-        "folder": "C:\\CDM\\錢大媽發票及執貨表_20261116"
-      },
       {
         "date": "20261117",
         "has_pdf": true,
         "has_xlsx": true,
         "folder": "C:\\CDM\\錢大媽發票及執貨表_20261117"
+      },
+      {
+        "date": "20261118",
+        "has_pdf": true,
+        "has_xlsx": true,
+        "folder": "C:\\CDM\\錢大媽發票及執貨表_20261118"
       }
     ],
     "invoice_count": 31
@@ -29,7 +29,7 @@
   "orders": {
     "today_count": 1,
     "today_files": [
-      "(祐興粉麵廠有限公司)訂單20261117.XLS"
+      "(祐興粉麵廠有限公司)訂單20261118.XLS"
     ],
     "pending_count": 0
   },
@@ -79,10 +79,10 @@
       "inv_09-11-2026.xlsx ／ 工作區副本"
     ],
     "ok": false,
-    "checked_at": "20:26"
+    "checked_at": "20:33"
   },
   "cdm_workflow": {
-    "target_date": "2026-11-19",
+    "target_date": "2026-11-20",
     "month_folder": "11 Nov 2026",
     "steps": [
       {
@@ -96,11 +96,11 @@
         "path": "OneDrive\\CDM\\訂單\\",
         "full": "C:\\CDM\\訂單",
         "status": "ok",
-        "detail": "本月揾到 19 個 .XLS",
+        "detail": "本月揾到 20 個 .XLS",
         "files": [
-          "(祐興粉麵廠有限公司)訂單20261117.XLS",
           "(祐興粉麵廠有限公司)訂單20261118.XLS",
-          "(祐興粉麵廠有限公司)訂單20261119.XLS"
+          "(祐興粉麵廠有限公司)訂單20261119.XLS",
+          "(祐興粉麵廠有限公司)訂單20261120.XLS"
         ]
       },
       {
@@ -126,13 +126,13 @@
         "script": "gen_delivery.py",
         "artifact": "錢大媽發票及執貨表_{YYYYMMDD}\\delivery_{YYYYMMDD}_wb.xlsx + .pdf",
         "path": "OneDrive\\CDM\\錢大媽發票及執貨表_{YYYYMMDD}\\",
-        "full": "C:\\CDM\\錢大媽發票及執貨表_20261119",
+        "full": "C:\\CDM\\錢大媽發票及執貨表_20261120",
         "status": "ok",
-        "detail": "目標日 2026-11-19：輸出 4 個檔",
+        "detail": "目標日 2026-11-20：輸出 4 個檔",
         "files": [
-          "delivery_20261119_wb.pdf",
-          "delivery_20261119_wb.xlsx",
-          "invoice_20261119_wb.pdf"
+          "delivery_20261120_wb.pdf",
+          "delivery_20261120_wb.xlsx",
+          "invoice_20261120_wb.pdf"
         ]
       },
       {
@@ -145,8 +145,8 @@
         "artifact": "inv_{DD}-{MM}-{YYYY}.xlsx",
         "path": "OneDrive\\CDM\\CDM 發票對數\\CDM 發票\\{月文件夹}\\",
         "full": "C:\\CDM\\CDM 發票對數\\CDM 發票\\11 Nov 2026",
-        "status": "ok",
-        "detail": "本月 19 張（最新 inv_19-11-2026.xlsx）｜目標 2026-11-19：已出",
+        "status": "pending",
+        "detail": "本月 19 張（最新 inv_19-11-2026.xlsx）｜目標 2026-11-20：未出",
         "files": [
           "inv_17-11-2026.xlsx",
           "inv_18-11-2026.xlsx",
@@ -164,7 +164,7 @@
         "path": "WorkBuddy\\Claw\\cdm\\ + WorkBuddy\\{工作區}\\cdm\\",
         "full": "C:\\Users\\benso\\WorkBuddy\\Claw\\cdm ／ C:\\Users\\benso\\WorkBuddy\\2026-09-21-11-40-31\\cdm",
         "status": "pending",
-        "detail": "11 Nov 2026 / 19 檔 / 缺 24 / 唔一致 14（20:26 檢查）",
+        "detail": "11 Nov 2026 / 19 檔 / 缺 24 / 唔一致 14（20:33 檢查）",
         "files": []
       },
       {
@@ -219,9 +219,9 @@
       }
     ],
     "total": 8,
-    "done": 5,
-    "pending": 2,
-    "ok": 5
+    "done": 4,
+    "pending": 3,
+    "ok": 4
   },
   "cdm_archive": {
     "items": [
@@ -229,11 +229,11 @@
         "no": 1,
         "stage": "① 訂單入庫",
         "kind": "輸入",
-        "name": "(祐興粉麵廠有限公司)訂單20261119.XLS",
+        "name": "(祐興粉麵廠有限公司)訂單20261120.XLS",
         "where": "OneDrive\\CDM\\訂單\\",
         "full": "C:\\CDM\\訂單",
         "status": "ok",
-        "note": "已入庫：(祐興粉麵廠有限公司)訂單20261119.XLS",
+        "note": "已入庫：(祐興粉麵廠有限公司)訂單20261120.XLS",
         "copies": [],
         "script": "（人類：Yahoo 下載）"
       },
@@ -241,7 +241,7 @@
         "no": 2,
         "stage": "② 落單去重",
         "kind": "輸出",
-        "name": "delivery_20261119.xlsx — delivery_20261119.pdf",
+        "name": "delivery_20261120.xlsx — delivery_20261120.pdf",
         "where": "OneDrive\\CDM\\Archive\\",
         "full": "C:\\CDM\\Archive",
         "status": "pending",
@@ -265,9 +265,9 @@
         "no": 3,
         "stage": "③ 19:40 主流程",
         "kind": "輸出",
-        "name": "delivery_20261119_wb.xlsx",
-        "where": "OneDrive\\CDM\\錢大媽發票及執貨表_20261119\\",
-        "full": "C:\\CDM\\錢大媽發票及執貨表_20261119",
+        "name": "delivery_20261120_wb.xlsx",
+        "where": "OneDrive\\CDM\\錢大媽發票及執貨表_20261120\\",
+        "full": "C:\\CDM\\錢大媽發票及執貨表_20261120",
         "status": "ok",
         "note": "已出",
         "copies": [],
@@ -277,9 +277,9 @@
         "no": 3,
         "stage": "③ 19:40 主流程",
         "kind": "輸出",
-        "name": "delivery_20261119_wb.pdf",
-        "where": "OneDrive\\CDM\\錢大媽發票及執貨表_20261119\\",
-        "full": "C:\\CDM\\錢大媽發票及執貨表_20261119",
+        "name": "delivery_20261120_wb.pdf",
+        "where": "OneDrive\\CDM\\錢大媽發票及執貨表_20261120\\",
+        "full": "C:\\CDM\\錢大媽發票及執貨表_20261120",
         "status": "ok",
         "note": "已出",
         "copies": [],
@@ -289,11 +289,11 @@
         "no": 3,
         "stage": "③ 19:40 主流程",
         "kind": "輸出",
-        "name": "invoice_20261119_wb.xls",
-        "where": "OneDrive\\CDM\\錢大媽發票及執貨表_20261119\\",
-        "full": "C:\\CDM\\錢大媽發票及執貨表_20261119",
+        "name": "invoice_20261120_wb.xls",
+        "where": "OneDrive\\CDM\\錢大媽發票及執貨表_20261120\\",
+        "full": "C:\\CDM\\錢大媽發票及執貨表_20261120",
         "status": "pending",
-        "note": "target = 今日 + 2（2026-11-19），要等 11/19 嗰晚 19:40 先出",
+        "note": "target = 今日 + 2（2026-11-20），要等 11/20 嗰晚 19:40 先出",
         "copies": [],
         "script": "gen_delivery.py"
       },
@@ -301,9 +301,9 @@
         "no": 3,
         "stage": "③ 19:40 主流程",
         "kind": "輸出",
-        "name": "invoice_20261119_wb.pdf",
-        "where": "OneDrive\\CDM\\錢大媽發票及執貨表_20261119\\",
-        "full": "C:\\CDM\\錢大媽發票及執貨表_20261119",
+        "name": "invoice_20261120_wb.pdf",
+        "where": "OneDrive\\CDM\\錢大媽發票及執貨表_20261120\\",
+        "full": "C:\\CDM\\錢大媽發票及執貨表_20261120",
         "status": "ok",
         "note": "已出",
         "copies": [],
@@ -313,10 +313,10 @@
         "no": 4,
         "stage": "④ 21:00 Flow1",
         "kind": "輸出",
-        "name": "inv_19-11-2026.xlsx",
+        "name": "inv_20-11-2026.xlsx",
         "where": "OneDrive\\CDM\\CDM 發票對數\\CDM 發票\\11 Nov 2026\\",
         "full": "C:\\CDM\\CDM 發票對數\\CDM 發票\\11 Nov 2026",
-        "status": "ok",
+        "status": "pending",
         "note": "本月 19 張",
         "copies": [
           {
@@ -337,7 +337,7 @@
         "name": "inv_*（同一批）+ 逐檔 md5",
         "where": "WorkBuddy\\Claw\\cdm\\CDM 發票對數\\CDM 發票\\11 Nov 2026\\",
         "full": "C:\\Users\\benso\\WorkBuddy\\Claw\\cdm",
-        "status": "ok",
+        "status": "pending",
         "note": "Flow1 出票後自動 sync_shadow() 回補",
         "copies": [],
         "script": ""
@@ -349,7 +349,7 @@
         "name": "inv_*（同一批）+ 逐檔 md5",
         "where": "WorkBuddy\\2026-09-21-11-40-31\\cdm\\CDM 發票對數\\CDM 發票\\11 Nov 2026\\",
         "full": "C:\\Users\\benso\\WorkBuddy\\2026-09-21-11-40-31\\cdm",
-        "status": "ok",
+        "status": "pending",
         "note": "唯一 writer = benso 部機",
         "copies": [],
         "script": ""
@@ -358,7 +358,7 @@
         "no": 6,
         "stage": "⑥ Flow2 合併發票",
         "kind": "輸出",
-        "name": "Inv_ 01-19 Nov 2026.xlsx",
+        "name": "Inv_ 01-20 Nov 2026.xlsx",
         "where": "OneDrive\\CDM\\CDM 發票對數\\CDM 發票\\11 Nov 2026\\",
         "full": "C:\\CDM\\CDM 發票對數\\CDM 發票\\11 Nov 2026",
         "status": "manual",
@@ -373,13 +373,13 @@
             "full": "C:\\Users\\benso\\WorkBuddy\\2026-09-21-11-40-31\\cdm"
           }
         ],
-        "script": "gen_flow23_segment.py --month 2026-11 --segment 01-19"
+        "script": "gen_flow23_segment.py --month 2026-11 --segment 01-20"
       },
       {
         "no": 7,
         "stage": "⑦ Flow3 金額對數",
         "kind": "輸出",
-        "name": "CDM 金額對數(01-19 Nov 2026).xlsx",
+        "name": "CDM 金額對數(01-20 Nov 2026).xlsx",
         "where": "OneDrive\\CDM\\CDM 發票對數\\CDM 發票\\11 Nov 2026\\",
         "full": "C:\\CDM\\CDM 發票對數\\CDM 發票\\11 Nov 2026",
         "status": "manual",
@@ -424,7 +424,7 @@
         "no": 4,
         "stage": "④ 21:00 Flow1",
         "kind": "日志",
-        "name": "_logs\\flow1_20261117.log",
+        "name": "_logs\\flow1_20261118.log",
         "where": "OneDrive\\CDM\\_logs\\",
         "full": "C:\\CDM\\_logs",
         "status": "ok",
@@ -494,7 +494,7 @@
       }
     ],
     "total": 20,
-    "target_date": "2026-11-19",
+    "target_date": "2026-11-20",
     "month_folder": "11 Nov 2026"
   },
   "last_backup": "2026-10-02",
