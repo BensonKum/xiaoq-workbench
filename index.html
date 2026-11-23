@@ -1074,7 +1074,9 @@ async function loadBoxChart(month) {
   // 2) 靜態 box_history.json（雲端／手機 同源，必定可讀；deploy 時一齊上）
   if (!data || !data.rows) {
     try {
-      var res2 = await fetch('box_history.json');
+      /* cache-busting：加版本號做 query，每次 deploy 換 URL，強迫繞開 HTTP/CDN 舊快取
+         （SW network-first 只確保去 network，但 HTTP 層仍可能命中舊 response，故要換 URL） */
+      var res2 = await fetch('box_history.json?v=' + encodeURIComponent(window.APP_VERSION || ''));
       if (res2.ok) {
         var all = await res2.json();
         var key = month || (all.months && all.months[all.months.length - 1]);
@@ -1212,7 +1214,7 @@ async function loadInvChart(month) {
   }
   if (!data || !data.rows) {
     try {
-      var res2 = await fetch('invoice_history.json');
+      var res2 = await fetch('invoice_history.json?v=' + encodeURIComponent(window.APP_VERSION || ''));
       if (res2.ok) {
         var all = await res2.json();
         var key = month || (all.months && all.months[all.months.length - 1]);
@@ -2596,8 +2598,12 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v130';
-  var APP_PUBLISHED = '2026/11/23 22:04';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v131';
+  var APP_PUBLISHED = '2026/11/23 22:14';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  /* 暴露到 window：令 loadBoxChart/loadInvChart 嘅 JSON cache-busting、SW 版本自檢都攞得到
+     （呢個IIFE 內嘅 var 原本唔係全域，window.APP_VERSION 一直 undefined） */
+  window.APP_VERSION = APP_VERSION;
+  window.APP_PUBLISHED = APP_PUBLISHED;
   var updBtn = document.getElementById('updBtn');
   var updTxt = document.getElementById('updTxt');
   var updVer = document.getElementById('updVer');
