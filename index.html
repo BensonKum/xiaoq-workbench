@@ -2598,8 +2598,8 @@ async function checkWorkflow() {
   if (iOS && standalone) btn.classList.remove('show');
 
   /* ---------- 版本號 + PWA 更新機制 ---------- */
-  var APP_VERSION = 'v133';
-  var APP_PUBLISHED = '2026/11/24 22:02';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
+  var APP_VERSION = 'v134';
+  var APP_PUBLISHED = '2026/11/25 02:01';          /* 由 _publish.py 每次 publish 前寫入，未 publish 就留空 */
   /* 暴露到 window：令 loadBoxChart/loadInvChart 嘅 JSON cache-busting、SW 版本自檢都攞得到
      （呢個IIFE 內嘅 var 原本唔係全域，window.APP_VERSION 一直 undefined） */
   window.APP_VERSION = APP_VERSION;
